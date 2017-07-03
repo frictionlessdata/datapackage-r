@@ -1,8 +1,8 @@
-#' @title Validation 
+#' @title is.valid 
 #'
 #' @description ...
 #' 
-#' @usage validator(descriptor,schema)
+#' @usage is.valid(descriptor,schema)
 #' 
 #' 
 #' @param descriptor json dictionary
@@ -14,7 +14,7 @@
 #' @author ...
 #' @seealso ...
 #' @examples ...
-#' @rdname validator
+#' @rdname is.valid
 #' @import jsonvalidate
 #' @export
 
