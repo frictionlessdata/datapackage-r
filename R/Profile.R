@@ -1,8 +1,8 @@
-#' @title Profile 
+#' @title profile 
 #'
 #' @description ...
 #' 
-#' @usage Profile(name, jsonschema, descriptor )
+#' @usage profile(name, jsonschema, descriptor )
 #' 
 #' 
 #' @param name name
@@ -15,11 +15,11 @@
 #' @author ...
 #' @seealso ...
 #' @examples ...
-#' @rdname Profile
+#' @rdname profile
 #' @export
 
 
-Profile <- function(name, jsonschema, descriptor ) {
+profile <- function(name, jsonschema, descriptor ) {
   
   if (!is.character(name)) stop("name must be character")
   if (!is.character(jsonschema)) stop("jsonschema must be character")
@@ -30,5 +30,5 @@ Profile <- function(name, jsonschema, descriptor ) {
   
   structure(list(name ,
                  jsonschema,
-                 validate ), class = "Profile")
+                 validate ), class = "profile")
 }
