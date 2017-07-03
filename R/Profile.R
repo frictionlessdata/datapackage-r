@@ -1,13 +1,13 @@
-#' @title Validation 
+#' @title Profile 
 #'
 #' @description ...
 #' 
 #' @usage Profile(name, jsonschema, descriptor )
 #' 
 #' 
-#' @param name json dictionary
+#' @param name name
 #' @param jsonschema json schema
-#' @param descriptor json schema
+#' @param descriptor descriptor
 #' 
 #' @details ...
 #' 
@@ -16,7 +16,6 @@
 #' @seealso ...
 #' @examples ...
 #' @rdname Profile
-#' @import jsonvalidate
 #' @export
 
 
@@ -33,4 +32,3 @@ Profile <- function(name, jsonschema, descriptor ) {
                  jsonschema,
                  validate ), class = "Profile")
 }
-
