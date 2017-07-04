@@ -40,4 +40,3 @@ datapackage <- function(descriptor, base_path, strict=TRUE) {
                 # update() 
                  ), class = "datapackage")
 }
-
