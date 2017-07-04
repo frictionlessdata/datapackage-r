@@ -40,3 +40,17 @@ datapackage <- function(descriptor, base_path, strict=TRUE) {
                 # update() 
                  ), class = "datapackage")
 }
+
+
+valid -> dict
+errors -> list
+profile -> Profile
+descriptor -> dict
+resources -> Resource[]
+resource_names -> str[]
+
+add_resource(descriptor) -> Resource/None
+remove_resource(name) -> Resource/None
+get_resource(name) -> Resource/None
+save(target) -> bool
+update() -> bool
