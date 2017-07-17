@@ -19,7 +19,7 @@
 #' @export
 
 is.valid = function(descriptor,schema)  {
-  
+  inherits(x, "descriptor")
   if(is.null(scheme)){
     
     v = jsonvalidate::json_validator(paste(readLines("https://schemas.frictionlessdata.io/data-package.json"), collapse=""))
