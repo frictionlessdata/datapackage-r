@@ -62,6 +62,8 @@ get.descriptor.path=function(directory= "."){
     
     descriptor.path=path.expand(paste0(getwd(),"/datapackage.json"))
     
+    descriptor.path
+    
   } else message("Descriptor file (datapackage.json) does not exists.")
   
 }
