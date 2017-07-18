@@ -40,3 +40,28 @@ filepath=function(x){
   
   return(matched_files)
 }
+
+
+#' 
+#' @usage get.descriptor.path(directory= ".")
+#' 
+#' @param directory A character vector of full path name. The default corresponds to the working directory specified by \code{\link[base]{getwd}}
+#' @rdname get.descriptor.path
+#' @export
+#' 
+
+get.descriptor.path=function(directory= "."){
+  
+  # datapackage.json(descriptor) exists?
+  
+  files=list.files(path = directory, recursive = FALSE)
+  
+  exist=grepl("datapackage.json", files, fixed = FALSE, ignore.case = FALSE)
+  
+  if (any(exist)==TRUE){
+    
+    descriptor.path=path.expand(paste0(getwd(),"/datapackage.json"))
+    
+  } else message("Descriptor file (datapackage.json) does not exists.")
+  
+}
