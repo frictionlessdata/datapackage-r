@@ -1,12 +1,11 @@
 ---
-title: Data Package r
-date: "..."
-output:
+title: <img src="okgr.png" align="right" width=130px /><img src="oklabs.png" align="right" width=130px /><br><br/><img src="frictionlessdata.png" align="left" width=60 />rictionless Data - <br/>   Data Package
+output: 
   github_document:
-    html_preview: false
+    html_preview: no
   number_sections: yes
-subtitle: "..."
 ---
+
 [![Build Status](https://travis-ci.org/okgreece/datapackage-r.svg?branch=master)](https://travis-ci.org/okgreece/datapackage-r)
 [![Coverage Status](https://coveralls.io/repos/github/okgreece/datapackage-r/badge.svg?branch=master)](https://coveralls.io/github/okgreece/datapackage-r?branch=master)
 [![Github Issues](http://githubbadges.herokuapp.com/okgreece/datapackage-r/issues.svg)](https://github.com/okgreece/datapackage-r/issues)
@@ -23,10 +22,103 @@ subtitle: "..."
 ```
 
 
-# datapackage-r
-An R library for working with Data Package.
+# Description
+
+R library for working with [Data Package][datapackage].
+
+
+# Getting started
+
+## Installation
+
+In order to install the latest distribution of [R software][Rs] to your computer you have to select one of the mirror sites of the [Comprehensive R Archive Network][R], select the appropriate link for your operating system and follow the wizard instructions.
+
+For windows users you can:
+
+1. Go to CRAN
+2. Click download R for Windows
+3. Click Base (This is what you want to install R for the first time)
+4. Download the latest R version
+5. Run installation file and follow the instrustions of the installer.
+
+(Mac) OS X and Linux users may need to follow different steps depending on their system version to install R successfully and it is recommended to read the instructions on CRAN site carefully.
+
+Even more detailed installation instructions can be found in [R Installation and Administration manual][Rman].
+
+To install [RStudio][Rstudio], you can download [RStudio Desktop][Rstudiodown] with Open Source License and follow the wizard instructions:
+
+1. Go to [RStudio](https://www.rstudio.com/products/rstudio/)
+2. Click download on RStudio Desktop 
+3. Download on RStudio Desktop free download
+4. Select the appropriate file for your system
+5. Run installation file
+
+To install the `tableschema` library it is necessary to install first `devtools` library to make installation of github libraries available.
+
+```{r, eval=FALSE, include=T}
+# Install devtools package if not already
+install.packages("devtools")
+```
+
+
+Install `tableschema.r`
+
+```{r, eval=FALSE, include=T}
+# And then install the development version from github
+devtools::install_github("okgreece/datapackage-r")
+```
+
+## Load library
+```{r, echo=TRUE}
+# load the library using
+library(tableschema.r)
+```
 
 
 
+
+
+
+
+
+## Changelog - News
+
+In [NEWS.md][news] described only breaking and the most important changes. The full changelog could be found in nicely formatted [commit][commits] history.  
+
+# Contributing
+The project follows the [Open Knowledge International coding standards][coding_standards]. There are common commands to work with the project.Recommended way to get started is to create, activate and load the library environment. To install package and development dependencies into active environment:
+
+```{r, eval=FALSE, include=T}
+devtools::install_github("okgreece/datapackage-r", dependencies=TRUE)
+```
+
+To make test:
+```{r, eval=FALSE, include=TRUE}
+  test_that(description, {
+    expect_equal(test, expected result)
+  })
+```
+
+To run tests:
+```{r}
+devtools::test()
+```
+more detailed information about how to create and run tests you can find in [testthat package](https://github.com/hadley/testthat)
+
+# Github 
+
++ https://github.com/okgreece/datapackage-r
+
+<img src="okgr.png" align="right" width=120px /><img src="oklabs.png" align="right" width=120px />
+
+[Rs]: https://www.r-project.org/
+[R]: https://cloud.r-project.org/
+[Rman]: https://cran.r-project.org/doc/manuals/R-admin.html
+[Rstudio]: https://www.rstudio.com/
+[Rstudiodown]: https://www.rstudio.com/products/rstudio/download/
+[coding_standards]: https://github.com/okfn/coding-standards
+[datapackage]: http://frictionlessdata.io/specs/data-package
+[news]: https://github.com/okgreece/datapackage-r/blob/master/NEWS.md
+[commits]: https://github.com/okgreece/datapackage-r/commits/master
 
 
