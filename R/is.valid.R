@@ -19,7 +19,7 @@
 #' @export
 
 is.valid = function(descriptor,schema)  {
-  inherits(x, "descriptor")
+  #inherits(x, "descriptor")
   if(is.null(scheme)){
     
     v = jsonvalidate::json_validator(paste(readLines("https://schemas.frictionlessdata.io/data-package.json"), collapse=""))
@@ -30,7 +30,7 @@ is.valid = function(descriptor,schema)  {
     v = jsonvalidate::json_validator("schema.json")
   }
 
-  valid=v(json,verbose = T, greedy=TRUE,error=F)
+  valid=v(json, verbose = T, greedy=TRUE,error=F)
   class(valid)="logical"
   
   #.print.validator(valid)

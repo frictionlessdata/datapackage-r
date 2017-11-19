@@ -1,12 +1,17 @@
-Package: datapackage-r
+Package: datapackage.r
 Type: Package
-Title: ...
-Version: 1.0
+Title: 'R Data Package'
+Version: 0.0.0.9000
 Date: 2017-07-01
-Author: ...
-Maintainer: ...
-Description: ...
+Author: c( person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role =
+    "cre"), person("Kleanthis", "Koupidis", email = "koupidis.okfgr@gmail.com", role
+    = "cre"))
+Maintainer: Open Knowledge Greece <info@okfn.gr>
+Description: A library for working with Data Package (<http://frictionlessdata.io/specs/data-package/>).
 License: MIT | file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: jsonvalidate
+RoxygenNote: 6.0.1
+Suggests:
+    testthat,foreach

@@ -1,4 +1,5 @@
-#' 
+#' is git
+#' @param x url
 #' @rdname is.git
 #' @export
 #' 
@@ -7,7 +8,8 @@ is.git <- function(x){
   any(grepl("git", x) | grepl("hub", x) | grepl("github", x))
 }
 
-#' 
+#' is compressed
+#' @param x file
 #' @rdname is.compressed
 #' @export
 #' 
@@ -20,7 +22,8 @@ else  message("The input file does not exist in:",getwd() )
 }
 
 
-#' 
+#' filepath
+#' @param x filepath
 #' @rdname filepath
 #' @export
 #' 
@@ -42,6 +45,7 @@ filepath=function(x){
 }
 
 
+#' get descriptor path
 #' 
 #' @usage get.descriptor.path(directory= ".")
 #' 

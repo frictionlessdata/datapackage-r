@@ -28,6 +28,10 @@ resource <- function(descriptor, base_path ) {
   if (!is.character(source)) stop("source must be character")
   if (!is.character(table)) stop("table must be character")
   
+  name="resources" 
+  "name"
+  
+  
   
   structure(list(name ,
                  tabular,
