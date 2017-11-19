@@ -36,14 +36,14 @@ To install [RStudio](https://www.rstudio.com/), you can download [RStudio Deskto
 4.  Select the appropriate file for your system
 5.  Run installation file
 
-To install the `tableschema` library it is necessary to install first `devtools` library to make installation of github libraries available.
+To install the `datapackage` library it is necessary to install first `devtools` library to make installation of github libraries available.
 
 ``` r
 # Install devtools package if not already
 install.packages("devtools")
 ```
 
-Install `tableschema.r`
+Install `datapackage.r`
 
 ``` r
 # And then install the development version from github
@@ -55,8 +55,15 @@ Load library
 
 ``` r
 # load the library using
-library(tableschema.r)
+library(datapackage.r)
 ```
+
+    ## 
+    ## Attaching package: 'datapackage.r'
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     profile
 
 Changelog - News
 ----------------

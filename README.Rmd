@@ -53,7 +53,7 @@ To install [RStudio][Rstudio], you can download [RStudio Desktop][Rstudiodown] w
 4. Select the appropriate file for your system
 5. Run installation file
 
-To install the `tableschema` library it is necessary to install first `devtools` library to make installation of github libraries available.
+To install the `datapackage` library it is necessary to install first `devtools` library to make installation of github libraries available.
 
 ```{r, eval=FALSE, include=T}
 # Install devtools package if not already
@@ -61,7 +61,7 @@ install.packages("devtools")
 ```
 
 
-Install `tableschema.r`
+Install `datapackage.r`
 
 ```{r, eval=FALSE, include=T}
 # And then install the development version from github
@@ -71,7 +71,7 @@ devtools::install_github("okgreece/datapackage-r")
 ## Load library
 ```{r, echo=TRUE}
 # load the library using
-library(tableschema.r)
+library(datapackage.r)
 ```
 
 
