@@ -11,7 +11,19 @@ Description: A library for working with Data Package (<http://frictionlessdata.i
 License: MIT | file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: jsonvalidate
+Imports: future, jsonvalidate, stringr, tableschema.r
 RoxygenNote: 6.0.1
 Suggests:
-    testthat,foreach
+    testthat, foreach
+Collate: 
+    'tableschemaerror.R'
+    'constraints.R'
+    'types.R'
+    'Package.R'
+    'datapackage.R'
+    'helpers.R'
+    'is.valid.R'
+    'loaddatapackage.R'
+    'profile.R'
+    'resource.R'
+    'validate.R'
