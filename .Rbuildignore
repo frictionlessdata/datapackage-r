@@ -1,2 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.travis\.yml$
+^NEWS\.Rmd$
+^README\.Rmd$
+^config\.yml$
+^frictionlessdata\.png$
+^okgr\.png$
+^oklabs\.png$
