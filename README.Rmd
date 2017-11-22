@@ -65,7 +65,7 @@ Install `datapackage.r`
 
 ```{r, eval=FALSE, include=T}
 # And then install the development version from github
-devtools::install_github("okgreece/datapackage-r")
+devtools::install_github("okgreece/datapackage.r")
 ```
 
 ## Load library
