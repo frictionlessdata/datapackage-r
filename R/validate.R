@@ -15,7 +15,7 @@ validate = function (descriptor) {
     
     valid_errors= Package$load(descriptor)
     
-    names(valid_errors)= c(valid, errors)
+    names(valid_errors)= c("valid", "errors")
     
     return (valid_errors)
     

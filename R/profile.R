@@ -29,7 +29,7 @@ Profile <- R6Class(
         
         jsonschema = cache_[profile]
         
-        if (!is.null(jsonschema)) {
+        if (is.null(jsonschema)) {
           
             tryCatch( {
               response = httr::GET(profile)
@@ -54,7 +54,7 @@ Profile <- R6Class(
     
     name = function() {
       
-      if (!this._jsonschema.title) return (NULL)
+      if (is.null(private$jsonschema_$title)) return (NULL)
       
       return (tolower(gsub(private$jsonschema_$title(' ', '-'))))
       
@@ -121,10 +121,4 @@ Profile <- R6Class(
 
 # Internal
 
-cache_ = {}
-  
-
-  
-  
-  
-  
+cache_ = list()
