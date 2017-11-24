@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{get.descriptor.path}
 \alias{get.descriptor.path}
-\title{get descriptor path}
+\title{Get descriptor path}
 \usage{
 get.descriptor.path(directory= ".")
 }
@@ -10,5 +10,5 @@ get.descriptor.path(directory= ".")
 \item{directory}{A character vector of full path name. The default corresponds to the working directory specified by \code{\link[base]{getwd}}}
 }
 \description{
-get descriptor path
+Find descriptor path in directory
 }

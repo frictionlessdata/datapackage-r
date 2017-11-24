@@ -9,6 +9,9 @@ is.git(x)
 \arguments{
 \item{x}{url}
 }
+\value{
+TRUE if url is git
+}
 \description{
 is git
 }

@@ -11,7 +11,7 @@ infer <- function(source, options=list() ){
   
   # https://github.com/frictionlessdata/tableschema-js#infer
   
-  table = Table$load(source, options)
+  table = tableschema.r::Table$load(source, options)
   
   descriptor = table$infer(limit = options[["limit"]])
   

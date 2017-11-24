@@ -4,12 +4,12 @@
 #' @export
 #' 
 
-DataPackageError = tableschema.r::errors$DataPackageError
+#DataPackageError = tableschema.r::errors$DataPackageError
 
 #' TableSchemaError 
 #' 
 #' @rdname TableSchemaError
 #' @export
 #' 
-TableSchemaError = tableschema.r::errors$TableSchemaError
+#TableSchemaError = tableschema.r::errors$TableSchemaError
   

@@ -8,19 +8,20 @@ Author: c( person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role =
     = "cre"))
 Maintainer: Open Knowledge Greece <info@okfn.gr>
 Description: A library for working with Data Package (<http://frictionlessdata.io/specs/data-package/>).
-License: MIT | file LICENSE
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: future, httr, jsonvalidate, stringr, tableschema.r, V8
+Imports: config, future, httr, jsonlite, jsonvalidate, purrr, R6, R.utils, readr, stringr, tableschema.r, utils, V8
 RoxygenNote: 6.0.1
 Suggests:
     testthat, foreach
 Collate: 
+    'DataPackageError.R'
     'Package.R'
-    'datapackage.R'
+    'errors.R'
     'helpers.R'
+    'infer.R'
     'is.valid.R'
-    'loaddatapackage.R'
     'profile.R'
     'resource.R'
     'validate.R'

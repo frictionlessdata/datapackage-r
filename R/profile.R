@@ -9,7 +9,7 @@
 
 # Module API
 
-Profile <- R6Class(
+Profile <- R6::R6Class(
   
   "profile",
   
@@ -38,7 +38,7 @@ Profile <- R6Class(
             },
             
             error= function(e) {
-              DataPackageError$new(stringr::str_interp("Can not retrieve remote profile '${profile}'"))
+              DataPackageError$new(stringr::str_interp("Can not retrieve remote profile '${profile}'"))$message
             })
           
           cache_[profile] = jsonschema
@@ -68,7 +68,7 @@ Profile <- R6Class(
     
     # https://github.com/frictionlessdata/datapackage-js#profile
     
-    validate(descriptor) {
+    validate = function(descriptor) {
       
       errors = list()
       
@@ -87,8 +87,8 @@ Profile <- R6Class(
       })
       
       return ( 
-        list( valid= !errors.length,
-              εrrors
+        list( valid = !length(errors),
+              errors
         )
       )
        

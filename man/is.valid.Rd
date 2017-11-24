@@ -11,21 +11,6 @@ is.valid(descriptor,schema)
 
 \item{schema}{json schema}
 }
-\value{
-...
-}
 \description{
-...
-}
-\details{
-...
-}
-\examples{
-...
-}
-\seealso{
-...
-}
-\author{
-...
+is.valid
 }

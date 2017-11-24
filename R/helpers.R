@@ -10,8 +10,8 @@ locateDescriptor = function (descriptor) {
   
   if (is.character(descriptor)) {
     
-    basePath = unlist(strsplit(descriptor, '/', simplify = TRUE))
-    basePath = basePath[-lenght(basePath)]
+    basePath = unlist(strsplit(descriptor, '/')) # OR stringr::str_split , simplify = TRUE
+    basePath = basePath[-length(basePath)]
     basePath = paste(basePath, collapse = "/")
   
     # Current dir by default
@@ -58,9 +58,9 @@ retrieveDescriptor = function (descriptor) {
         
         stop(DataPackageError$new(
           
-          stringr::str_interp('Can\'t load descriptor at "${descriptor}"'),
+          message = stringr::str_interp('Can\'t load descriptor at "${descriptor}"'),
           
-          errors
+          # errors = errors
           
         ))
         
@@ -110,11 +110,14 @@ retrieveDescriptor = function (descriptor) {
 
 dereferencePackageDescriptor = function (descriptor, basePath) {
 
-  for (const [index, resource] of (descriptor.resources || []).entries()) {
-    # TODO: May be we should use Promise.all here
-    descriptor[[resources]][index] = dereferenceResourceDescriptor(
-      resource, basePath, descriptor)
-  }
+  descriptor[["resources"]] = purrr::map(descriptor[["resources"]], dereferenceResourceDescriptor, baseDescriptor = descriptor[["resources"]][[2]], basePath = basePath, descriptor = descriptor)
+  
+  # for (const [index, resource] of (descriptor.resources || []).entries()) {
+  #   # TODO: May be we should use Promise.all here
+  #   descriptor.resources[index] = await dereferenceResourceDescriptor(
+  #     resource, basePath, descriptor)
+  # }
+  
   return (descriptor)
 }
 
@@ -131,7 +134,9 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor) 
 
   baseDescriptor = baseDescriptor || descriptor
   PROPERTIES = list('schema', 'dialect')
+  
   for (property in PROPERTIES) {
+    
     value = descriptor[[property]]
     
     # URI -> No
@@ -141,7 +146,7 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor) 
       # URI -> Pointer
     } else if ( startsWith(value,'#') ) {
       tryCatch({
-        descriptor[property] = jsonpointer.get(baseDescriptor, value.slice(1))
+        descriptor[["property"]] = purrr::detect(baseDescriptor, value[[2]] )
       },
       error = function(e) {
         message = stringr::str_interp('Not resolved Pointer URI "${value}" for resource[[${property}]]')
@@ -152,10 +157,10 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor) 
       # TODO: remote base path also will lead to remote case!
     } else if (isRemotePath(value)) {
       tryCatch({
-        const response = await axios.get(value)
-        descriptor[property] = response.data
+        response = httr::GET(value)
+        descriptor[["property"]] = httr::content(response, as = 'text')
       },
-      error = function {
+      error = function(e) {
         message = stringr::str_interp('Not resolved Remote URI "${value}" for resource[[${property}]]')
         DataPackageError$new(message)
       })
@@ -201,9 +206,11 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor) 
 #' 
 expandPackageDescriptor = function (descriptor) {
   descriptor[["profile"]] = descriptor[["profile"]] || config::get("DEFAULT_DATA_PACKAGE_PROFILE")
-  for (const [index, resource] of (descriptor.resources || []).entries()) {
-    descriptor[["resources"]][index] = expandResourceDescriptor(resource)
-  }
+  
+  descriptor[["resources"]] = purrr::map(descriptor[["resources"]], expandResourceDescriptor)
+  # for (const [index, resource] in ( descriptor[["resources"]] || list() ) ) {
+  #   descriptor[["resources"]][index] = expandResourceDescriptor(resource)
+  # }
   return (descriptor)
 }
 
@@ -229,19 +236,101 @@ expandResourceDescriptor = function (descriptor) {
     
     # Dialect
     dialect = descriptor[["dialect"]]
+    
     if (dialect != "undefined" | isUndefined(dialect)) {
-      
-      for (c(key, value) in Object.entries(config::get("DEFAULT_DIALECT"))) {
-        
-        if (!dialect.hasOwnProperty(key)) {
-          
-          dialect[[key]] = value
-        }
-      }
+      dialect = config::get("DEFAULT_DIALECT")
+      # for (c(key, value) in config::get("DEFAULT_DIALECT")) {
+      #   
+      #   if (!dialect.hasOwnProperty(key)) {
+      #     
+      #     dialect[[key]] = value
+      #   }
+      # }
     }
   }
   return (descriptor)
 }
+
+
+# Miscellaneous
+
+
+#' Is remote path
+#' 
+#' @param path path
+#' 
+#' @return TRUE if path is remote
+#' @rdname isRemotePath
+#' @export
+#' 
+
+isRemotePath = function (path) {
+  
+  if (!is.character(path)) message("Path should be character")
+  
+  startsWith("http", path)
+  
+}
+
+#' Is safe path
+#' 
+#' @param path path
+#' 
+#' @return TRUE if path is safe
+#' @rdname isSafePath
+#' @export
+#' 
+
+isSafePath = function (path) {
+  
+  containsWindowsVar = function(path) grep("/%.+%/", path)
+  containsPosixVar = function(path) grep("[/\\$.+/]", path)
+  
+  # Safety checks
+  unsafenessConditions = list(
+    
+    R.utils::isAbsolutePath(path),
+    grep(stringr::str_interp('${pathModule.sep}'), path),
+    #path.includes(`..${pathModule.sep}`),
+    startsWith(path, '~'),
+    containsWindowsVar(path),
+    containsPosixVar(path)
+  )
+  
+  return (!any(unsafenessConditions))
+}
+
+
+## Extra
+
+
+#' Determine if a variable is undefined or NULL
+#' 
+#' @param x variable
+#' 
+#' @return TRUE if variable is undefined
+#' @rdname isUndefined
+#' @export
+#' 
+isUndefined = function(x){
+  
+  if (any(isTRUE( !exists(deparse(substitute(x))) || is.null(x)  ))) TRUE else FALSE
+  
+}
+
+#' Push elements in a list or vector
+#' 
+#' @param x list or vector
+#' @param value value to push in x
+#' 
+#' @rdname push
+#' @export
+#' 
+push = function(x, value){
+  x = append(x,value)
+  return (x)
+}
+
 
 #' is git
 #' @param x url
@@ -263,9 +352,9 @@ is.git <- function(x){
 
 is.compressed <- function(x){
   
- if(file.exists(x))
-   grepl("^.*(.gz|.bz2|.tar|.zip)[[:space:]]*$", x)
-else  message("The input file does not exist in:",getwd() )  
+  if(file.exists(x))
+    grepl("^.*(.gz|.bz2|.tar|.zip)[[:space:]]*$", x)
+  else  message("The input file does not exist in:",getwd() )  
 }
 
 
@@ -284,11 +373,11 @@ filepath=function(x){
   if (length(matched_files)>1){
     
     message("There are multiple matches with the input file." ) 
-    choice = menu(matched_files, title = cat("Please specify the input file:"))
+    choice = utils::menu(matched_files, title = cat("Please specify the input file:"))
     matched_files= matched_files[choice]
   } else 
-  
-  return(matched_files)
+    
+    return(matched_files)
 }
 
 
@@ -322,52 +411,3 @@ get.descriptor.path = function(directory= "."){
   } else message("Descriptor file (datapackage.json) does not exists.")
   
 }
-
-# Miscellaneous
-
-
-#' is Remote Path
-#' 
-#' @param path path
-#' 
-#' @return TRUE if path is remote
-#' @rdname isRemotePath
-#' @export
-#' 
-
-isRemotePath = function (path) {
-  
-  if (!is.character(path)) message("Path should be character")
-  
-  startsWith("http", path)
-  
-}
-
-
-#' Determine if a variable is undefined or NULL
-#' 
-#' @param x variable
-#' 
-#' @return TRUE if variable is undefined
-#' @rdname isUndefined
-#' @export
-#' 
-isUndefined = function(x){
-  
-  if (any(isTRUE( !exists(deparse(substitute(x))) || is.null(x)  ))) TRUE else FALSE
-  
-}
-
-#' Push elements in a list or vector
-#' 
-#' @param x list or vector
-#' @param value value to push in x
-#' 
-#' @rdname push
-#' @export
-#' 
-push = function(x, value){
-  x = append(x,value)
-  return (x)
-}
-
