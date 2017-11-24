@@ -1,5 +1,9 @@
-# Locate descriptor
-
+#' Locate descriptor
+#' 
+#' @param descriptor descriptor
+#' @rdname locateDescriptor
+#' @export
+#' 
 locateDescriptor = function (descriptor) {
   
   # Infer from path/url
@@ -20,8 +24,12 @@ locateDescriptor = function (descriptor) {
   return (basePath)
 }
 
-# Retrieve descriptor
-
+#' Retrieve descriptor
+#' 
+#' @param descriptor descriptor
+#' @rdname retrieveDescriptor
+#' @export
+#' 
 retrieveDescriptor = function (descriptor) {
   
   if (jsonlite::validate(descriptor)) {
@@ -92,6 +100,152 @@ retrieveDescriptor = function (descriptor) {
   
   DataPackageError$new('Descriptor must be String or Object')
 }
+
+#' Dereference descriptor
+#' @param descriptor descriptor
+#' @param basePath basePath
+#' @rdname dereferencePackageDescriptor
+#' @export
+#' 
+
+dereferencePackageDescriptor = function (descriptor, basePath) {
+
+  for (const [index, resource] of (descriptor.resources || []).entries()) {
+    # TODO: May be we should use Promise.all here
+    descriptor[[resources]][index] = dereferenceResourceDescriptor(
+      resource, basePath, descriptor)
+  }
+  return (descriptor)
+}
+
+#' Dereference resource descriptor
+#' @param descriptor descriptor
+#' @param basePath basePath
+#' @param baseDescriptor baseDescriptor
+#' @rdname dereferenceResourceDescriptor
+#' @export
+#' 
+
+
+dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor) {
+
+  baseDescriptor = baseDescriptor || descriptor
+  PROPERTIES = list('schema', 'dialect')
+  for (property in PROPERTIES) {
+    value = descriptor[[property]]
+    
+    # URI -> No
+    if (!is.character(value)) {
+      continue
+      
+      # URI -> Pointer
+    } else if (value.startsWith('#')) {
+      try {
+        descriptor[property] = jsonpointer.get(baseDescriptor, value.slice(1))
+      } catch (error) {
+        const message = stringr::str_interp('Not resolved Pointer URI "${value}" for resource[[${property}]]')
+        DataPackageError$new(message)
+      }
+      
+      # URI -> Remote
+      # TODO: remote base path also will lead to remote case!
+    } else if (isRemotePath(value)) {
+      try {
+        const response = await axios.get(value)
+        descriptor[property] = response.data
+      } catch (error) {
+        message = stringr::str_interp('Not resolved Remote URI "${value}" for resource[[${property}]]')
+        DataPackageError$new(message)
+      }
+      
+      # URI -> Local
+    } else {
+      if (config::get("IS_BROWSER")) {
+        message = 'Local URI dereferencing in browser is not supported'
+        DataPackageError$new(message)
+      }
+      if (!isSafePath(value)) {
+        const message = stringr::str_interp('Not safe path in Local URI "${value}" for resource[[${property}]]')
+        DataPackageError$new(message)
+      }
+      if (!basePath) {
+        message = stringr::str_interp('Local URI "${value}" requires base path for resource[[${property}]]')
+        DataPackageError$new(message)
+      }
+      try {
+        # TODO: support other that Unix OS
+        const fullPath = [basePath, value].join('/')
+        # TODO: rebase on promisified fs.readFile (async)
+        const contents = fs.readFileSync(fullPath, 'utf-8')
+        descriptor[[property]] = JSON.parse(contents)
+      } catch (error) {
+        message = stringr::str_interp('Not resolved Local URI "${value}" for resource[[${property}]]')
+        DataPackageError$new(message)
+      }
+      
+    }
+  }
+  
+  return (descriptor)
+}
+
+
+
+#' Expand descriptor
+#' @param descriptor descriptor
+#' @rdname expandPackageDescriptor
+#' @export
+#' 
+expandPackageDescriptor = function (descriptor) {
+  descriptor = cloneDeep(descriptor)
+  descriptor.profile = descriptor.profile || config.DEFAULT_DATA_PACKAGE_PROFILE
+  for (const [index, resource] of (descriptor.resources || []).entries()) {
+    descriptor.resources[index] = expandResourceDescriptor(resource)
+  }
+  return (descriptor)
+}
+
+#' Expand descriptor
+#' @param descriptor descriptor
+#' @rdname expandResourceDescriptor
+#' @export
+#' 
+expandResourceDescriptor = function (descriptor) {
+  descriptor[["profile"]] = descriptor[["profile"]] || config::get("DEFAULT_RESOURCE_PROFILE")
+  descriptor[["encoding"]] = descriptor[["encoding"]] || config::get("DEFAULT_RESOURCE_ENCODING")
+  if (descriptor[["profile"]] == 'tabular-data-resource') {
+    
+    # Schema
+    schema = descriptor[["schema"]]
+    if (schema != "undefined" | !isTRUE(isUndefined(schema)) ) {
+      for (field in (schema[["fields"]] || list() ) ) {
+        field$type = field$type || config::get("DEFAULT_FIELD_TYPE")
+        field$format = field$format || config::get("DEFAULT_FIELD_FORMAT")
+      }
+      schema[["missingValues"]] = schema[["missingValues"]] || config::get("DEFAULT_MISSING_VALUES")
+    }
+    
+    # Dialect
+    dialect = descriptor[["dialect"]]
+    if (dialect != "undefined" | isUndefined(dialect)) {
+      
+      for (const [key, value] of Object.entries(config::get("DEFAULT_DIALECT"))) {
+        
+        if (!dialect.hasOwnProperty(key)) {
+          
+          dialect[[key]] = value
+        }
+      }
+    }
+  }
+  return (descriptor)
+}
+
+
+
+
+
+
 
 #' is git
 #' @param x url
