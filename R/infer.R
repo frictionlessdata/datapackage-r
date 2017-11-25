@@ -1,19 +1,16 @@
 #' infer 
-#' @param source source
-#' @param options options
+#' @param pattern pattern
+#' @param basePath basePath
 #' @rdname infer
 #' @export
 #' 
 
 # Module API
 
-infer <- function(source, options=list() ){
+infer <- function(pattern, basePath={}) {
   
-  # https://github.com/frictionlessdata/tableschema-js#infer
-  
-  table = tableschema.r::Table$load(source, options)
-  
-  descriptor = table$infer(limit = options[["limit"]])
+  dataPackage = Package$load({}, basePath)
+  descriptor = dataPackage$infer(pattern)
   
   return (descriptor)
 }

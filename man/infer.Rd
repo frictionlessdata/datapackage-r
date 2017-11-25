@@ -4,12 +4,12 @@
 \alias{infer}
 \title{infer}
 \usage{
-infer(source, options = list())
+infer(pattern, basePath = { })
 }
 \arguments{
-\item{source}{source}
+\item{pattern}{pattern}
 
-\item{options}{options}
+\item{basePath}{basePath}
 }
 \description{
 infer
