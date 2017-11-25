@@ -283,21 +283,21 @@ isRemotePath = function (path) {
 
 isSafePath = function (path) {
   
-  containsWindowsVar = function(path) grep("/%.+%/", path)
-  containsPosixVar = function(path) grep("[/\\$.+/]", path)
+  containsWindowsVar = function(path) if (isTRUE(grepl("%.+%", path))) TRUE else FALSE
+  containsPosixVar = function(path) if (isTRUE(grepl("\\$.+", path))) TRUE else FALSE
   
-  # Safety checks
+  # un Safety checks
   unsafenessConditions = list(
     
     R.utils::isAbsolutePath(path),
-    grep(stringr::str_interp('${pathModule.sep}'), path),
+    grepl("\\|/", path),
     #path.includes(`..${pathModule.sep}`),
     startsWith(path, '~'),
     containsWindowsVar(path),
     containsPosixVar(path)
   )
-  
-  return (!any(unsafenessConditions))
+  response = any(unlist(unsafenessConditions))
+  return (!response)
 }
 
 
