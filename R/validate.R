@@ -10,8 +10,8 @@
 # https://github.com/frictionlessdata/datapackage-js#validate
 
 validate = function (descriptor) {
-  
-  future::future({
+  descriptor = jsonlite::fromJSON(descriptor)
+  #future::future({
     
     valid_errors= Package$load(descriptor)
     
@@ -19,6 +19,6 @@ validate = function (descriptor) {
     
     return (valid_errors)
     
-  })
+  #})
 
   }
