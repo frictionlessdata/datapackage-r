@@ -36,4 +36,5 @@ addons:
   apt:
     packages:
       - libxml2-dev
+      - libv8-dev
 warnings_are_errors: false
