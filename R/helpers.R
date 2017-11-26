@@ -31,7 +31,7 @@ locateDescriptor = function (descriptor) {
 #' @export
 #' 
 retrieveDescriptor = function (descriptor) {
-  
+  descriptor = jsonlite::fromJSON(descriptor)
   if (jsonlite::validate(descriptor)) {
     
     descriptor = descriptor
@@ -58,7 +58,7 @@ retrieveDescriptor = function (descriptor) {
         
         stop(DataPackageError$new(
           
-          message = stringr::str_interp('Can\'t load descriptor at "${descriptor}"'),
+          message = stringr::str_interp('Can\'t load descriptor at "${descriptor}"')#,
           
           # errors = errors
           
@@ -70,11 +70,11 @@ retrieveDescriptor = function (descriptor) {
       
     } else {
       
-      if (config::get("IS_BROWSER") ) {
-        message = stringr::str_interp('Local descriptor "${descriptor}" in browser is not supported')
-        DataPackageError$new(message)
-
-      }
+      # if (config::get("IS_BROWSER") ) {
+      #   message = stringr::str_interp('Local descriptor "${descriptor}" in browser is not supported')
+      #   DataPackageError$new(message)
+      # 
+      # }
       
       tryCatch({
         
@@ -109,9 +109,12 @@ retrieveDescriptor = function (descriptor) {
 #' 
 
 dereferencePackageDescriptor = function (descriptor, basePath) {
-
-  descriptor[["resources"]] = purrr::map(descriptor[["resources"]], dereferenceResourceDescriptor, baseDescriptor = descriptor[["resources"]][[2]], basePath = basePath, descriptor = descriptor)
+  descriptor = jsonlite::fromJSON(descriptor)
+  #descriptor[["resources"]] = purrr::map(descriptor[["resources"]], dereferenceResourceDescriptor, baseDescriptor = descriptor[["resources"]][[2]], basePath = basePath, descriptor = descriptor)
   
+  
+  for (resource in descriptor[["resources"]]){
+    dereferenceResourceDescriptor(resource, basePath, descriptor)}
   # for (const [index, resource] of (descriptor.resources || []).entries()) {
   #   # TODO: May be we should use Promise.all here
   #   descriptor.resources[index] = await dereferenceResourceDescriptor(
@@ -130,14 +133,14 @@ dereferencePackageDescriptor = function (descriptor, basePath) {
 #' 
 
 
-dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor) {
-
-  baseDescriptor = baseDescriptor || descriptor
+dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=NULL) {
+  # descriptor = jsonlite::fromJSON(descriptor)
+  if (is.null(baseDescriptor) | isUndefined(baseDescriptor)) baseDescriptor = descriptor
   PROPERTIES = list('schema', 'dialect')
   
-  for (property in PROPERTIES) {
+  for (property in purrr::list_along(PROPERTIES)) {
     
-    value = descriptor[[property]]
+    value = purrr::compact(descriptor,property)
     
     # URI -> No
     if (!is.character(value)) {
@@ -146,7 +149,7 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor) 
       # URI -> Pointer
     } else if ( startsWith(value,'#') ) {
       tryCatch({
-        descriptor[["property"]] = purrr::detect(baseDescriptor, value[[2]] )
+        descriptor[[property]] = purrr::compact(baseDescriptor, value[[2]] )
       },
       error = function(e) {
         message = stringr::str_interp('Not resolved Pointer URI "${value}" for resource[[${property}]]')
@@ -158,7 +161,7 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor) 
     } else if (isRemotePath(value)) {
       tryCatch({
         response = httr::GET(value)
-        descriptor[["property"]] = httr::content(response, as = 'text')
+        descriptor[[property]] = httr::content(response, as = 'text')
       },
       error = function(e) {
         message = stringr::str_interp('Not resolved Remote URI "${value}" for resource[[${property}]]')
@@ -205,6 +208,7 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor) 
 #' @export
 #' 
 expandPackageDescriptor = function (descriptor) {
+  descriptor = jsonlite::fromJSON(descriptor)
   descriptor[["profile"]] = descriptor[["profile"]] || config::get("DEFAULT_DATA_PACKAGE_PROFILE")
   
   descriptor[["resources"]] = purrr::map(descriptor[["resources"]], expandResourceDescriptor)
@@ -220,6 +224,7 @@ expandPackageDescriptor = function (descriptor) {
 #' @export
 #' 
 expandResourceDescriptor = function (descriptor) {
+  descriptor = jsonlite::fromJSON(descriptor)
   descriptor[["profile"]] = descriptor[["profile"]] || config::get("DEFAULT_RESOURCE_PROFILE")
   descriptor[["encoding"]] = descriptor[["encoding"]] || config::get("DEFAULT_RESOURCE_ENCODING")
   if (descriptor[["profile"]] == 'tabular-data-resource') {
@@ -327,7 +332,7 @@ isUndefined = function(x){
 #' @export
 #' 
 push = function(x, value){
-  x = append(x,value)
+  x = purrr::prepend(x,value) #append
   return (x)
 }
 
@@ -358,6 +363,29 @@ is.compressed <- function(x){
 }
 
 
+#' findFiles
+#' @param pattern pattern
+#' @param path path
+#' @rdname findFiles
+#' @export
+#' 
+
+findFiles = function(pattern,path="."){
+  
+  files=list.files(path, recursive = TRUE)
+  
+  matched_files=files[grep(pattern, files, fixed = FALSE, ignore.case = F)]
+  
+  if (length(matched_files)>1){
+    
+    message("There are multiple matches with the input file." ) 
+    choice = utils::menu(matched_files, title = cat("Please specify the input file:"))
+    matched_files= matched_files[choice]
+  } else 
+    
+    return(matched_files)
+}
+
 #' filepath
 #' @param x filepath
 #' @rdname filepath
@@ -379,8 +407,6 @@ filepath=function(x){
     
     return(matched_files)
 }
-
-
 #' Get descriptor path
 #' 
 #' @description Find descriptor path in directory

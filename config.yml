@@ -2,8 +2,8 @@
 default:
  ERROR: 'datapackage.error'
  WARNING: 'datapackage.warning'
- IS_BROWSER: (typeof window !== 'undefined')
- TABULAR_FORMATS: ['csv', 'tsv', 'xls', 'xlsx']
+ IS_BROWSER: (typeof window != 'undefined')
+ TABULAR_FORMATS: list('csv', 'tsv', 'xls', 'xlsx')
  DEFAULT_DATA_PACKAGE_PROFILE: 'data-package'
  DEFAULT_RESOURCE_PROFILE: 'data-resource'
  DEFAULT_RESOURCE_ENCODING: 'utf-8'
