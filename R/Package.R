@@ -13,7 +13,7 @@ Package <- R6::R6Class(
   
   public=list( 
     
-    load = function (descriptor = {}, basePath, strict = FALSE ) {
+    load = function (descriptor = list(), basePath, strict = FALSE ) {
       
       # Get base path
       
