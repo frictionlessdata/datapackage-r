@@ -3,6 +3,7 @@
 export(DataPackageError)
 export(Package)
 export(Profile)
+export(Resource)
 export(dereferencePackageDescriptor)
 export(dereferenceResourceDescriptor)
 export(expandPackageDescriptor)

@@ -7,7 +7,7 @@
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object
 
-Package <- R6::R6Class( 
+Package <- R6::R6Class(
   
   "Package",
   
@@ -145,8 +145,81 @@ Package <- R6::R6Class(
       }
       return (resource)
     }
+    
+    ),
+  
+  private = list(
+    
+    # Set attributes
+    currentDescriptor_ = NULL,
+    nextDescriptor_ = NULL,
+    basePath_ = NULL,
+    strict_ = NULL,
+    profile_ = NULL,
+    resources_ = NULL,
+    errors_ = NULL,
+    
+    build_ = function () {
+      
+      # Process descriptor
+      
+      #private$currentDescriptor_json = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = TRUE)
+      private$currentDescriptor_ = expandPackageDescriptor(descriptor)
+      private$nextDescriptor_ = private$currentDescriptor_
+      
+      # Validate descriptor
+      
+      private$errors_ = list()
+      
+      
+      private$currentDescriptor_json =  retrieveDescriptor(private$currentDescriptor_json)
+      if(inherits(private$currentDescriptor_json, "simpleError")) {
+        stop(private$currentDescriptor_json$message)
+      }
+      
+      descriptor = jsonlite::fromJSON(private$currentDescriptor_json, simplifyVector = FALSE)
+      current = private$profile_$validate(private$currentDescriptor_json)
+      
+      if (!current[['valid']]) {
+        private$errors_ = current[['errors']]
+        
+        if (private$strict_ == TRUE) {
+          message = stringr::str_interp(
+            "There are ${length(current[['errors']])} validation errors (see 'error$errors')"
+          )
+          stop((message))
+        }
+      }
+      
+      # Update resources
+      #this._resources.length = (this._currentDescriptor.resources || []).length
+      descriptor = private$currentDescriptor_$resources
+      for (index in purrr::list_along(private$currentDescriptor_$resources)) {
+        resource = private$resources_[index]
+        
+        if (is.null(resource) || !identical(resource$descriptor, descriptor) ||
+            (!is.null(resource$schema) && length(resource$schema$foreignKeys>1))) {
+          
+          private$resources_[index] = Resource$new(descriptor, list(
+            strict = private$strict_, basePath = private$basePath_#, dataPackage = this
+          ))
+        }
+      }
+      
+    }
+    
+  )
+  
+  )
 
-  ))
-
-
-
+   
+  # # Handle deprecated resource.path.url
+  # for (resource in purrr::list_along(descriptor$resources)) {
+  #   if (!is.null(resource$url)) {
+  #     warning(
+  #       'Resource property "url: <url>" is deprecated.
+  #       Please use "path: <url>" instead.')
+  #     resource$path = resource$url
+  #     rm(resource.url)
+  #   }
+  # }
