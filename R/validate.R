@@ -10,16 +10,11 @@
 # https://github.com/frictionlessdata/datapackage-js#validate
 
 validate = function (descriptor) {
-  
-  #descriptor = jsonlite::fromJSON(descriptor)
-  #future::future({
     
-    valid_errors= Package$public_methods$load(descriptor)
-    
-    names(valid_errors)= c("valid", "errors")
-    
-    return (valid_errors)
-    
-  #})
+  valid_errors = Package$new()$load(descriptor= descriptor, strict=TRUE )
+
+  valid_errors = list(valid = valid_errors$valid, errors = valid_errors$errors)
+  # valid_errors = jsonlite::validate(descriptor)
+  return (valid_errors)
 
   }
