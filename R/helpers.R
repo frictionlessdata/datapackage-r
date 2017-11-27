@@ -11,13 +11,13 @@ locateDescriptor = function (descriptor) {
   if (is.character(descriptor)) {
     
     basePath = unlist(strsplit(descriptor, '/')) # OR stringr::str_split , simplify = TRUE
-    basePath = basePath[-length(basePath)]
+    basePath = if (length(basePath[-length(basePath)])!=0) basePath[-length(basePath)] else getwd()
     basePath = paste(basePath, collapse = "/")
   
     # Current dir by default
   } else {
     
-    basePath = '.'
+    basePath = getwd()
     
   }
   
@@ -31,8 +31,9 @@ locateDescriptor = function (descriptor) {
 #' @export
 #' 
 retrieveDescriptor = function (descriptor) {
-  descriptor = jsonlite::fromJSON(descriptor)
-  if (jsonlite::validate(descriptor)) {
+  descriptor = jsonlite::toJSON(jsonlite::fromJSON(descriptor))
+  
+  if (isTRUE(jsonlite::validate(descriptor))) {
     
     descriptor = descriptor
     
@@ -40,7 +41,7 @@ retrieveDescriptor = function (descriptor) {
   if (is.character(descriptor)) {
     
     # Remote
-    if (isRemotePath(descriptor)) {
+    if (isTRUE(isRemotePath(descriptor))) {
       
       tryCatch({
         
@@ -80,9 +81,10 @@ retrieveDescriptor = function (descriptor) {
         
         # TODO: rebase on promisified fs.readFile (async)
         
-        contents =  readr::read_file(system.file(descriptor, package = "datapackage.r"))
+        #contents =  readr::read_file(system.file(descriptor, package = "datapackage.r"))
+        contents =  jsonlite::fromJSON(descriptor)
         
-        return (jsonlite::toJSON(contents))
+        return (contents)
       }, 
       
       error = function(e) {
@@ -138,16 +140,16 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=N
   if (is.null(baseDescriptor) | isUndefined(baseDescriptor)) baseDescriptor = descriptor
   PROPERTIES = list('schema', 'dialect')
   
-  for (property in purrr::list_along(PROPERTIES)) {
+  for (property in PROPERTIES) {
     
-    value = purrr::compact(descriptor,property)
+    value = purrr::compact(purrr::map(descriptor,property))
     
     # URI -> No
     if (!is.character(value)) {
       # continue
       
       # URI -> Pointer
-    } else if ( startsWith(value,'#') ) {
+    } else if (is.character(value)) if(startsWith(value,'#') ) {
       tryCatch({
         descriptor[[property]] = purrr::compact(baseDescriptor, value[[2]] )
       },
@@ -170,15 +172,15 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=N
       
       # URI -> Local
     } else {
-      if (config::get("IS_BROWSER")) {
-        message = 'Local URI dereferencing in browser is not supported'
-        DataPackageError$new(message)
-      }
+      # if (config::get("IS_BROWSER")) {
+      #   message = 'Local URI dereferencing in browser is not supported'
+      #   DataPackageError$new(message)
+      # }
       if (!isSafePath(value)) {
         message = stringr::str_interp('Not safe path in Local URI "${value}" for resource[[${property}]]')
         DataPackageError$new(message)
       }
-      if (!basePath) {
+      if (is.null(basePath)) {
         message = stringr::str_interp('Local URI "${value}" requires base path for resource[[${property}]]')
         DataPackageError$new(message)
       }
@@ -271,10 +273,7 @@ expandResourceDescriptor = function (descriptor) {
 
 isRemotePath = function (path) {
   
-  if (!is.character(path)) message("Path should be character")
-  
-  startsWith("http", path)
-  
+  if (!is.character(path)) FALSE else startsWith("http", path) #message("Path should be character")
 }
 
 #' Is safe path
@@ -287,7 +286,7 @@ isRemotePath = function (path) {
 #' 
 
 isSafePath = function (path) {
-  
+  if (!isTRUE(is.character(path))) FALSE else {
   containsWindowsVar = function(path) if (isTRUE(grepl("%.+%", path))) TRUE else FALSE
   containsPosixVar = function(path) if (isTRUE(grepl("\\$.+", path))) TRUE else FALSE
   
@@ -303,6 +302,7 @@ isSafePath = function (path) {
   )
   response = any(unlist(unsafenessConditions))
   return (!response)
+  }
 }
 
 

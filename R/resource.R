@@ -2,8 +2,6 @@
 #'
 #' @docType class
 #' @importFrom R6 R6Class
-#' @importFrom tableschema.r Readable 
-#' @importFrom tableschema.r ReadableConnection
 #' @export
 #' @include helpers.R
 #' @return Object of \code{\link{R6Class}} .
@@ -493,7 +491,7 @@ createByteStream = function (source, remote) {
     
       response = httr::GET(source) #await axios.get(source)
       response.data = httr::content(response, as = 'text')
-      stream = Readable$new()
+      stream = tableschema.r::Readable$new()
       push(stream, response.data)
       push(stream, NULL)
       # response = await axios.get(source, {responseType: 'stream'})
@@ -505,7 +503,7 @@ createByteStream = function (source, remote) {
     #   stop(DataPackageError$new('Local paths are not supported in the browser'))
     # } else {
     connection = file(source)
-    stream = ReadableConnection$new(options = list(source = connection))
+    stream = tableschema.r::ReadableConnection$new(options = list(source = connection))
   }
   
   return (stream)
