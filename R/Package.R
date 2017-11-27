@@ -99,12 +99,12 @@ Package <- R6::R6Class(
       return (private$currentDescriptor_)
     },
     
-    commit = function(strict=list()) {
-      
-      if (is_logical(strict)) self$strict = strict
-      else if ( identical(private$currentDescriptor_, private$nextDescriptor_) ) return (FALSE)
+    commit = function (strict=NULL) {
+      if (is.logical(strict)) private$strict_ = strict
+      else if (identical(private$currentDescriptor_, private$nextDescriptor_)) return (FALSE)
       private$currentDescriptor_ = private$nextDescriptor_
-      private$build()
+      private$currentDescriptor_json = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = TRUE)
+      private$build_()
       return (TRUE)
     },
     
@@ -184,10 +184,11 @@ Package <- R6::R6Class(
         private$errors_ = current[['errors']]
         
         if (private$strict_ == TRUE) {
-          message = stringr::str_interp(
-            "There are ${length(current[['errors']])} validation errors (see 'error$errors')"
-          )
-          stop((message))
+          # message = stringr::str_interp(
+          #   "There are ${length(current[['errors']])} validation errors (see 'error$errors')"
+          # )
+          # stop((message))
+          stop(DataPackageError$new(stringr::str_interp("There are ${length(current[['errors']])} validation errors (see 'error$errors')")))
         }
       }
       
