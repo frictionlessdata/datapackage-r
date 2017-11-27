@@ -4,7 +4,7 @@
 \alias{is.valid}
 \title{is.valid}
 \usage{
-is.valid(descriptor,schema)
+is.valid(descriptor,schema=NULL)
 }
 \arguments{
 \item{descriptor}{json dictionary}

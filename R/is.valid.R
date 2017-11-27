@@ -2,7 +2,7 @@
 #'
 #' @description is.valid
 #' 
-#' @usage is.valid(descriptor,schema)
+#' @usage is.valid(descriptor,schema=NULL)
 #' 
 #' 
 #' @param descriptor json dictionary
@@ -12,7 +12,7 @@
 #' @import jsonvalidate
 #' @export
 
-is.valid = function(descriptor,schema)  {
+is.valid = function(descriptor,schema=NULL)  {
   #inherits(x, "descriptor")
   if(is.null(schema)){
     
@@ -21,7 +21,7 @@ is.valid = function(descriptor,schema)  {
     
   } else {
     #local
-    v = jsonvalidate::json_validator("schema.json")
+    v = jsonvalidate::json_validator("https://schemas.frictionlessdata.io/data-package.json")
   }
 
   valid=v(descriptor, verbose = TRUE, greedy=TRUE,error=FALSE)

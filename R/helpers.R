@@ -377,27 +377,7 @@ findFiles = function(pattern,path=getwd()){
     return(matched_files)
 }
 
-#' filepath
-#' @param x filepath
-#' @rdname filepath
-#' @export
-#' 
 
-filepath=function(x){
-  
-  files=filepath(path)#, recursive = TRUE)
-  
-  matched_files=files[grep(x,files,fixed = FALSE,ignore.case = F)]
-  
-  # if (length(matched_files)>1){
-  #   
-  #   message("There are multiple matches with the input file." ) 
-  #   choice = utils::menu(matched_files, title = cat("Please specify the input file:"))
-  #   matched_files= matched_files[choice]
-  # } else 
-    
-    return(matched_files)
-}
 #' Get descriptor path
 #' 
 #' @description Find descriptor path in directory
