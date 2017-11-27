@@ -4,7 +4,7 @@
 \alias{infer}
 \title{infer}
 \usage{
-infer(pattern, basePath = { })
+infer(pattern = NULL, basePath = getwd())
 }
 \arguments{
 \item{pattern}{pattern}

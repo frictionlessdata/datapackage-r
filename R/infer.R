@@ -7,9 +7,9 @@
 
 # Module API
 
-infer <- function(pattern, basePath={}) {
+infer <- function(pattern=NULL, basePath=getwd()) {
   
-  dataPackage = Package$load({}, basePath)
+  dataPackage = Package$new()$load('{}', basePath)
   descriptor = dataPackage$infer(pattern)
   
   return (descriptor)
