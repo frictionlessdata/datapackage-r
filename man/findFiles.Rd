@@ -4,7 +4,7 @@
 \alias{findFiles}
 \title{findFiles}
 \usage{
-findFiles(pattern, path = ".")
+findFiles(pattern, path = getwd())
 }
 \arguments{
 \item{pattern}{pattern}
