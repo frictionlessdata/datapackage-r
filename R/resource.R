@@ -1,5 +1,5 @@
 #' Resource class
-#'
+#' 
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
