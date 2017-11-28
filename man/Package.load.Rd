@@ -6,6 +6,13 @@
 \usage{
 Package.load(descriptor, basePath = NULL, strict = FALSE)
 }
+\arguments{
+\item{descriptor}{descriptor}
+
+\item{basePath}{basePath}
+
+\item{strict}{strict}
+}
 \description{
 Package.load
 }

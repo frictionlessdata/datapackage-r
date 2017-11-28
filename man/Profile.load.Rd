@@ -6,6 +6,9 @@
 \usage{
 Profile.load(profile)
 }
+\arguments{
+\item{profile}{profile}
+}
 \description{
 Profile.load
 }
