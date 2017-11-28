@@ -32,22 +32,9 @@ Resource <- R6Class(
       private$relations_ = NULL
       private$strict_ = strict
       private$errors_ = list()
+      sourceInspection_ = list()
     },
-    
-    load = function (descriptor = list(), basePath, strict = FALSE) {
-      
-      # Get base path
-      if (isUndefined(basePath)) {
-        basePath = locateDescriptor(descriptor)
-      }
-      
-      # Process descriptor
-      descriptor = retrieveDescriptor(descriptor)
-      descriptor = dereferenceResourceDescriptor(descriptor, basePath)
-      
-      return (Resource$new(descriptor, basePath, strict)) #self
-    },
-    
+
     valid = function () {
       return (length(private$errors_== 0))
     },
@@ -66,7 +53,8 @@ Resource <- R6Class(
     },
     
     name = function () {
-      return (private$currentDescriptor_$name)
+      #gsub("\"","",jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$name,auto_unbox=TRUE))
+      return (gsub("\"","",as.character(jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$name,auto_unbox=TRUE))))
     },
     
     inline = function () {
@@ -85,10 +73,23 @@ Resource <- R6Class(
       return (private$sourceInspection_$multipart)
     },
     
-    tabular = function () {
-      tabular = private$currentDescriptor_$profile == 'tabular-data-resource'
-      if (!isTRUE(private$strict_)) tabular = tabular || private$sourceInspection_$tabular
-      return (tabular)
+    tabular = function () { #gsub("\"","",as.character(jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$profile,auto_unbox=TRUE)))
+      
+        # if(gsub("\"","",as.character(jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$profile,auto_unbox=TRUE))) == 'tabular-data-resource')
+        #   tabular_ = TRUE
+        # if (!isTRUE(private$strict_)) {
+        #   if (any(config::get("TABULAR_FORMATS") %in% unlist(as.character(jsonlite::fromJSON(private$currentDescriptor_)$format)))) tabular_=TRUE
+        #   if (isTRUE(private$sourceInspection_$tabular)) {return(private$sourceInspection_$tabular)}      
+        # } else {return(FALSE)}
+      
+         return(
+           
+          any(gsub("\"","",as.character(jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$profile,auto_unbox=TRUE))) == 'tabular-data-resource',
+              
+              (!isTRUE(private$strict_) & any(config::get("TABULAR_FORMATS") %in% unlist(as.character(jsonlite::fromJSON(private$currentDescriptor_)$format)))),
+              
+              (!isTRUE(private$strict_) & isTRUE(private$sourceInspection_$tabular)) )
+          )
     },
     
     source = function () {
@@ -96,7 +97,7 @@ Resource <- R6Class(
     },
     
     headers = function () {
-      if (!self$tabular) return (NULL)
+      if (!isTRUE(self$tabular)) return (NULL)
       return (private$getTable_()$headers)
     },
     
@@ -106,17 +107,17 @@ Resource <- R6Class(
     },
     
     iter = function ( relations=FALSE, options=list() ) {
-
+      
       # Error for non tabular
       if (!isTRUE(self$tabular)) {
         stop(DataPackageError$new('Methods iter/read are not supported for non tabular data'))
       }
-
+      
       # Get relations
       if (isTRUE(relations)) {
         relations = private$getRelations_()
       }
-
+      
       return (iterators::iter(private$getTable_(), relations, options))
     },
     
@@ -141,15 +142,15 @@ Resource <- R6Class(
     },
     
     rawIter= function (stream = FALSE ) {
-        
-        # Error for inline
-        if (self$inline) {
-          stop( DataPackageError$new('Methods iter/read are not supported for inline data') )
-        }
-        
-        byteStream = createByteStream(self$source, self$remote)
-        return (byteStream) #if (stream) byteStream else new S2A(byteStream)
-      },
+      
+      # Error for inline
+      if (self$inline) {
+        stop( DataPackageError$new('Methods iter/read are not supported for inline data') )
+      }
+      
+      byteStream = createByteStream(self$source, self$remote)
+      return (byteStream) #if (stream) byteStream else new S2A(byteStream)
+    },
     
     rawRead = function () {
       iterator = self$rawIter(stream = TRUE)
@@ -165,69 +166,69 @@ Resource <- R6Class(
     },
     
     infer = function() {
-        descriptor = private$currentDescriptor_
+      descriptor = jsonlite::fromJSON(private$currentDescriptor_)
+      
+      # Blank -> Stop
+      if (isTRUE(private$sourceInspection_$blank)) {
+        return (jsonlite::toJSON(descriptor, auto_unbox = TRUE))
+      }
+      
+      # Name
+      if (!isUndefined(descriptor$name)) {
+        descriptor$name = private$sourceInspection_$name
+      }
+      
+      # Only for non inline
+      if (!isTRUE(private$sourceInspection_$inline)) {
         
-        # Blank -> Stop
-        if (private$sourceInspection_$blank) {
-          return (descriptor)
+        # Format
+        if (!isUndefined(descriptor$format)) {
+          descriptor$format = private$sourceInspection$format
         }
         
-        # Name
-        if (!descriptor.name) {
-          descriptor.name = private$sourceInspection_$name
+        # Mediatype
+        if (!isUndefined(descriptor$mediatype)) {
+          descriptor$mediatype = stringr::str_interp('text/${descriptor$format}')
         }
         
-        # Only for non inline
-        if (!this.inline) {
+        # Encoding
+        if (descriptor$encoding == config::get("DEFAULT_RESOURCE_ENCODING")) {
           
-          # Format
-          if (!descriptor$format) {
-            descriptor$format = private$sourceInspection$format
-          }
-          
-          # Mediatype
-          if (!descriptor$mediatype) {
-            descriptor$mediatype = stringr::str_interp('text/${descriptor$format}')
-          }
-          
-          # Encoding
-          if (descriptor$encoding == config::get("DEFAULT_RESOURCE_ENCODING")) {
-            
-            iterator = self$rawIter()
-            count = 0
-            repeat {
-              count = count + 1
-              bytes =  iterators::nextElem(iterator)
-              if (count == length(iterator) ){
-                break
-              }
+          iterator = self$rawIter()
+          count = 0
+          repeat {
+            count = count + 1
+            bytes =  iterators::nextElem(iterator)
+            if (count == length(iterator) ){
+              break
             }
-            encoding = stringi::stri_enc_detect("bytes")[[1]]$Encoding[1] #Ruchardet::detectEncoding
-            descriptor$encoding = if (encoding == 'ascii') 'utf-8' else encoding
           }
-          
+          encoding = stringi::stri_enc_detect("bytes")[[1]]$Encoding[1] #Ruchardet::detectEncoding
+          descriptor$encoding = if (encoding == 'ascii') 'utf-8' else encoding
         }
         
-        # Schema
-        if (purrr::is_empty(descriptor$schema)) {
-          if (isTRUE(self$tabular)) {
-            descriptor$schema = private$getTable_()$infer()
-          }
+      }
+      
+      # Schema
+      if (purrr::is_empty(descriptor$schema)) {
+        if (isTRUE(self$tabular)) {
+          descriptor$schema = private$getTable_()$infer()
         }
-        
-        # Profile
-        if (descriptor$profile == config::get("DEFAULT_RESOURCE_PROFILE")) {
-          if (self$tabular) {
-            descriptor$profile = 'tabular-data-resource'
-          }
+      }
+      
+      # Profile
+      if (descriptor$profile == config::get("DEFAULT_RESOURCE_PROFILE")) {
+        if (!isTRUE(self$tabular)) {
+          descriptor$profile = 'tabular-data-resource'
         }
-        
-        # Save descriptor
-        private$currentDescriptor_ = descriptor
-        private$build_()
-        
-        return (descriptor)
-      },
+      }
+      
+      # Save descriptor
+      private$currentDescriptor_ = jsonlite::toJSON(descriptor,auto_unbox = TRUE)
+      private$build_()
+      
+      return (jsonlite::toJSON(descriptor,auto_unbox = TRUE))
+    },
     
     commit = function (strict=NULL) {
       if (is.logical(strict)) private$strict_ = strict
@@ -265,7 +266,8 @@ Resource <- R6Class(
     relations_ = NULL,
     strict_ = NULL,
     errors_ = NULL,
-    
+    tabular_=NULL,
+    sourceInspection_ = NULL,
     build_ = function() {
       # Process descriptor
       
@@ -274,8 +276,12 @@ Resource <- R6Class(
       private$nextDescriptor_ = private$currentDescriptor_
       
       # Inspect source
+      
       private$sourceInspection_ = inspectSource(
-        this._private$currentDescriptor_$data, private$currentDescriptor_$path, private$basePath_)
+        jsonlite::fromJSON(private$currentDescriptor_)$data, 
+        jsonlite::fromJSON(private$currentDescriptor_)$path, 
+        private$basePath_)
+
       
       # Instantiate profile
       private$profile_ = Profile$new(private$currentDescriptor_$profile)
@@ -327,8 +333,8 @@ Resource <- R6Class(
         options[["format"]] = purrr::compact(purrr::map(descriptor, 'format', 'csv'))
         
         if (!is.null(purrr::compact(purrr::map(descriptor, 'data')))) {
-        
-        options[["format"]] = 'inline'
+          
+          options[["format"]] = 'inline'
         }
         options[["encoding"]] = descriptor[["encoding"]]
         options[["skip_rows"]] = purrr::compact(purrr::map(descriptor,"skipRows"))
@@ -338,7 +344,7 @@ Resource <- R6Class(
           
           if (is.null(
             purrr::modify_if(dialect,purrr::is_empty, function (x) x['header']<-config::get("DEFAULT_DIALECT")['header'])
-            )) {
+          )) {
             
             fields = purrr::compact(purrr::map(descriptor, function(x) purrr::compact(purrr::map(x,"fields"))))
             options[["headers"]] = purrr::map(descriptor$resources$schema$fields,'name')
@@ -402,7 +408,7 @@ Resource <- R6Class(
       return (private$getTable_())
     }
     
-
+    
   ) )
 
 
@@ -423,57 +429,64 @@ inspectSource = function (data, path, basePath) {
   inspection = list()
   
   # Normalize path
-  if (!is.null(path) && !is.list(path)) {
-    path = normalizePath(path)
-  }
+  if (exists(path)){
+    if(!is.list(path)) {
+      
+      path = basePath #normalizePath(basePath)
+    }}
   
   # Blank
-  if (is.null(data) && is.null(data)) {
+  if (!exists(data) && !exists(path)) {
     inspection$source = NULL
     inspection$blank = TRUE
     
     # Inline
-  } else if (!is.null(data)) {
+  } 
+  if (exists(data)) {
     inspection$source = data
     inspection$inline = TRUE
-    inspection$tabular =  is.list(data) && purrr::every(is.list(data))
+    inspection$tabular = is.list(jsonlite::fromJSON(data)) && purrr::every(jsonlite::fromJSON(data),"is.list")
     
     # Local/Remote
-  } else if (length(path) == 1) {
+  } 
+  if (length(path) == 1) {
     
     # Remote
     if (isRemotePath(path[1])) {
       inspection$source = path[1]
       inspection$remote = TRUE
-    } else if (!is.null(basePath) && isRemotePath(basePath)) {
-      inspection$source = stringr::str_c(basePath, path[1])
+    } 
+    if (exists(basePath) && isRemotePath(basePath)) {
+      inspection$source = c(basePath, path[1]) #stringr::str_c
       inspection$remote = TRUE
       
       # Local
     } else {
       
       # Path is not safe
-      if (!isSafePath(path[1])) {
-        stop(DataPackageError$new('Local path "${path[1]}" is not safe'))
-      }
+      # if (!isTRUE(isSafePath(path[1]))) {
+      #   DataPackageError$new('Local path "${path[1]}" is not safe')
+      # }
       
       # Not base path
-      if (is.null(basePath)) {
-        stop(DataPackageError$new('Local path "${path[1]}" requires base path'))
-      }
+      # if (!exists(basePath)) {
+      #   DataPackageError$new('Local path "${path[1]}" requires base path')
+      # }
       
-      inspection$source = stringr::str_c(basePath, path[1], sep = '/')
+      inspection$source = c(basePath, path[1])#stringr::str_c, sep = '/'
       inspection$local = TRUE
     }
     
     # Inspect
     inspection$format = tools::file_ext(path[1])[1]
-    inspection$name = basename(tools::list_files_with_exts(path[1], stringr::str_interp('.${inspection$format}') ))
-    inspection$mediatype = stringr::str_interp('text/${inspection.format}')
-    inspection$tabular = inspection$format == 'csv'
+    inspection$name = basename(tools::list_files_with_exts(dir=path, exts=stringr::str_interp('.${inspection$format}') ))
+    inspection$mediatype = stringr::str_interp('text/${inspection$format}')
+    inspection$tabular = inspection$format %in% config::get("TABULAR_FORMATS")
     
     # Multipart Local/Remote
-  } else if (length(path) > 1) {
+    
+  } 
+  if (length(path) > 1) {
     inspections = purrr::map(path, function(item) inspectSource(NULL, item, basePath))
     assign(inspection, inspections[0])
     inspection$source = purrr::map(inspections, function(item) item$source)
@@ -489,13 +502,13 @@ createByteStream = function (source, remote) {
   # Remote source
   if (isTRUE(remote)) {
     
-      response = httr::GET(source) #await axios.get(source)
-      response.data = httr::content(response, as = 'text')
-      stream = tableschema.r::Readable$new()
-      push(stream, response.data)
-      push(stream, NULL)
-      # response = await axios.get(source, {responseType: 'stream'})
-      # stream = response.data
+    response = httr::GET(source) #await axios.get(source)
+    response.data = httr::content(response, as = 'text')
+    stream = tableschema.r::Readable$new()
+    push(stream, response.data)
+    push(stream, NULL)
+    # response = await axios.get(source, {responseType: 'stream'})
+    # stream = response.data
     
     # Local source
   } else {
@@ -507,4 +520,25 @@ createByteStream = function (source, remote) {
   }
   
   return (stream)
+}
+
+#' Resource.load
+#' @param descriptor descriptor
+#' @param basePath basePath
+#' @param strict strict
+#' @rdname Resource.load
+#' @export
+
+Resource.load = function (descriptor, basePath=NULL, strict = FALSE) {
+  
+  # Get base path
+  if (isUndefined(basePath)) {
+    basePath = locateDescriptor(descriptor)
+  }
+  
+  # Process descriptor
+  descriptor = retrieveDescriptor(descriptor)
+  descriptor = dereferenceResourceDescriptor(descriptor, basePath)
+  
+  return (Resource$new(descriptor, basePath, strict))
 }
