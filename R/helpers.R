@@ -5,22 +5,23 @@
 #' @export
 #' 
 locateDescriptor = function (descriptor) {
-  if (inherits(descriptor, "connection")) {
+  #if (inherits(descriptor, "connection")) {
     # Infer from path/url
     
-    if (is.character(descriptor)) {
+    if (is.character(unlist(jsonlite::fromJSON(descriptor,flatten = T)))) {
       
-      basePath = unlist(strsplit(descriptor, '/')) # OR stringr::str_split , simplify = TRUE
-      basePath = if (length(basePath[-length(basePath)])!=0) basePath[-length(basePath)] else getwd()
-      basePath = paste(basePath, collapse = "/")
+      basePath = unlist(strsplit(unlist(jsonlite::fromJSON(descriptor,flatten = T)), '/')) # OR stringr::str_split , simplify = TRUE
+      basePath = basename(basePath)
+      basePath = if (length(basePath)!=0) tail(basePath, n=1) else getwd() #basePath[-length(basePath)] 
+      basePath = paste("inst/data",basePath, sep = "/")
       
       # Current dir by default
     } else {
       
-      basePath = getwd()
+      basePath = stringr::str_c(getwd(),"inst/data", sep = "/")
       
     } 
-  } else basePath = getwd()
+  #} else basePath = stringr::str_c(getwd(),"inst/data", sep = "/")
   return (basePath)
 }
 
@@ -207,14 +208,15 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=N
 #' @export
 #' 
 expandPackageDescriptor = function (descriptor) {
-  if (is.character(descriptor)){ descriptor = jsonlite::fromJSON(descriptor)
-  descriptor[["profile"]] = if (isUndefined(descriptor[["profile"]])) config::get("DEFAULT_DATA_PACKAGE_PROFILE") else descriptor[["profile"]]
+  descriptor = jsonlite::fromJSON(descriptor)
+  descriptor[["profile"]] = if (is.null(descriptor[["profile"]]) ) config::get("DEFAULT_DATA_PACKAGE_PROFILE") else descriptor[["profile"]]
   
   # descriptor[["resources"]] = purrr::map(descriptor[["resources"]], expandResourceDescriptor)
-  for (index in ( if (isUndefined(descriptor[["resources"]])) descriptor[["resources"]]=list() else  descriptor[["resources"]]) ) {
+  for (index in ( if (isUndefined(descriptor[["resources"]])) descriptor[["resources"]]=list() else descriptor[["resources"]]) ) {
     descriptor[["resources"]][index] = expandResourceDescriptor(descriptor[["resources"]][index])
-  }}
-  return (jsonlite::toJSON(descriptor))
+  }
+  descriptor = jsonlite::toJSON(descriptor)
+  return (descriptor)
 }
 
 #' Expand descriptor
@@ -223,7 +225,9 @@ expandPackageDescriptor = function (descriptor) {
 #' @export
 #' 
 expandResourceDescriptor = function (descriptor) {
+  
   descriptor = jsonlite::fromJSON(descriptor)
+  
   descriptor[["profile"]] = if (isUndefined(descriptor[["profile"]])) config::get("DEFAULT_RESOURCE_PROFILE") else descriptor[["profile"]]
   descriptor[["encoding"]] = if (isUndefined(descriptor[["encoding"]])) config::get("DEFAULT_RESOURCE_ENCODING") else descriptor[["encoding"]]
   if (descriptor[["profile"]] == 'tabular-data-resource') {
@@ -252,7 +256,8 @@ expandResourceDescriptor = function (descriptor) {
       # }
     }
   }
-  return (descriptor = jsonlite::toJSON(descriptor))
+  descriptor = jsonlite::toJSON(descriptor)
+  return (descriptor)
 }
 
 
@@ -284,6 +289,7 @@ isRemotePath = function (path) {
 #' 
 
 isSafePath = function (path) {
+  
   if (!isTRUE(is.character(path))) FALSE else {
   containsWindowsVar = function(path) if (isTRUE(grepl("%.+%", path))) TRUE else FALSE
   containsPosixVar = function(path) if (isTRUE(grepl("\\$.+", path))) TRUE else FALSE
