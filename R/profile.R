@@ -108,6 +108,7 @@ Profile <- R6::R6Class(
 )
 
 #' Profile.load
+#' @param profile profile
 #' @rdname Profile.load
 #' @export
 Profile.load = function (profile) {
