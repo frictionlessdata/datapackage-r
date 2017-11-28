@@ -11,7 +11,7 @@
 
 validate = function (descriptor) {
     
-  valid_errors = Package$new()$load(descriptor= descriptor, strict=TRUE )
+  valid_errors = Package.load(descriptor= descriptor, strict=TRUE )
 
   valid_errors = list(valid = valid_errors$valid, errors = valid_errors$errors)
   # valid_errors = jsonlite::validate(descriptor)

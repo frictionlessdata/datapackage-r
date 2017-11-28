@@ -32,6 +32,7 @@ r_packages:
  - roxygen2
  - stringr
  - tools
+ - urltools
  - utils
 addons:
   apt:

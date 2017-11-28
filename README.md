@@ -87,8 +87,8 @@ descriptor = "{
   ]
 }"
 
-dataPackage = datapackage$load(descriptor)
-#resource = dataPackage.getResource('example')
+dataPackage = Package.load(descriptor)
+#resource = dataPackage$getResource('example')
 #resource$read() # [[180, 18, 'Tony'], [192, 32, 'Jacob']]
 ```
 
@@ -162,13 +162,13 @@ dataPackage.save('datapackage.json')
 To continue the work with the data package we just load it again but this time using local `datapackage.json`:
 
 ``` r
-dataPackage = Package$new()$load('datapackage.json')
+dataPackage = Package.load('datapackage.json')
 # Continue the work
 ```
 
 It was onle basic introduction to the `Package` class. To learn more let's take a look on `Package` class API reference.
 
-#### `Package$new()$load(descriptor, basePath, strict=FALSE)`
+#### `Package.load(descriptor, basePath, strict=FALSE)`
 
 Constructor to instantiate `Package` class.
 
@@ -538,10 +538,10 @@ Save resource to target destination.
 A component to represent JSON Schema profile from [Profiles Registry](https://specs.frictionlessdata.io/schemas/registry.json):
 
 ``` r
-profile = Profile$new()$load('data-package')
+profile = Profile.load('data-package')
 
-profile$name # data-package
-profile.jsonschema # JSON Schema contents
+profile$name() # data-package
+profile$jsonschema() # JSON Schema contents
 
 valid_errors = profile$validate(descriptor)
 for (error in valid_errors$errors) {
@@ -549,7 +549,7 @@ for (error in valid_errors$errors) {
 }
 ```
 
-#### `Profile$load(profile)`
+#### `Profile.load(profile)`
 
 Factory method to instantiate `Profile` class. This method is async and it should be used with await keyword or as a `Promise`.
 
@@ -557,11 +557,11 @@ Factory method to instantiate `Profile` class. This method is async and it shoul
 -   `(errors$DataPackageError)` - raises error if something goes wrong
 -   `(Profile)` - returns profile class instance
 
-#### `Profile$name`
+#### `Profile$name()`
 
 -   `(String/null)` - returns profile name if available
 
-#### `Profile$jsonschema`
+#### `Profile$jsonschema()`
 
 -   `(Object)` - returns profile JSON Schema contents
 

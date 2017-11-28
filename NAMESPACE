@@ -2,7 +2,9 @@
 
 export(DataPackageError)
 export(Package)
+export(Package.load)
 export(Profile)
+export(Profile.load)
 export(Resource)
 export(dereferencePackageDescriptor)
 export(dereferenceResourceDescriptor)

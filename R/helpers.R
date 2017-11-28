@@ -270,7 +270,8 @@ expandResourceDescriptor = function (descriptor) {
 
 isRemotePath = function (path) {
   
-  if (!is.character(path)) FALSE else startsWith("http", path) #message("Path should be character")
+  #if (!is.character(path)) FALSE else 
+  startsWith("http", unlist(strsplit(path,":")))[1] #startsWith("http", path) #message("Path should be character")
 }
 
 #' Is safe path
