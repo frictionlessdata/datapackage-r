@@ -229,8 +229,8 @@ Package.load = function (descriptor, basePath=NULL, strict = FALSE ) {
   }
   
   # Process descriptor
-  descriptor = retrieveDescriptor(descriptor)
-  descriptor = dereferencePackageDescriptor(descriptor, basePath)
+  #descriptor = retrieveDescriptor(descriptor)
+  #descriptor = dereferencePackageDescriptor(descriptor, basePath)
   
   # Get profile
   

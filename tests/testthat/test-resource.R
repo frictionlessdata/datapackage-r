@@ -2,7 +2,6 @@ library(datapackage.r)
 library(testthat)
 library(foreach)
 library(stringr)
-#expand = expandResourceDescriptor
 
 # Tests
 testthat::context("Resource")

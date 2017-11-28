@@ -234,7 +234,8 @@ Resource <- R6Class(
       if (is.logical(strict)) private$strict_ = strict
       else if (identical(private$currentDescriptor_, private$nextDescriptor_)) return (FALSE)
       private$currentDescriptor_ = private$nextDescriptor_
-      private$currentDescriptor_json = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = TRUE)
+      private$table_ = NULL
+      #private$currentDescriptor_json = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = TRUE)
       private$build_()
       return (TRUE)
     },
@@ -268,6 +269,7 @@ Resource <- R6Class(
     errors_ = NULL,
     tabular_=NULL,
     sourceInspection_ = NULL,
+    table_=NULL,
     build_ = function() {
       # Process descriptor
       
@@ -329,7 +331,7 @@ Resource <- R6Class(
         # Resource -> Tabular
         
         options = list()
-        descriptor = private$currentDescriptor_
+        descriptor = jsonlite::fromJSON(private$currentDescriptor_)
         options[["format"]] = purrr::compact(purrr::map(descriptor, 'format', 'csv'))
         
         if (!is.null(purrr::compact(purrr::map(descriptor, 'data')))) {
@@ -357,14 +359,13 @@ Resource <- R6Class(
           }
         }
         
-        private$table_ = Table$new(self$source, schema=schema, self$options)
+        private$table_ = tableschema.r::Table$new(self$source, schema=schema, self$options)
         
       }
       return (private$table_)
     }, 
     
     getRelations_ = function () {
-      #async
       
       if (!private$relations_) {
         
@@ -410,7 +411,6 @@ Resource <- R6Class(
     
     
   ) )
-
 
 
 
