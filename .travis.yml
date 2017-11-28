@@ -20,6 +20,7 @@ brew_packages:
 r_packages:
  - config
  - curl
+ - covr
  - future
  - httr
  - iterators
@@ -41,3 +42,5 @@ addons:
       - libxml2-dev
       - libv8-dev
 warnings_are_errors: false
+after_success:
+  - Rscript -e 'library(covr); codecov()'
