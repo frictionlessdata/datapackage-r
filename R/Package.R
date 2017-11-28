@@ -28,7 +28,7 @@ Package <- R6::R6Class(
 
     },
     
-    infer = function(pattern) {
+    infer = function (pattern) {
       
       # Files
       if (!isUndefined(pattern)) {
@@ -215,6 +215,9 @@ Package <- R6::R6Class(
   )
 
 #' Package.load
+#' @param descriptor descriptor
+#' @param basePath basePath
+#' @param strict strict
 #' @rdname Package.load
 #' @export
 Package.load = function (descriptor, basePath=NULL, strict = FALSE ) {
