@@ -18,7 +18,7 @@ test_that('works with base descriptor', {
   resource = Resource.load(descriptor)
   
   expect_equal(resource$name(),'name')
-  expect_equal(resource$tabular(), FALSE)
+  expect_equal(resource$tabular(), TRUE)
   # expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
   # expect_equal(resource$inline(), TRUE)
   # expect_equal(resource$source(), "['data']")

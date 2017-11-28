@@ -12,7 +12,7 @@ locateDescriptor = function (descriptor) {
       
       basePath = unlist(strsplit(unlist(jsonlite::fromJSON(descriptor,flatten = T)), '/')) # OR stringr::str_split , simplify = TRUE
       basePath = basename(basePath)
-      basePath = if (length(basePath)!=0) tail(basePath, n=1) else getwd() #basePath[-length(basePath)] 
+      basePath = if (length(basePath)!=0) utils::tail(basePath, n=1) else getwd() #basePath[-length(basePath)] 
       basePath = paste("inst/data",basePath, sep = "/")
       
       # Current dir by default
