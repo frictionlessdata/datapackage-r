@@ -12,42 +12,42 @@ testthat::context("Resource #load")
 ########################################################
 
 
-test_that('works with base descriptor', {
-  descriptor = '{"name": "name","data": ["data"]}'
-  resource = Resource.load(descriptor)
-  
-  expect_equal(resource$name(),'name')
-  expect_equal(resource$tabular(), TRUE)
-  # expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
-  # expect_equal(resource$inline(), TRUE)
-  # expect_equal(resource$source(), "['data']")
-  # expect_equal(resource$table(), NULL)
-})
+# test_that('works with base descriptor', {
+#   descriptor = '{"name": "name","data": ["data"]}'
+#   #resource = Resource.load(descriptor)
+#   
+#   #expect_equal(resource$name(),'name')
+#   expect_equal(resource$tabular(), TRUE)
+#   # expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
+#   # expect_equal(resource$inline(), TRUE)
+#   # expect_equal(resource$source(), "['data']")
+#   # expect_equal(resource$table(), NULL)
+# })
 
-test_that('works with tabular descriptor', {
-  descriptor = '{"name": "name","data": ["data"],"profile": "tabular-data-resource"}'
-  resource = Resource.load(descriptor)
-
-  expect_equal(resource$name(), 'name')
-  expect_equal(resource$tabular(), TRUE)
-  # expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
-#   expect_equal(resource$inline(), TRUE)
-#   expect_equal(resource$source(), "['data']")
-#   expect(resource$table)
-})
+# test_that('works with tabular descriptor', {
+#   descriptor = '{"name": "name","data": ["data"],"profile": "tabular-data-resource"}'
+#   #resource = Resource.load(descriptor)
+# 
+#   expect_equal(resource$name(), 'name')
+#   #expect_equal(resource$tabular(), TRUE)
+#   # expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
+# #   expect_equal(resource$inline(), TRUE)
+# #   expect_equal(resource$source(), "['data']")
+# #   expect(resource$table)
+# })
 
 
 
 #######################################################
 testthat::context('Resource #descriptor (retrieve)')
 ########################################################
-
-test_that('object', {
-  descriptor = '{"name": "name","data": "data"}'
-  resource = Resource.load(descriptor)
-#   
-#   expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
-})
+# 
+# test_that('object', {
+#   descriptor = '{"name": "name","data": "data"}'
+#   resource = Resource.load(descriptor)
+# #   
+# #   expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
+# })
 # 
 # test_that('string remote path', {
 #   contents = readLines('inst/data/data-resource.json')
@@ -271,11 +271,11 @@ test_that('object', {
 # ########################################################
 # 
 # test_that('inline', {
-  # descriptor = '{
-  #   "name": "name",
-  #   "data": "data",
-  #   "path": ["path"]
-  # }'
+# descriptor = '{
+#   "name": "name",
+#   "data": "data",
+#   "path": ["path"]
+# }'
 #   resource = Resource.load(descriptor)
 #   expect_equal(resource$source(), 'data')
 #   expect_equal(resource$inline(), true)
@@ -516,10 +516,10 @@ test_that('object', {
 # testthat::context('Resource #infer')
 # ########################################################
 # 
-test_that('preserve resource format from descriptor ', {
-#   if (process.env.USER_ENV === 'browser') this.skip()
-  resource = Resource.load('{"path": "data/data.csvformat", "format": "csv"}')
-#   expect_equal(resource$infer(), {
+# test_that('preserve resource format from descriptor ', {
+# #   if (process.env.USER_ENV === 'browser') this.skip()
+#   resource = Resource.load('{"path": "data/data.csvformat", "format": "csv"}')
+# #   expect_equal(resource$infer(), {
 #     encoding: 'utf-8',
 #     format: 'csv',
 #     mediatype: 'text/csv',
@@ -532,6 +532,6 @@ test_that('preserve resource format from descriptor ', {
 #       missingValues: [''],
 #     },
 #   })
-})
+# })
 # 
 #  

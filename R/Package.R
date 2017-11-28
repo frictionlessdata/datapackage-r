@@ -28,7 +28,7 @@ Package <- R6::R6Class(
 
     },
     
-    infer = function (pattern) {
+    infer = function (pattern = FALSE) {
       
       # Files
       if (!isUndefined(pattern)) {
@@ -41,7 +41,7 @@ Package <- R6::R6Class(
         # Add resources
         files = findFiles(pattern, private$basePath_)
         for (file in files) {
-        self$addResource(list(path = files[file]))
+        self$addResource( list(path = files[file]) )
         }
         
       }

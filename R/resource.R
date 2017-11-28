@@ -34,7 +34,7 @@ Resource <- R6Class(
       private$errors_ = list()
       sourceInspection_ = list()
     },
-
+    
     valid = function () {
       return (length(private$errors_== 0))
     },
@@ -75,21 +75,21 @@ Resource <- R6Class(
     
     tabular = function () { #gsub("\"","",as.character(jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$profile,auto_unbox=TRUE)))
       
-        # if(gsub("\"","",as.character(jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$profile,auto_unbox=TRUE))) == 'tabular-data-resource')
-        #   tabular_ = TRUE
-        # if (!isTRUE(private$strict_)) {
-        #   if (any(config::get("TABULAR_FORMATS") %in% unlist(as.character(jsonlite::fromJSON(private$currentDescriptor_)$format)))) tabular_=TRUE
-        #   if (isTRUE(private$sourceInspection_$tabular)) {return(private$sourceInspection_$tabular)}      
-        # } else {return(FALSE)}
+      # if(gsub("\"","",as.character(jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$profile,auto_unbox=TRUE))) == 'tabular-data-resource')
+      #   tabular_ = TRUE
+      # if (!isTRUE(private$strict_)) {
+      #   if (any(config::get("TABULAR_FORMATS") %in% unlist(as.character(jsonlite::fromJSON(private$currentDescriptor_)$format)))) tabular_=TRUE
+      #   if (isTRUE(private$sourceInspection_$tabular)) {return(private$sourceInspection_$tabular)}      
+      # } else {return(FALSE)}
       
-         return(
-           
-          any(gsub("\"","",as.character(jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$profile,auto_unbox=TRUE))) == 'tabular-data-resource',
-              
-              (!isTRUE(private$strict_) & any(config::get("TABULAR_FORMATS") %in% unlist(as.character(jsonlite::fromJSON(private$currentDescriptor_)$format)))),
-              
-              (!isTRUE(private$strict_) & isTRUE(private$sourceInspection_$tabular)) )
-          )
+      return(
+        
+        any(gsub("\"","",as.character(jsonlite::toJSON(jsonlite::fromJSON(private$currentDescriptor_)$profile,auto_unbox=TRUE))) == 'tabular-data-resource',
+            
+            (!isTRUE(private$strict_) & any(config::get("TABULAR_FORMATS") %in% unlist(as.character(jsonlite::fromJSON(private$currentDescriptor_)$format)))),
+            
+            (!isTRUE(private$strict_) & isTRUE(private$sourceInspection_$tabular)) )
+      )
     },
     
     source = function () {
@@ -283,7 +283,7 @@ Resource <- R6Class(
         jsonlite::fromJSON(private$currentDescriptor_)$data, 
         jsonlite::fromJSON(private$currentDescriptor_)$path, 
         private$basePath_)
-
+      
       
       # Instantiate profile
       private$profile_ = Profile$new(private$currentDescriptor_$profile)

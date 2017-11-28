@@ -10,19 +10,19 @@ testthat::context("Package")
 ###################################
 testthat::context("Package #load")
 ###################################
-
-test_that('initializes with Object descriptor', {
-  descriptor = system.file('data/dp1/datapackage.json', package = "datapackage.r")
-  dataPackage = Package.load(descriptor, basePath= 'data/dp1')
-#  expect_equal(dataPackage$descriptor(), expandPackageDescriptor(descriptor))
-})
-
-test_that('initializes with URL descriptor', {
-  descriptor = system.file('data/dp1/datapackage.json')
-  dataPackage = Package.load(
-    'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
-#  expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
-})
+# 
+# test_that('initializes with Object descriptor', {
+#   descriptor = system.file('data/dp1/datapackage.json', package = "datapackage.r")
+#   dataPackage = Package.load(descriptor, basePath= 'data/dp1')
+# #  expect_equal(dataPackage$descriptor(), expandPackageDescriptor(descriptor))
+# })
+# 
+# test_that('initializes with URL descriptor', {
+#   descriptor = system.file('data/dp1/datapackage.json')
+#   dataPackage = Package.load(
+#     'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
+# #  expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
+# })
 
 # test_that('throws errors for invalid datapackage in strict mode', {
 #   error = catchError(Package.load, {}, {strict: true})
