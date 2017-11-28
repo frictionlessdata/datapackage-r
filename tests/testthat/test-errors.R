@@ -18,19 +18,19 @@ test_that('should work with one error', {
 
 
 test_that('should work with multiple errors', {
-    errors = list('error1', 'error2')
-    error = DataPackageError$new('message', errors)
-    expect_equivalent(error$message, 'message')
-    expect_equivalent(error$multiple(), TRUE)
-    expect_equivalent(length(error$errors()), 2)
-    expect_equivalent(error$errors()[1], 'error1')
-    expect_equivalent(error$errors()[2], 'error2')
-  })
-  
+  errors = list('error1', 'error2')
+  error = DataPackageError$new('message', errors)
+  expect_equivalent(error$message, 'message')
+  expect_equivalent(error$multiple(), TRUE)
+  expect_equivalent(length(error$errors()), 2)
+  expect_equivalent(error$errors()[1], 'error1')
+  expect_equivalent(error$errors()[2], 'error2')
+})
+
 test_that('should be catchable as a normal error', {
-    tryCatch({
-      DataPackageError$new('message')
-    }, error = function(e) {
+  tryCatch({
+    DataPackageError$new('message')
+  }, error = function(e) {
       expect_equivalent(error$message, 'message')
       #expect_equivalent(methods::is(error,"Error") , true)
       expect_equivalent(methods::is(error,"DataPackageError"), TRUE)

@@ -16,94 +16,73 @@ PROFILES = list(
 
 
 # Tests
-# 
-# testthat::context("Profile")
-# 
-# describe('Profile', () => {
-#   
-#   describe('#load', () => {
-#     let http
-#     
-#     beforeEach(() => {http = new AxiosMock(axios)})
-#     afterEach(() => {http.restore()})
-#     
-# 
-#     foreach(name = 1:length(PROFILES) ) %do% {
-#       test_that(stringr::str_interp('load registry "${name}" profile'), {
-#         jsonschema = system.file(stringr::str_interp('./inst/profiles/${name}.json'), package = "datapackage.r")
-#         profile = Profile$load(name)
-#         expect_equal(profile$jsonschema, jsonschema)
-#       })
-#     }
-#     
-#     
-#     test_that('load remote profile', {
-#       url = 'http://example.com/data-package.json'
-#       jsonschema = system.file('./inst/profiles/data-package.json', package = "datapackage.r")
-#       http.onGet(url).reply(200, jsonschema)
-#       profile = Profile$load(url)
-#       expect_equal(profile$name, 'data-package')
-#       expect_equal(profile$jsonschema, jsonschema)
-#     })
-#     
-#     
-#     
-#     
-#     test_that('throw loading bad registry profile', {
-#       const name = 'bad-data-package'
-#       const error = catchError(Profile$load, name)
-#       assert.instanceOf(error, Error)
-#       assert.include(error$message, 'profile "bad-data-package"')
-#     })
-#     
-#     
-#     
-#     test_that('throw loading bad remote profile', {
-#       const name = 'http://example.com/profile.json'
-#       http.onGet(name).reply(400)
-#       const error = await catchError(Profile.load, name)
-#       assert.instanceOf(error, Error)
-#       assert.include(error.message, 'Can not retrieve remote')
-#     })
-#     
-#     
-#     
+
+testthat::context("Profile")
+
+
+foreach(name = 1:length(PROFILES) ) %do% {
+  
+  test_that(stringr::str_interp('load registry "${PROFILES[[name]]}" profile'), {
+    
+    jsonschema = system.file(stringr::str_interp('profiles/${PROFILES[[name]]}.json'), package = "datapackage.r")
+    
+    profile = Profile.load(PROFILES[[name]])
+    
+    expect_equal(profile$jsonschema(), jsonschema)
+  })
+}
+
+test_that('load remote profile', {
+  url = 'http://example.com/data-package.json'
+  jsonschema = system.file('profiles/data-package.json', package = "datapackage.r")
+  #httr::GET(url)$status_code #200
+  profile = Profile.load(url)
+  expect_equal(profile$name(), 'data package')
+  expect_equal(profile$jsonschema(), jsonschema)
+})
+
+test_that('throw loading bad registry profile', {
+  name = 'bad-data-package'
+  expect_error(Profile$load(name))
+})
+
+
+
+test_that('throw loading bad remote profile', {
+  name = 'http://example.com/profile.json'
+  #http.onGet(name).reply(400)
+  expect_error(Profile$load(name))
+})
+
+
+##
+testthat::context('Profile #validate')
+
+test_that('returns true for valid descriptor', {
+  descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
+  profile = Profile.load('data-package')
+  expect_true(profile$validate(descriptor)$valid)
+})
+
+test_that('errors for invalid descriptor', {
+  descriptor = "{}"
+  profile = Profile.load('data-package')
+  valid_errors = profile$validate(descriptor)
+  
+  expect_error(valid_errors.valid)
+  expect_equal_to_reference(valid_errors$errors[1], "Error")
+})
+
+##
+testthat::context('Profile #up-to-date')
+
+# foreach(name = 1:length(PROFILES) ) %do% {
+#   test_that(stringr::str_interp('profile ${PROFILES[[name]]} should be up-to-date'), {
+#     # if (process.env.USER_ENV == 'browser') this.skip()
+#     # if (process.env.TRAVIS_BRANCH != 'master') this.skip()
+#     profile = Profile.load(PROFILES[[name]])
+#     response = httr::GET(stringr::str_interp('https://specs.frictionlessdata.io/schemas/${PROFILES[[name]]}.json'))
+#     response.data = httr::content(response, as = 'text')
+#     identical(profile$jsonschema.contents(), response.data)
 #   })
-#   
-#   
-#   
-#   
-#   describe('#validate', () => {
-#     
-#     it('returns true for valid descriptor', async () => {
-#       const descriptor = {resources: [{name: 'name', data: ['data']}]}
-#       const profile = await Profile.load('data-package')
-#       assert.isOk(profile.validate(descriptor))
-#     })
-#     
-#     it('errors for invalid descriptor', async () => {
-#       const descriptor = {}
-#       const profile = await Profile.load('data-package')
-#       const {valid, errors} = profile.validate(descriptor)
-#       expect_equal(valid, false)
-#       assert.instanceOf(errors[0], Error)
-#       assert.include(errors[0].message, 'Missing required property')
-#     })
-#     
-#   })
-#   
-#   describe('#up-to-date', () => {
-#     
-#     PROFILES.forEach(name => {
-#       it(`profile ${name} should be up-to-date`, async function() {
-#         if (process.env.USER_ENV === 'browser') this.skip()
-#         if (process.env.TRAVIS_BRANCH !== 'master') this.skip()
-#         const profile = await Profile.load(name)
-#         const response = await axios.get(`https://specs.frictionlessdata.io/schemas/${name}.json`)
-#         expect_equal(profile.jsonschema, response.data)
-#       })
-#     })
-#     
-#   })
-#   
-# })
+# }
