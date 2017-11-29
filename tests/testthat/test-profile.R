@@ -19,18 +19,18 @@ PROFILES = list(
 
 testthat::context("Profile")
 
-# 
-# foreach(name = 1:length(PROFILES) ) %do% {
-#   
-#   test_that(stringr::str_interp('load registry "${PROFILES[[name]]}" profile'), {
-#     
-#     jsonschema = system.file(stringr::str_interp('profiles/${PROFILES[[name]]}.json'), package = "datapackage.r")
-#     
-#     #profile = Profile.load(PROFILES[[name]])
-#     
-#     expect_equal(profile$jsonschema(), jsonschema)
-#   })
-# }
+
+foreach(name = 1:length(PROFILES) ) %do% {
+
+  test_that(stringr::str_interp('load registry "${PROFILES[[name]]}" profile'), {
+
+    jsonschema = as.character(jsonlite::toJSON(jsonlite::fromJSON(system.file(stringr::str_interp('profiles/${PROFILES[[name]]}.json'), package = "datapackage.r"))))
+
+    profile = Profile$new(PROFILES[[name]])
+
+    expect_true(identical(as.character(profile$jsonschema()), jsonschema))
+  })
+}
 
 # test_that('load remote profile', {
 #   url = 'http://example.com/data-package.json'
