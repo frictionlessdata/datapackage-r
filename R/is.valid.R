@@ -21,7 +21,7 @@ is.valid = function(descriptor,schema=NULL)  {
     
   } else {
     #local
-    v = jsonvalidate::json_validator("https://schemas.frictionlessdata.io/data-package.json")
+    v = jsonvalidate::json_validator(schema)
   }
 
   valid=v(descriptor, verbose = TRUE, greedy=TRUE,error=FALSE)

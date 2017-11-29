@@ -16,96 +16,55 @@ Profile <- R6::R6Class(
   # Public
   
   # https://github.com/frictionlessdata/datapackage-js#profile
-  
+  lock_object = FALSE,
+  class = TRUE,
   public = list(
-    
-    initialize = function (profile) {
-      private$profile_ = private$build_(profile)
-
-      },
-    
-    
-    
-    # https://github.com/frictionlessdata/datapackage-js#profile
-    
-    name = function() {
+    initialize=function(profile){
       
-      base.name = basename(private$jsonschema_)
-      file.ext = tools::file_ext(private$jsonschema_)
-      remove.ext = stringr::str_replace(base.name, paste0(".",file.ext),"")
-      private$jsonschema_.title = stringr::str_replace_all(remove.ext,"-"," ")
-      if (is.null(private$jsonschema_.title)) return (NULL)
-      
-      return (tolower(private$jsonschema_.title))
-      
+      private$profile_ = system.file(stringr::str_interp("profiles/${profile}.json"), package = "datapackage.r")
+      if(private$profile_=="") {
+        private$message.error_ = DataPackageError$new(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))
+        private$profile_ = private$message.error_
+        stop(DataPackageError$new(private$profile_))
+      }
+      return(private$profile_)
     },
-    
-    # https://github.com/frictionlessdata/datapackage-js#profile
-    
-    jsonschema = function() {
-      return (private$jsonschema_) # private$jsonschema.contents_
+    name=function(){
+      profile_title = jsonlite::fromJSON(private$profile_)$title
+      private$jsonschema_title = stringr::str_replace_all(profile_title," ","-")
+      
+      if (is.null(private$jsonschema_title)) return (NULL)
+      
+      return (tolower(private$jsonschema_title))
     },
-    jsonschema.contents = function() {
-      return (private$jsonschema.contents_) # private$jsonschema.contents_
+    jsonschema=function(){
+      private$jsonschema_ = jsonlite::toJSON(jsonlite::fromJSON(private$profile_))
+      return(private$jsonschema_)
     },
-    
-    # https://github.com/frictionlessdata/datapackage-js#profile
-    
-    validate = function(descriptor) {
+    validate = function(descriptor){
       
-      errors = list()
+      private$validation_$valid = is.valid(descriptor,private$schema)
       
-      # Basic validation
-      #private$jsonschema_=private$build_(descriptor)
-      validation = validate(descriptor)
-      
-      purrr::map(validation[["errors"]], function() {
+      for (validationError in nrow(attr(private$validation_$valid,"errors"))) {
         
-        push(errors ,stringr::str_interp(
+        private$validation_$errors = append(private$validation_$errors ,stringr::str_interp(
           'Descriptor validation error:
-            ${validationError.message}
-            at "${validationError.dataPath}" in descriptor and
-            at "${validationError.schemaPath}" in profile')
+          "${attr(private$validation_$valid,"errors")$field[validationError]}" in descriptor
+          ${attr(private$validation_$valid,"errors")$message[validationError]}.')
         )
-      })
-      
-      return ( 
-        list( valid = validation$valid,
-              errors = validation$errors
-        )
-      )
-       
-    }
-  ),
-  
-  # Private
-  private = list(
-    jsonschema.contents_ = NULL,
-    jsonschema_ = NULL,
-    profile_ = NULL,
-    jsonschema_.title = NULL,
-    build_ = function(profile) {
-      
-      # Registry
-      
-      if (is.character(profile)) {
-        
-        tryCatch({
-          
-          profile =  system.file(stringr::str_interp("profiles/${profile}.json"), package = "datapackage.r")
-          jsonschema.contents = jsonlite::toJSON(jsonlite::fromJSON(profile))
-        },
-        
-        error= function(e) {
-          DataPackageError$new(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))
-        })
       }
       
-      private$jsonschema_ = profile
-      private$jsonschema.contents_ = jsonschema.contents
-    }
-  )
-)
+      return (private$validation_)
+      
+      }
+  ),
+  private = list(
+    profile_=NULL,
+    jsonschema_=NULL,
+    jsonschema_title = NULL,
+    validation_=list(valid=TRUE,errors=list()),
+    message.error_ = "None"
+  ))
 
 #' Profile.load
 #' @param profile profile
