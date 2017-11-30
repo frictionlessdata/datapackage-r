@@ -5,23 +5,20 @@
 #' @export
 #' 
 locateDescriptor = function (descriptor) {
-  #if (inherits(descriptor, "connection")) {
+
     # Infer from path/url
+    if (is.character(descriptor)){
+      
+    if (dir.exists(unlist(descriptor))) {
+      
+      basePath = dirname(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=T)))
+      
+    } else if (tableschema.r::is.uri(descriptor)) {
+      
+      basePath = dirname(descriptor)
+      
+    }} else basePath = "."
     
-    if (is.character(unlist(jsonlite::fromJSON(descriptor,flatten = T)))) {
-      
-      basePath = unlist(strsplit(unlist(jsonlite::fromJSON(descriptor,flatten = T)), '/')) # OR stringr::str_split , simplify = TRUE
-      basePath = basename(basePath)
-      basePath = if (length(basePath)!=0) utils::tail(basePath, n=1) else getwd() #basePath[-length(basePath)] 
-      basePath = paste("inst/data",basePath, sep = "/")
-      
-      # Current dir by default
-    } else {
-      
-      basePath = stringr::str_c(getwd(),"inst/data", sep = "/")
-      
-    } 
-  #} else basePath = stringr::str_c(getwd(),"inst/data", sep = "/")
   return (basePath)
 }
 
@@ -336,7 +333,7 @@ isUndefined = function(x){
 #' @export
 #' 
 push = function(x, value){
-  x = purrr::prepend(x,value) #append
+  x = append(x,value) #append rlist::list.
   return (x)
 }
 
