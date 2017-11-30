@@ -395,6 +395,19 @@ findFiles = function(pattern,path=getwd()){
 }
 
 
+#' is empty list
+#' @param list list
+#' @rdname is.empty
+#' @return TRUE if list is empty (currently at depth 2)
+#' @export
+#' 
+
+is.empty = function(list){
+  empty = purrr::every( list, function(x){purrr::is_empty(x)} )
+  return(empty)
+}
+
+
 #' Get descriptor path
 #' 
 #' @description Find descriptor path in directory
