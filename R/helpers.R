@@ -366,6 +366,16 @@ is.compressed <- function(x){
   else  message("The input file does not exist in:",getwd() )  
 }
 
+#' is json
+#' @description  Test if an object is json
+#' @param object object to test if json
+#' @rdname is.json
+#' @return TRUE if object is json
+#' @export
+#' 
+is.json = function (object){
+  if (class(object) == "json") return (TRUE) else return(FALSE)
+}
 
 #' findFiles
 #' @param pattern pattern

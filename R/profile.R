@@ -15,7 +15,7 @@ Profile <- R6::R6Class(
   
   # Public
   
-  # https://github.com/frictionlessdata/datapackage-js#profile
+  # https://github.com/frictionlessdata/datapackage-r#profile
   lock_object = FALSE,
   class = TRUE,
   public = list(
@@ -42,15 +42,14 @@ Profile <- R6::R6Class(
       return(private$jsonschema_)
     },
     validate = function(descriptor){
-      
-      private$validation_$valid = is.valid(descriptor,private$schema)
-      
-      for (validationError in nrow(attr(private$validation_$valid,"errors"))) {
-        
+      vld = is.valid(descriptor,private$jsonschema_)
+      private$validation_$valid = vld$valid
+      private$validation_$errors = vld$errors
+      for (validationError in nrow(private$validation_$errors)) {
         private$validation_$errors = append(private$validation_$errors ,stringr::str_interp(
           'Descriptor validation error:
-          "${attr(private$validation_$valid,"errors")$field[validationError]}" in descriptor
-          ${attr(private$validation_$valid,"errors")$message[validationError]}.')
+          "${private$validation_$errors$field[validationError]}" in descriptor
+          ${private$validation_$errors$message[validationError]}.')
         )
       }
       
