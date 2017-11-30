@@ -80,30 +80,31 @@ library(datapackage.r)
 Code examples in this readme requires R 3.3 or higher, You could see even more [examples](https://github.com/okgreece/datapackage-r/tree/master/inst/examples) in examples directory (and vignettes will be soon available). 
 
 ```{r eval=FALSE, include=TRUE}
-datapackage = Package$new()
+datapackage = Package.load2()
 
-descriptor = "{
-  resources: [
+descriptor = '{
+  "resources": [
     {
-      name: 'example',
-      profile: 'tabular-data-resource',
-      data: [
-        ['height', 'age', 'name'],
-        ['180', '18', 'Tony'],
-        ['192', '32', 'Jacob'],
+      "name": "example",
+      "profile": "tabular-data-resource",
+      "data": [
+        ["height", "age", "name"],
+        [180, 18, "Tony"],
+        [192, 32, "Jacob"]
       ],
-      schema:  {
-        fields: [
-          {name: 'height', type: 'integer'},
-          {name: 'age', type: 'integer'},
-          {name: 'name', type: 'string'},
-        ],
+      "schema":  {
+        "fields": [
+          {"name": "height", "type": "integer" },
+          {"name": "age", "type": "integer" },
+          {"name": "name", "type": "string" }
+        ]
       }
     }
   ]
-}"
+}'
 
-dataPackage = Package.load(descriptor)
+dataPackage = Package.load2(descriptor)
+dataPackage$profile()
 #resource = dataPackage$getResource('example')
 #resource$read() # [[180, 18, 'Tony'], [192, 32, 'Jacob']]
 ```
@@ -563,6 +564,7 @@ profile$name() # data-package
 profile$jsonschema() # JSON Schema contents
 
 valid_errors = profile$validate(descriptor)
+valid = valid_errors$valid # TRUE if valid descriptor
 for (error in valid_errors$errors) {
   # inspect Error objects
 }
