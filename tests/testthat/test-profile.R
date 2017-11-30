@@ -26,7 +26,7 @@ foreach(name = 1:length(PROFILES) ) %do% {
 
     jsonschema = as.character(jsonlite::toJSON(jsonlite::fromJSON(system.file(stringr::str_interp('profiles/${PROFILES[[name]]}.json'), package = "datapackage.r"))))
 
-    profile = Profile$new(PROFILES[[name]])
+    profile = Profile.load(PROFILES[[name]])
 
     expect_true(identical(as.character(profile$jsonschema()), jsonschema))
   })
