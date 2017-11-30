@@ -24,11 +24,12 @@ is.valid = function(descriptor,schema=NULL)  {
     v = jsonvalidate::json_validator(schema)
   }
 
-  valid=v(descriptor, verbose = TRUE, greedy=TRUE,error=FALSE)
-  class(valid)="logical"
+  validate=v(descriptor, verbose = TRUE, greedy=TRUE,error=FALSE)
+  class(validate)="logical"
   
   #.print.validator(valid)
-  valid
+  validation=list(valid=as.vector(validate), errors=attr(validate,"errors"))
+  return(validation)
 }
 
 
