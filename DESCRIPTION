@@ -26,6 +26,5 @@ Collate:
     'infer.R'
     'is.valid.R'
     'profile.R'
-    'rebuilding Package class.R'
     'resource.R'
     'validate.R'
