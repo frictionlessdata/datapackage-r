@@ -22,13 +22,53 @@ Resource <- R6::R6Class(
       private$basePath_ = basePath
 
       # Deprecate
-      private$table = private$getTable_()
+      private$table_ = private$getTable_()
       
     },
-    iter = function(relations = FALSE, options = list()) {},
-    read = function(relations = FALSE, options = list()) {},
-    checkRelations = function() {},
-    rawIter = function(stream = FALSE){},
+    
+    iter = function(relations = FALSE, options = list()) {
+      
+      # Error for non tabular
+      if(!isTRUE(self$tabular_)){
+        DataPackageError$new('Methods iter/read are not supported for non tabular data')
+      }
+      
+      # Get relations
+      if (isTRUE(relations)) {
+        relations = private$getRelations_()
+      }
+      
+      return(private$getTable_()$iter(relations, options))
+    },
+    
+    read = function(relations = FALSE, options = list()) {
+      
+      # Error for non tabular
+      if(!isTRUE(self$tabular_)) {
+        DataPackageError$new('Methods iter/read are not supported for non tabular data')
+      }
+      
+      # Get relations
+      if (isTRUE(relations)) {
+        relations = private$getRelations_()
+      }
+      return (private$getTable_()$read(relations, options))
+    },
+    
+    checkRelations = function() {
+      if (isTRUE(!is.null(self$read(relations = TRUE))))
+      return(TRUE)
+    },
+    
+    rawIter = function(stream = FALSE){
+      
+      # Error for inline
+      if (self$inline) {
+        DataPackageError$new('Methods iter/read are not supported for inline data')
+      }
+      
+    },
+    
     rawRead = function() {},
     infer = function() {},
     commit = function (strict) {},
@@ -106,12 +146,91 @@ Resource <- R6::R6Class(
     sourceInspection_ = NULL,
     dataPackage_ = NULL,
     basePath_ = NULL,
-    
-    build_ = function () {},
-    getTable_ = function () {},
-    getRelations_ = function () {},
+    relations_ = NULL,
     # Deprecated
-    table = NULL
+    table_ = NULL,
+
+    build_ = function () {
+      private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
+      private$nextDescriptor_ = private$currentDescriptor_
+      
+      # Inspect source
+      
+      private$sourceInspection_ = inspectSource( private$currentDescriptor_$data,
+                                                 private$currentDescriptor_$path,
+                                                 private$basePath_
+                                                 )
+      
+      # Instantiate profile
+      private$profile_ = Profile.load(private$currentDescriptor_$profile)
+      
+      # Validate descriptor
+      private$errors_ = list()
+      
+      valid_errors = private$profile_$validate(private$currentDescriptor_)
+      
+      if (!isTRUE(valid_errors)) {
+        
+        private$errors_ = valid_errors$errors
+        
+        if (isTRUE(private$strict_)) {
+          
+          message = stringr::str_interp(
+            "There are ${length(valid_errors$errors)} validation errors (see 'error.errors')"
+          )
+          DataPackageError$new(message, valid_errors$errors)
+        }
+      }
+      
+    },
+    getTable_ = function () {
+      
+      if(!isTRUE(private$table_)) {
+        
+        # Resource -> Regular
+        if (!isTRUE(self$tabular_)) {
+          return (NULL)
+        }
+        
+        # Resource -> Multipart
+        if (isTRUE(self$multipart_)) {
+          DataPackageError$new('Resource$table does not support multipart resources')
+        }
+        
+        # Resource -> Tabular
+        options = list()
+        schemaDescriptor = private$currentDescriptor_$schema
+        schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema$new(schemaDescriptor) else NULL
+        private$table_ = tableschema.r::Table$new(schema , options)
+      }
+      return(private$table_)
+      
+    },
+    
+    getRelations_ = function () {
+      if (isTRUE(private$relations_)) {
+        # Prepare resources
+        resources = list()
+        if (isTRUE(!is.null(private$getTable_())) && isTRUE(!is.null((private$getTable_()$schema)))) {
+          for (fk in private$getTable_()$schema$foreignKeys) {
+            resources[fk$reference$resource] = resources[fk$reference$resource]
+            for (field in fk$reference$fields) {
+              push(resources[fk$reference$resource], field)
+            }
+          }
+        }
+        # Fill Relations
+        private$relations_ = list()
+        for (resource in resources) {
+          if(isTRUE(!is.null(resource)) && isTRUE(!is.null(private$dataPackage_)) ) {}
+          private$relations_ [resource] = 
+            if (!is.null(private$relations_ [resource])) private$relations_ [resource] else list()
+          data = if (isTRUE(!is.null(resource))) private$dataPackage_$getResource(resource)
+          if (isTRUE(data$tabular)) private$relations_[resource] = data$read(keyed = TRUE)
+        }
+      }
+      return(private$relations_)
+    }
   )
 )
 
@@ -134,7 +253,7 @@ Resource.load = function (descriptor = list(), basePath=NULL, strict = FALSE) {
   return (Resource$new(descriptor, basePath, strict))
 }
 
-
+# inspect Source
 inspectSource = function (data, path, basePath) {
   
   inspection = list()
