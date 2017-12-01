@@ -94,8 +94,8 @@ Package <- R6::R6Class(
       if (is.logical(strict)) private$strict_ = strict
       else if (identical(private$currentDescriptor_, private$nextDescriptor_)) return (FALSE)
       private$currentDescriptor_ = private$nextDescriptor_
-      # private$currentDescriptor_json = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = F)
-      # private$build_()
+      private$table_=NULL
+      private$build_()
       return (private$strict_)
     },
     
