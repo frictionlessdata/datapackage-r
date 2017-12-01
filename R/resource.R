@@ -29,7 +29,7 @@ Resource <- R6::R6Class(
     iter = function(relations = FALSE, options = list()) {
       
       # Error for non tabular
-      if(!isTRUE(self$tabular_)){
+      if(!isTRUE(self$tabular)){
         DataPackageError$new('Methods iter/read are not supported for non tabular data')
       }
       
@@ -44,7 +44,7 @@ Resource <- R6::R6Class(
     read = function(relations = FALSE, options = list()) {
       
       # Error for non tabular
-      if(!isTRUE(self$tabular_)) {
+      if(!isTRUE(self$tabular)) {
         DataPackageError$new('Methods iter/read are not supported for non tabular data')
       }
       
@@ -67,12 +67,99 @@ Resource <- R6::R6Class(
         DataPackageError$new('Methods iter/read are not supported for inline data')
       }
       
+      byteStream = createByteStream(self$source, self$remote)
+      return (byteStream) #if (stream) byteStream else new S2A(byteStream)
     },
     
-    rawRead = function() {},
-    infer = function() {},
-    commit = function (strict) {},
-    save = function(target) {}
+    rawRead = function() {
+      
+      iterator = self$rawIter(stream = TRUE)
+      count = 0
+      repeat {
+        count = count + 1
+        stream.on =  iterators::nextElem(iterator)
+        if (count == length(iterator) ){
+          break
+        }
+      }
+      
+      return (stream.on)
+    },
+    infer = function() {
+      
+      descriptor = private$currentDescriptor_
+      
+      # Blank -> Stop
+      if (isTRUE(private$sourceInspection_$blank)) return(descriptor)
+      
+      # Name 
+      if (isTRUE(!is.null(descriptor$name))) descriptor$name = private$sourceInspection_$name
+      
+      # Only for inline
+      if (!isTRUE(private$inline_)) {
+        # Format 
+        if (isTRUE(!is.null(descriptor$format))) descriptor$format = private$sourceInspection_$format
+        
+        # Mediatype
+        
+        if (isTRUE(!is.null(descriptor$mediatype))) descriptor$mediatype = stringr::str_interp('text/${descriptor$format}')
+        
+        # Encoding
+        if (isTRUE(descriptor$encoding == config::get("DEFAULT_RESOURCE_ENCODING"))) {
+          iterator = self$rawIter()
+          count = 0
+          repeat {
+            count = count + 1
+            bytes =  iterators::nextElem(iterator)
+            if (count == length(iterator) ){
+              break
+            }
+          }
+          
+          encoding = stringi::stri_enc_detect(bytes)[[1]]$Encoding[1] #Ruchardet::detectEncoding
+          descriptor$encoding = if (encoding == 'ascii') 'utf-8' else encoding
+        }
+        
+        # Schema
+        
+        if (purrr::is_empty(descriptor$schema)) {
+          if (isTRUE(self$tabular)) {
+            descriptor$schema = private$getTable_()$infer() # or $infer
+          }
+        }
+        
+        # Profile
+        if (isTRUE(descriptor$profile == config::get("DEFAULT_RESOURCE_PROFILE"))) {
+          if (isTRUE(self.tabular)) descriptor$profile = 'tabular-data-resource'
+        }
+        
+        # Save descriptor
+        private$currentDescriptor_ = descriptor
+        private$build_() 
+        
+        return(descriptor)
+      }
+    },
+    
+    commit = function (strict) {
+      
+      if (is.logical(strict)) private$strict_ = strict
+      else if (identical(private$currentDescriptor_, private$nextDescriptor_)) return (FALSE)
+      
+      private$currentDescriptor_ = private$nextDescriptor_
+      private$table_=NULL
+      private$build_()
+      
+      return (private$strict_)
+    },
+    
+    save = function(target) {
+      
+      write(private$currentDescriptor_, file = stringr::str_c(target,"package.txt", sep = "/"))
+      save=stringr::str_interp('Package saved at: "${target}"')
+      
+      return (save)
+    }
     
   ),
   
@@ -188,7 +275,7 @@ Resource <- R6::R6Class(
       if(!isTRUE(private$table_)) {
         
         # Resource -> Regular
-        if (!isTRUE(self$tabular_)) {
+        if (!isTRUE(self$tabular)) {
           return (NULL)
         }
         
@@ -319,7 +406,7 @@ inspectSource = function (data, path, basePath) {
 }
 
 
-createByteStream = function (source, remote=NULL) {
+createByteStream = function (source, remote) {
   
   stream=list()
   
