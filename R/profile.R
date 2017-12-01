@@ -29,20 +29,10 @@ Profile <- R6::R6Class(
       }
       return(private$profile_)
     },
-    name=function(){
-      profile_title = jsonlite::fromJSON(private$profile_)$title
-      private$jsonschema_title = stringr::str_replace_all(profile_title," ","-")
-      
-      if (is.null(private$jsonschema_title)) return (NULL)
-      
-      return (tolower(private$jsonschema_title))
-    },
-    jsonschema=function(){
-      private$jsonschema_ = jsonlite::toJSON(jsonlite::fromJSON(private$profile_))
-      return(private$jsonschema_)
-    },
+
     validate = function(descriptor){
-      vld = is.valid(descriptor,private$jsonschema_)
+      if (!is.json(descriptor)|is.character(descriptor)) descriptor2=jsonlite::toJSON(descriptor)
+      vld = is.valid(descriptor2,jsonlite::toJSON(private$jsonschema_))
       private$validation_$valid = vld$valid
       private$validation_$errors = vld$errors
       for (validationError in nrow(private$validation_$errors)) {
@@ -56,6 +46,27 @@ Profile <- R6::R6Class(
       return (private$validation_)
       
       }
+  ),
+  active = list(
+    
+    name=function(){
+      
+      profile_title = jsonlite::fromJSON(private$profile_)$title
+      private$jsonschema_title = stringr::str_replace_all(profile_title," ","-")
+      if (is.null(private$jsonschema_title)) return (NULL)
+      return (tolower(private$jsonschema_title))
+      
+      # profile_title = jsonlite::fromJSON(private$profile_)$title
+      # private$jsonschema_title = stringr::str_replace_all(profile_title," ","-")
+      # if (is.null(private$jsonschema_title)) return (NULL)
+      # return (tolower(private$jsonschema_title))
+    },
+    jsonschema=function(){
+      private$jsonschema_ = jsonlite::fromJSON(private$profile_)
+      # private$jsonschema_ = jsonlite::toJSON(jsonlite::fromJSON(private$profile_))
+      return(private$jsonschema_)
+    }
+    
   ),
   private = list(
     profile_=NULL,
@@ -93,7 +104,6 @@ Profile.load = function (profile) {
       profile = jsonschema
     } else profile = urltools::host_extract(urltools::domain(basename(profile)))$host
   }
-  
   return (Profile$new(profile))
   
 }

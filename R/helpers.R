@@ -30,172 +30,136 @@ locateDescriptor = function (descriptor) {
 #' 
 retrieveDescriptor = function (descriptor) {
   
-  if (isTRUE(jsonlite::validate(descriptor))) {
-    
-    descriptor = descriptor
-    
-  }
+  if (is.json(descriptor)) {
+    descriptor = jsonlite::fromJSON(descriptor)
+    return (descriptor)
+    }
+  if (is.list(descriptor)) {return (descriptor)}
+  
   if (is.character(descriptor)) {
     
-    # Remote
-    if (isTRUE(tableschema.r::is.uri(descriptor))) {
-      
+    # Local / Remote
       tryCatch({
-        
-        response = httr::GET(descriptor)
-        
-        descriptor = httr::content(response, as = 'text')
-        
+        # response = httr::GET(descriptor)
+        # descriptor = httr::content(response, as = 'text')
+        descriptor = jsonlite::fromJSON(descriptor)
+        return(descriptor)
       }, 
       
       error = function(e) {
         
-        message = stringr::str_interp('Can not retrieve remote descriptor "${descriptor}"')
+        message = stringr::str_interp('Can not retrieve/load descriptor "${descriptor}"')
         
         DataPackageError$new(message)
         
     })
-      
-      # Local
-      
-    } else {
-      
-      descriptor = tryCatch({
-        data = descriptor
-        #data = readLines(descriptor,encoding="UTF-8", warn = FALSE)
-        valid = jsonlite::validate(data)
-        
-        if (valid == FALSE) {
-          DataPackageError$new(
-            stringr::str_interp("Can\'t load descriptor at '${descriptor}'"))
-        }
-        else{
-          return(data)
-        }
-        
-      },
-      error = function(cond) {
-        # Choose a return value in case of error
-        DataPackageError$new(
-          stringr::str_interp("Can\'t load descriptor at '${descriptor}': ${cond$message}"))
-        
-      },
-      warning = function(cond) {
-        # Choose a return value in case of error
-        DataPackageError$new(
-          stringr::str_interp("Can\'t load descriptor at '${descriptor}': ${cond$message}"))
-        
-      })
-      
-      
-    }
-    # contents =  jsonlite::toJSON(contents)
-    # contents
-    
-  }
-  
-  DataPackageError$new('Descriptor must be String or Object')
+  } else  DataPackageError$new('Descriptor must be String, JSON or List')
 }
 
-#' Dereference descriptor
-#' @param descriptor descriptor
-#' @param basePath basePath
-#' @rdname dereferencePackageDescriptor
-#' @export
-#' 
+# #' Dereference descriptor
+# #' @param descriptor descriptor
+# #' @param basePath basePath
+# #' @rdname dereferencePackageDescriptor
+# #' @export
+# #' 
 
-dereferencePackageDescriptor = function (descriptor, basePath) {
-  # if (!is.character(descriptor)) descriptor = jsonlite::toJSON(descriptor)
-  # descriptor2 = jsonlite::fromJSON(descriptor)
-  # #descriptor[["resources"]] = purrr::map(descriptor[["resources"]], dereferenceResourceDescriptor, baseDescriptor = descriptor[["resources"]][[2]], basePath = basePath, descriptor = descriptor)
-  # 
-  # 
-  # for (resource in descriptor2[["resources"]]){
-  #   dereferenceResourceDescriptor(descriptor =resource, basePath = basePath, descriptor)}
-  # # for (const [index, resource] of (descriptor.resources || []).entries()) {
-  # #   # TODO: May be we should use Promise.all here
-  # #   descriptor.resources[index] = await dereferenceResourceDescriptor(
-  # #     resource, basePath, descriptor)
-  # # }
-  
-  return (descriptor)
-}
+# dereferencePackageDescriptor = function (descriptor, basePath) {
+#   # if (!is.character(descriptor)) descriptor = jsonlite::toJSON(descriptor)
+#   # descriptor2 = jsonlite::fromJSON(descriptor)
+#   # #descriptor[["resources"]] = purrr::map(descriptor[["resources"]], dereferenceResourceDescriptor, baseDescriptor = descriptor[["resources"]][[2]], basePath = basePath, descriptor = descriptor)
+#   # 
+#   # 
+#   # for (resource in descriptor2[["resources"]]){
+#   #   dereferenceResourceDescriptor(descriptor =resource, basePath = basePath, descriptor)}
+#   # # for (const [index, resource] of (descriptor.resources || []).entries()) {
+#   # #   # TODO: May be we should use Promise.all here
+#   # #   descriptor.resources[index] = await dereferenceResourceDescriptor(
+#   # #     resource, basePath, descriptor)
+#   # # }
+#   
+#   return (descriptor)
+# }
 
-#' Dereference resource descriptor
-#' @param descriptor descriptor
-#' @param basePath basePath
-#' @param baseDescriptor baseDescriptor
-#' @rdname dereferenceResourceDescriptor
-#' @export
-#' 
+# #' Dereference resource descriptor
+# #' @param descriptor descriptor
+# #' @param basePath basePath
+# #' @param baseDescriptor baseDescriptor
+# #' @rdname dereferenceResourceDescriptor
+# #' @export
+# #' 
+# 
 
-
-dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=NULL) {
-  #  #if (is.character(descriptor)) descriptor = jsonlite::fromJSON(descriptor)
-  # if (isUndefined(baseDescriptor)) baseDescriptor = descriptor
-  # PROPERTIES = list('dialect','schema')
-  # 
-  # for (property in PROPERTIES) {
-  #   
-  #   value = purrr::compact(purrr::map(jsonlite::fromJSON(descriptor),property))
-  #   value = jsonlite::toJSON(value)
-  #   # URI -> No
-  #   if (!is.character(value)) {
-  #     # continue
-  #     
-  #     # URI -> Pointer
-  #   } else if (is.character(value)) if(startsWith(value,'#') ) {
-  #     tryCatch({
-  #       descriptor[[property]] = purrr::compact(baseDescriptor, value[[2]] )
-  #     },
-  #     error = function(e) {
-  #       message = stringr::str_interp('Not resolved Pointer URI "${value}" for resource[[${property}]]')
-  #       DataPackageError$new(message)
-  #     })
-  #     
-  #     # URI -> Remote
-  #     # TODO: remote base path also will lead to remote case!
-  #   } else if (isRemotePath(value)) {
-  #     tryCatch({
-  #       response = httr::GET(value)
-  #       descriptor[[property]] = httr::content(response, as = 'text')
-  #     },
-  #     error = function(e) {
-  #       message = stringr::str_interp('Not resolved Remote URI "${value}" for resource[[${property}]]')
-  #       DataPackageError$new(message)
-  #     })
-  #     
-  #     # URI -> Local
-  #   } else {
-  #     # if (config::get("IS_BROWSER")) {
-  #     #   message = 'Local URI dereferencing in browser is not supported'
-  #     #   DataPackageError$new(message)
-  #     # }
-  #     if (!isSafePath(value)) {
-  #       message = stringr::str_interp('Not safe path in Local URI "${value}" for resource[[${property}]]')
-  #       DataPackageError$new(message)
-  #     }
-  #     if (isUndefined(basePath)) {
-  #       message = stringr::str_interp('Local URI "${value}" requires base path for resource[[${property}]]')
-  #       DataPackageError$new(message)
-  #     }
-  #     tryCatch({
-  #       # TODO: support other that Unix OS
-  #       fullPath = paste(basePath, value, sep = '/')
-  #       # TODO: rebase on promisified fs.readFile (async)
-  #       contents = readLines(fullPath, 'utf-8')
-  #       descriptor[[property]] = jsonlite::fromJSON(contents)
-  #     }, 
-  #     error = function(e) {
-  #       message = stringr::str_interp('Not resolved Local URI "${value}" for resource[[${property}]]')
-  #       DataPackageError$new(message)
-  #     })
-  #     
-  #   }
-  # }
-  
-  return (descriptor)
-}
+# dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=NULL) {
+#   #conditions
+#   if (is.json(descriptor)) descriptor = jsonlite::fromJSON(descriptor)
+#   if (is.json(baseDescriptor)) descriptor = jsonlite::fromJSON(descriptor)
+#   if (is.nuexll(baseDescriptor) | !exists("baseDescriptor")) baseDescriptor = descriptor
+#   #set list properties
+#   PROPERTIES = list('dialect','schema')
+#   
+#   # complex loop to simplify later
+#   
+#   for (property in PROPERTIES) {
+# 
+#     value = purrr::compact(purrr::map(jsonlite::fromJSON(descriptor),property))
+#     value = jsonlite::toJSON(value)
+#     # URI -> No
+#     if (!is.character(value)) {
+#       # continue
+# 
+#       # URI -> Pointer
+#     } else if (is.character(value)) if(startsWith(value,'#') ) {
+#       tryCatch({
+#         descriptor[[property]] = purrr::compact(baseDescriptor, value[[2]] )
+#       },
+#       error = function(e) {
+#         message = stringr::str_interp('Not resolved Pointer URI "${value}" for resource[[${property}]]')
+#         DataPackageError$new(message)
+#       })
+# 
+#       # URI -> Remote
+#       # TODO: remote base path also will lead to remote case!
+#     } else if (isRemotePath(value)) {
+#       tryCatch({
+#         response = httr::GET(value)
+#         descriptor[[property]] = httr::content(response, as = 'text')
+#       },
+#       error = function(e) {
+#         message = stringr::str_interp('Not resolved Remote URI "${value}" for resource[[${property}]]')
+#         DataPackageError$new(message)
+#       })
+# 
+#       # URI -> Local
+#     } else {
+#       # if (config::get("IS_BROWSER")) {
+#       #   message = 'Local URI dereferencing in browser is not supported'
+#       #   DataPackageError$new(message)
+#       # }
+#       if (!isSafePath(value)) {
+#         message = stringr::str_interp('Not safe path in Local URI "${value}" for resource[[${property}]]')
+#         DataPackageError$new(message)
+#       }
+#       if (isUndefined(basePath)) {
+#         message = stringr::str_interp('Local URI "${value}" requires base path for resource[[${property}]]')
+#         DataPackageError$new(message)
+#       }
+#       tryCatch({
+#         # TODO: support other that Unix OS
+#         fullPath = paste(basePath, value, sep = '/')
+#         # TODO: rebase on promisified fs.readFile (async)
+#         contents = readLines(fullPath, 'utf-8')
+#         descriptor[[property]] = jsonlite::fromJSON(contents)
+#       },
+#       error = function(e) {
+#         message = stringr::str_interp('Not resolved Local URI "${value}" for resource[[${property}]]')
+#         DataPackageError$new(message)
+#       })
+# 
+#     }
+#   }
+#   
+#   return (descriptor)
+# }
 
 
 
@@ -205,14 +169,15 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=N
 #' @export
 #' 
 expandPackageDescriptor = function (descriptor) {
-  descriptor = jsonlite::fromJSON(descriptor)
-  descriptor[["profile"]] = if (is.null(descriptor[["profile"]]) ) config::get("DEFAULT_DATA_PACKAGE_PROFILE") else descriptor[["profile"]]
+  if (is.json(descriptor) ) descriptor = jsonlite::fromJSON(descriptor)
+  descriptor$profile = if (is.empty(descriptor$profile) ) config::get("DEFAULT_DATA_PACKAGE_PROFILE") else descriptor$profile
   
   # descriptor[["resources"]] = purrr::map(descriptor[["resources"]], expandResourceDescriptor)
-  for (index in ( if (isUndefined(descriptor[["resources"]])) descriptor[["resources"]]=list() else descriptor[["resources"]]) ) {
-    descriptor[["resources"]][index] = expandResourceDescriptor(descriptor[["resources"]][index])
+  for (index in ( if (is.empty(descriptor$resources)) length(list()) else length(descriptor$resources)) ) {
+    descriptor$resources[[index]] = expandResourceDescriptor(descriptor$resources[index])
   }
-  descriptor = jsonlite::toJSON(descriptor)
+  names(descriptor$resources)
+  #descriptor = jsonlite::toJSON(descriptor)
   return (descriptor)
 }
 
@@ -223,27 +188,30 @@ expandPackageDescriptor = function (descriptor) {
 #' 
 expandResourceDescriptor = function (descriptor) {
   
-  descriptor = jsonlite::fromJSON(descriptor)
+  if (is.json(descriptor)) descriptor = jsonlite::fromJSON(descriptor)
+  # set default for profile and encoding
+  descriptor$profile = if (is.empty(descriptor$profile) | !exists("descriptor$profile") ) config::get("DEFAULT_RESOURCE_PROFILE") else descriptor$profile
+  descriptor$encoding = if (is.empty(descriptor$encoding) | !exists("descriptor$encoding") ) config::get("DEFAULT_RESOURCE_ENCODING") else descriptor$encoding
   
-  descriptor[["profile"]] = if (isUndefined(descriptor[["profile"]])) config::get("DEFAULT_RESOURCE_PROFILE") else descriptor[["profile"]]
-  descriptor[["encoding"]] = if (isUndefined(descriptor[["encoding"]])) config::get("DEFAULT_RESOURCE_ENCODING") else descriptor[["encoding"]]
-  if (descriptor[["profile"]] == 'tabular-data-resource') {
+  # tabular-data-resource
+  if (descriptor$profile != 'tabular-data-resource') {
     
     # Schema
-    schema = descriptor[["schema"]]
-    if (schema != "undefined" | !isTRUE(isUndefined(schema)) ) {
-      for (field in ( if (isUndefined(schema[["fields"]])) list() else schema[["fields"]]  ) ) {
-        field$type = if (isUndefined(field$type)) config::get("DEFAULT_FIELD_TYPE") else field$type
-        field$format = if (isUndefined(field$format)) config::get("DEFAULT_FIELD_FORMAT") else field$format
-      }
-      schema[["missingValues"]] = if (isUndefined(schema[["missingValues"]])) config::get("DEFAULT_MISSING_VALUES") else schema[["missingValues"]]
+    #schema = descriptor$schema
+    if ( !is.empty(descriptor$schema) | isTRUE(descriptor$schema != "undefined") ) {
+      
+      #for (field in ( if (is.empty(descriptor$schema$fields)) list() else descriptor$schema$fields) ) {
+      descriptor$schema$field$type = if (is.empty(descriptor$schema$field$type)) config::get("DEFAULT_FIELD_TYPE") else descriptor$schema$field$type
+      descriptor$schema$field$format = if (is.empty(descriptor$schema$field$format)) config::get("DEFAULT_FIELD_FORMAT") else descriptor$schema$field$format
+      #}
+      descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues)) config::get("DEFAULT_MISSING_VALUES") else descriptor$schema$missingValues
     }
     
     # Dialect
-    dialect = descriptor[["dialect"]]
+    #dialect = descriptor$dialect
     
-    if (isUndefined(dialect) | dialect != "undefined") {
-      dialect = config::get("DEFAULT_DIALECT")
+    if (!is.empty(descriptor$dialect) | isTRUE(descriptor$dialect != "undefined") ) {
+      descriptor$dialect = config::get("DEFAULT_DIALECT")
       # for (c(key, value) in config::get("DEFAULT_DIALECT")) {
       #   
       #   if (!dialect.hasOwnProperty(key)) {
@@ -253,7 +221,7 @@ expandResourceDescriptor = function (descriptor) {
       # }
     }
   }
-  descriptor = jsonlite::toJSON(descriptor)
+  
   return (descriptor)
 }
 

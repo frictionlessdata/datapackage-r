@@ -4,7 +4,7 @@
 \alias{Package.load}
 \title{Package.load}
 \usage{
-Package.load(descriptor, basePath = NULL, strict = FALSE)
+Package.load(descriptor = "{}", basePath = NULL, strict = FALSE)
 }
 \arguments{
 \item{descriptor}{descriptor}
