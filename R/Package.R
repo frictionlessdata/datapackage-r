@@ -24,10 +24,37 @@ Package <- R6::R6Class(
       
     },
     
-    resourceNames = function () {
-      return (purrr::compact(lapply(private$resources_, names))) # maybe $resources
-      # if(is.json(private$resources_)|is.character(private$resources_)) private$resources_ = jsonlite::fromJSON(private$resources_)
-      # return (jsonlite::toJSON(purrr::compact(lapply(private$resources_, names)))) # maybe $resources
+    infer = function (pattern = FALSE) {
+      
+      if (isTRUE(pattern)) {
+        
+        # No base path
+        if (is.empty(private$basePath_)) {
+          DataPackageError$new('Base path is required for pattern infer')
+        }
+        
+        # Add resources
+        files = findFiles(pattern, private$basePath_)
+        for (file in files) {
+          self$addResource( list(path = files[file]) )
+        }
+      }
+      
+      # Resources
+      for (index in length(private$resources_)) {
+        descriptor = private$resources_[[index]]$infer()
+        private$currentDescriptor_$resources[[index]] = descriptor
+        private$build_()
+      }
+      # Profile
+      if (isTRUE(private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE"))) {
+        
+        if (length(private$resources)>=1 && isTRUE(purrr::every(private$resources_, function(resource) !is.empty(resource$tabular))) ) {
+          private$currentDescriptor_$profile = 'tabular-data-package'
+          private$build_()
+      }}
+        
+      
     },
     
     getResource = function (name) {
@@ -97,6 +124,11 @@ Package <- R6::R6Class(
       return (private$nextDescriptor_)
     },
     
+    resourceNames = function () {
+      return (purrr::compact(lapply(private$resources_, names))) # maybe $resources
+      # if(is.json(private$resources_)|is.character(private$resources_)) private$resources_ = jsonlite::fromJSON(private$resources_)
+      # return (jsonlite::toJSON(purrr::compact(lapply(private$resources_, names)))) # maybe $resources
+    },
     
     profile = function() {
       if (is.null(private$profile_)) private$profile_ = private$currentDescriptor_$resources$profile 
