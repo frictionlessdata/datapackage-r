@@ -182,7 +182,7 @@ Resource <- R6::R6Class(
       }, # Never use self.descriptor inside self class (!!!)
     
     name = function () {
-      return(currentDescriptor_$name)
+      return(private$currentDescriptor_$name)
       },
     
     inline = function () {
@@ -204,7 +204,7 @@ Resource <- R6::R6Class(
     tabular = function () {
       if (isTRUE(private$currentDescriptor_$profile == 'tabular-data-resource')) return(TRUE)
       if (!isTRUE(private$strict_)) {
-        if(config::get("TABULAR_FORMATS") %in% private$currentDescriptor_$format) return(TRUE)
+        if(isTRUE(private$currentDescriptor_$format %in% config::get("TABULAR_FORMATS"))) return(TRUE)
         if(isTRUE(private$sourceInspection_$tabular)) return(TRUE)
       }
       return(FALSE)
