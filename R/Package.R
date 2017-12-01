@@ -10,139 +10,121 @@
 Package <- R6::R6Class(
   
   "Package",
-  
+  lock_object = FALSE,
+  class = TRUE,
   public=list( 
-    
-    initialize = function (descriptor = "{}", basePath=NULL, pattern=NULL, strict = FALSE ) {
-
-      # Set attributes
-      private$descriptor_=descriptor
+    #strict=FALSE,
+    initialize = function (descriptor = list(), basePath=NULL, pattern=NULL, strict = FALSE, profile = config::get("DEFAULT_DATA_PACKAGE_PROFILE")  ) {
+      
       private$currentDescriptor_ = descriptor
       private$nextDescriptor_ = descriptor
-      private$basePath_ = basePath
+      private$profile_ = profile
       private$strict_ = strict
-      #private$profile_ = NULL
-      private$resources_ = list()
-      private$errors_ = list()
-      private$pattern_ = pattern
-
-    },
-    
-    infer = function (pattern = FALSE) {
+      private$resources_=list()
       
-      # Files
-      if (!isUndefined(pattern)) {
-        
-        # No base path
-        if (is.null(private$basePath_)) {
-          stop(DataPackageError$new('Base path is required for pattern infer'))
-        }
-        
-        # Add resources
-        files = findFiles(pattern, private$basePath_)
-        for (file in files) {
-        self$addResource( list(path = files[file]) )
-        }
-        
-      }
-      
-      # Resources
-      for (index in private$resources_) {
-        descriptor = private$resources_[index]$infer #()
-        private$currentDescriptor_$resources[index] = descriptor
-        private$build_()
-      }
-      
-      # Profile
-      if(!isUndefined(private$nextDescriptor_$profile )){
-      if (private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE") ) {
-        if (length(private$resources)>=1 ){#&& private$resources.every(resouce => resouce.tabular)) {
-          private$currentDescriptor_$profile = 'tabular-data-package'
-          private$build_()
-        }
-      }}
-      
-      return (private$currentDescriptor_)
     },
     
-    commit = function (strict=NULL) {
-      if (is.logical(strict)) private$strict_ = strict
-      else if (identical(private$currentDescriptor_, private$nextDescriptor_)) return (FALSE)
-      private$currentDescriptor_ = private$nextDescriptor_
-      private$currentDescriptor_json = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = F)
-      private$build_()
-      return (TRUE)
-    },
-    
-    
-    save = function(target) {
-      contents = jsonlite::toJSON(private$currentDescriptor_, pretty = TRUE)
-      deferred_ = future::future( function() {
-        base::save(contents, file = target)
-      })
-      return(deferred_)
-    }
-    
-    ),
-  
-  active = list(
-    
-    valid = function () {
-      return (length(private$errors_) == 0 ) #&& purrr::map(private$resources, valid)
-    },
-    
-    errors = function () {
-      # errors = this.errors_
-      # for ( resource in purrr::list_along(private$resources)) {
-      #   if (!isTRUE(valid(resource))) {
-      #     Error = push(errors,(stringr::str_interp('Resource "${private$resources[[resource]][["name"]] || resource}" validation error(s)')) )
-      #     stop(Error)
-      #   }
-      # }
-      return (private$errors_) # Error
-    }, 
-    
-    profile = function () {
-      return (private$profile_)
-    },
-    
-    descriptor = function () {
-      # Never use this.descriptor inside this class (!!!)
-      return (private$nextDescriptor_)
-    },
-    
-    resources = function () {
-      private$build_()
-      return (private$resources_)
-    },
     resourceNames = function () {
-      return (purrr::map(private$resources_, names))
+      return (purrr::compact(lapply(private$resources_, names))) # maybe $resources
+      # if(is.json(private$resources_)|is.character(private$resources_)) private$resources_ = jsonlite::fromJSON(private$resources_)
+      # return (jsonlite::toJSON(purrr::compact(lapply(private$resources_, names)))) # maybe $resources
     },
     
     getResource = function (name) {
-      private$resources_ = jsonlite::fromJSON(private$resources_)
-      return (jsonlite::toJSON(purrr::compact(purrr::map(private$resources_, function (x) { i<-names(x) == name; x[which(i==TRUE)] } ))))
+      return (purrr::compact(purrr::map(private$resources_, function (x) { i<-names(x) == name; x[which(i==TRUE)] } )))
+      # if(is.json(private$resources_)|is.character(private$resources_)) private$resources_ = jsonlite::fromJSON(private$resources_)
+      # return (jsonlite::toJSON(purrr::compact(purrr::map(private$resources_, function (x) { i<-names(x) == name; x[which(i==TRUE)] } ))))
     },
     
     addResource = function (descriptor) {
-      
-      if (isUndefined(private$currentDescriptor_[["resources"]]) ) private$currentDescriptor_[["resources"]] = list()
-      private$currentDescriptor_[["resources"]] = append(private$currentDescriptor_[["resources"]], self$descriptor)
-      self$commit()
-      return (private$resources_[[length(private$resources_) - 1]])
+      if ( is.empty(private$currentDescriptor_[["resources"]]) ) private$currentDescriptor_[["resources"]] = list()
+      private$currentDescriptor_[["resources"]] = push(private$currentDescriptor_[["resources"]], descriptor)
+      private$build_()
+      # descriptor = jsonlite::fromJSON(descriptor)
+      # if ( is.empty(private$currentDescriptor_[["resources"]]) ) private$currentDescriptor_[["resources"]] = list()
+      # private$currentDescriptor_[["resources"]] = push(private$currentDescriptor_[["resources"]], descriptor)
+      # private$build_()
+      return (private$resources_)
     },
     
     removeResource = function (name) {
       resource = self$getResource(name)
-      if (!null(resource)){
-        predicat = names(resource) != name
-        private$currentDescriptor_$resources = purrr::keep(private$currentDescriptor_$resources, predicat)
+      if (!is.empty(resource)|exists(resource)){
+        private$currentDescriptor_$resources = purrr::compact(purrr::map(resource, function (x) { i<-names(x) == name; x[which(i==TRUE)] } ))
         private$build_()
       }
+      # resource = self$getResource(name)
+      # if (is.json(resource)|is.character(resource)) resource = jsonlite::fromJSON(resource)
+      # if (!is.empty(resource)|exists(resource)){
+      #   private$currentDescriptor_$resources = purrr::compact(purrr::map(resource, function (x) { i<-names(x) == name; x[which(i==TRUE)] } ))
+      #   private$build_()
+      # }
       return (resource)
+    },
+    
+    commit = function (strict=FALSE) {
+      
+      if (is.logical(strict)) private$strict_ = strict
+      else if (identical(private$currentDescriptor_, private$nextDescriptor_)) return (FALSE)
+      private$currentDescriptor_ = private$nextDescriptor_
+      # private$currentDescriptor_json = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = F)
+      # private$build_()
+      return (private$strict_)
+    },
+    
+    save = function(target, type = "json") { #add name descriptor
+      
+      # if(type == "zip"){
+      # write.csv(private$currentDescriptor_, file=stringr::str_c(target, "package.txt",sep = "/"))
+      # } 
+      write(private$currentDescriptor_, file = stringr::str_c(target,"package.txt", sep = "/"))
+      save=stringr::str_interp('Package saved at: "${target}"')
+      return (save)
+      
+      # if (!is.json(private$currentDescriptor_)) private$currentDescriptor_ = jsonlite::toJSON(private$currentDescriptor_, pretty = TRUE)
+      # # if(type == "zip"){
+      # # write.csv(private$currentDescriptor_, file=stringr::str_c(target, "package.txt",sep = "/"))
+      # # } 
+      # else write(private$currentDescriptor_, file = stringr::str_c(target,"package.json", sep = "/"))
+      # save=stringr::str_interp('Package saved at: "${target}"')
+      # return (save)
+    }
+  ),
+  
+  active = list(
+    
+    descriptor = function() {
+      return (private$nextDescriptor_)
+    },
+    
+    
+    profile = function() {
+      if (is.null(private$profile_)) private$profile_ = private$currentDescriptor_$resources$profile 
+      return (private$profile_)
+      
+      # if (is.json(private$currentDescriptor_)|is.character(private$currentDescriptor_)) {
+      #   private$profile_ = jsonlite::fromJSON(private$currentDescriptor_)$profile 
+      #   if (is.null(private$profile_)) private$profile_ = jsonlite::fromJSON(private$currentDescriptor_)$resources$profile 
+      # }
+      # return (private$profile_)
+    },
+    
+    valid = function () {
+      return (isTRUE(length(private$errors_) == 0 && unlist(purrr::map(private$resources_, function(x) validate(jsonlite::toJSON(x))$valid)) )) #&& unlist(purrr::map(q, function(x) validate(jsonlite::toJSON(x))$valid))
+      # return (isTRUE(length(private$errors_) == 0 && unlist(purrr::map(private$resources_, function(x) validate(jsonlite::toJSON(x))$valid)) )) #&& unlist(purrr::map(q, function(x) validate(jsonlite::toJSON(x))$valid))
+    },
+    
+    errors = function() {
+      
+    }, 
+    
+    resources = function() {
+      return (private$resources_)
     }
     
-    ),
+    
+    
+  ),
   
   private = list(
     
@@ -157,62 +139,59 @@ Package <- R6::R6Class(
     #     rm(resource.url)
     #   }
     # }
-    # Set attributes
+    
     currentDescriptor_ = NULL,
     nextDescriptor_ = NULL,
-    basePath_ = NULL,
-    strict_ = NULL,
     profile_ = NULL,
-    resources_ = NULL,
-    errors_ = NULL,
-    descriptor_=NULL,
-    pattern_=NULL,
-    currentDescriptor_json = NULL,
-    resources_length= NULL,
-    build_ = function () {
+    strict_ = NULL,
+    errors_ = list(),
+    resources_=NULL,
+    build_ = function() {
       
       # Process descriptor
       
-      #private$currentDescriptor_json = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = TRUE)
-      private$currentDescriptor_ = expandPackageDescriptor(self$descriptor_)
+      ## think of making lists at this point
+      
+      #if (!is.json(private$currentDescriptor_)) private$currentDescriptor_ = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = TRUE)
+      private$currentDescriptor_ = expandPackageDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
       
+      
+      # Instantiate profile
+      private$profile_ = Profile.load(private$currentDescriptor_)$profile
+      
       # Validate descriptor
+      #private$errors_=list()
       
-      private$errors_ = list()
-      
-      valid_errors= private$profile_$validate(this._currentDescriptor)
+      valid_errors= private$profile_$validate(private$currentDescriptor_)
       
       if (!isTRUE(valid_errors$valid)) {
         private$errors_ = valid_errors$errors
         
         if (isTRUE(private$strict_)) {
           message = stringr::str_interp("There are ${length(valid_errors$errors)} validation errors (see 'valid_errors$errors')")
-          stop(DataPackageError$new(message))
+          DataPackageError$new(message)
         }
       }
       
       # Update resources
-      private$resources_length = if (isUndefined(private$currentDescriptor_$resources)) length(list()) else length(private$currentDescriptor_$resources)
-      descriptor = private$currentDescriptor_$resources
-      
+      # list current descriptor
       for (index in private$currentDescriptor_$resources) {
-        resource = private$resources_[index]
+        #private$resources_[index]
         
-        if (isUndefined(resource) || !identical(resource$descriptor[index], private$descriptor$resources[index]) ||
-            (!isUndefined(resource$schema) && length(resource$schema$foreignKeys>1))) {
+        if ( purrr::is_empty(private$resources_[index]) || 
+             !identical(private$resources_[index]$descriptor, private$currentDescriptor_$resources[index]) ||
+             (!purrr::is_empty((private$resources_[index]$schema)) && length(private$resources_[index]$schema$foreignKeys)>1)) {
           
-          private$resources_[index] = Resource$new(descriptor, list(
-            strict = private$strict_, basePath = private$basePath_, dataPackage = self
-          ))
+          private$resources_[index] = Resource.load( private$currentDescriptor_$resources[index],
+                                                     strict = private$strict_, 
+                                                     basePath = private$basePath_, 
+                                                     dataPackage = self)
         }
       }
-      
     }
-    
   )
-  
-  )
+)
 
 #' Package.load
 #' @param descriptor descriptor
@@ -220,30 +199,33 @@ Package <- R6::R6Class(
 #' @param strict strict
 #' @rdname Package.load
 #' @export
-Package.load = function (descriptor, basePath=NULL, strict = FALSE ) {
+
+Package.load = function (descriptor="{}", basePath=NULL, strict = FALSE ) {
   
   # Get base path
   
-  if (isUndefined(basePath)) {
-    basePath = locateDescriptor(descriptor)
+  if (is.null(basePath)) {
+    basePath = "C:/Users/Kleanthis-Okf/Documents/datapackage-r/inst/data" #locateDescriptor(descriptor)
   }
   
   # Process descriptor
-  #descriptor = retrieveDescriptor(descriptor)
+  descriptor = jsonlite::toJSON(jsonlite::fromJSON(descriptor)) #retrieveDescriptor(descriptor)
   #descriptor = dereferencePackageDescriptor(descriptor, basePath)
   
   # Get profile
   
   fromjson = jsonlite::fromJSON(stringr::str_replace_all(descriptor, "[\r\n  ]" , "") )
   
-  map_profile = purrr::map(fromjson,"profile")
+  map_profile = purrr::compact(purrr::map(fromjson,"profile"))
   
-  if (!isUndefined(map_profile) ) {
+  if ( (is.list(map_profile) & !purrr::is_empty(map_profile)) | (is.character(map_profile) & isTRUE(map_profile != "")) ) {
+    
     descriptor.profile = unlist(map_profile)
     profile = Profile.load(descriptor.profile)
+    
   } else profile = Profile.load(config::get("DEFAULT_DATA_PACKAGE_PROFILE") )
   
-  
+  descriptor = jsonlite::fromJSON(descriptor)
   return (Package$new(descriptor, basePath, strict, profile) )
   
 }
