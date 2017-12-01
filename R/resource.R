@@ -24,6 +24,10 @@ Resource <- R6::R6Class(
       # Deprecate
       private$table_ = private$getTable_()
       
+      # Build instance
+      private$build_()
+      
+      
     },
     
     iter = function(relations = FALSE, options = list()) {
@@ -346,27 +350,30 @@ inspectSource = function (data, path, basePath) {
   inspection = list()
   
   # Normalize path
-  if (isTRUE(path) && !is.list(path) ) path = {path} #normalizePath(basePath)
+  if (isTRUE(!is.null(path)) && !is.list(path) ) path = {path} #normalizePath(basePath)
   
   # Blank
-  if (!isTRUE(data) && !isTRUE(path)) {
+  if (isTRUE(is.null(data)) && isTRUE(is.null(path))) {
     inspection$source = NULL
     inspection$blank = TRUE 
     
   # Inline  
-  } else if (isTRUE(data)) {
+  } 
+  if (isTRUE(!is.null(data))) {
     inspection$source = data
     inspection$inline = TRUE
-    inspection$tabular = is.list(data) && purrr::every(data, "is.list")
+    inspection$tabular = is.list(data)# && purrr::every(data, "is.list")
     
   # Local/Remote
-  } else if (length(path) == 1) {
+  } 
+  if (length(path) == 1) {
     
     # Remote
     if (isRemotePath(path[1])) {
       inspection$source = path[1]
       inspection$remote = TRUE
-  } else if (isTRUE(basePath) && isRemotePath(basePath)) {
+  }
+    if (isTRUE(!is.null(basePath)) && isRemotePath(basePath)) {
     inspection$source = stringr::str_c(basePath, path[1], sep = "/")
     inspection$remote = TRUE
     
@@ -377,7 +384,7 @@ inspectSource = function (data, path, basePath) {
       DataPackageError$new('Local path "${path[1]}" is not safe')
     }
     # Not base path
-    if (!isTRUE(basePath)) {
+    if (isTRUE(is.null(basePath))) {
       DataPackageError$new('Local path "${path[1]}" requires base path')
     }
     
@@ -394,7 +401,8 @@ inspectSource = function (data, path, basePath) {
     
     
     # Multipart Local/Remote
-  } else if (length(path) > 1) {
+  } 
+  if (length(path) > 1) {
     inspections = purrr::map(path, function(item) inspectSource(NULL, item, basePath))
     assign(inspection, inspections[1])
     inspection$source = purrr::map(inspections, function(item) item$source)

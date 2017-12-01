@@ -20,14 +20,8 @@ Profile <- R6::R6Class(
   class = TRUE,
   public = list(
     initialize=function(profile){
-      
-      private$profile_ = system.file(stringr::str_interp("profiles/${profile}.json"), package = "datapackage.r")
-      if(private$profile_=="") {
-        private$message.error_ = DataPackageError$new(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))
-        private$profile_ = private$message.error_
-        stop(DataPackageError$new(private$profile_))
-      }
-      return(private$profile_)
+      private$profile_ = profile
+      private$build_()
     },
 
     validate = function(descriptor){
@@ -73,7 +67,16 @@ Profile <- R6::R6Class(
     jsonschema_=NULL,
     jsonschema_title = NULL,
     validation_=list(valid=TRUE,errors=list()),
-    message.error_ = "None"
+    message.error_ = "None",
+    build_ = function() {
+      
+      private$profile_ = system.file(stringr::str_interp("profiles/${private$profile_}.json"), package = "datapackage.r")
+      if(private$profile_ =="" | is.null(private$profile_)) {
+        private$message.error_ = DataPackageError$new(stringr::str_interp("Profiles registry hasn't profile '${private$profile}'"))
+        private$profile_ = private$message.error_
+        DataPackageError$new(private$profile_)
+      }
+    }
   ))
 
 #' Profile.load

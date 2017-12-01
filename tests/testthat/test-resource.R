@@ -12,17 +12,17 @@ testthat::context("Resource #load")
 ########################################################
 
 
-# test_that('works with base descriptor', {
-#   descriptor = '{"name": "name","data": ["data"]}'
-#   #resource = Resource.load(descriptor)
-#   
-#   #expect_equal(resource$name(),'name')
-#   expect_equal(resource$tabular(), TRUE)
-#   # expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
-#   # expect_equal(resource$inline(), TRUE)
-#   # expect_equal(resource$source(), "['data']")
-#   # expect_equal(resource$table(), NULL)
-# })
+test_that('works with base descriptor', {
+  descriptor = jsonlite::fromJSON('{"name": "name","data": ["data"]}')
+  resource = Resource.load(descriptor)
+
+  expect_equal(resource$name,'name')
+  expect_equal(resource$tabular, FALSE)
+  expect_equal(resource$descriptor, expandResourceDescriptor(descriptor))
+  expect_equal(resource$inline, TRUE)
+  expect_equal(resource$source, "data")
+  expect_equal(resource$table, NULL)
+})
 
 # test_that('works with tabular descriptor', {
 #   descriptor = '{"name": "name","data": ["data"],"profile": "tabular-data-resource"}'
