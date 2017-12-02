@@ -41,7 +41,7 @@ retrieveDescriptor = function (descriptor) {
   if (is.character(descriptor)) {
     
     # Remote
-    if(tableschema.r::is.uri(descriptor)){
+    if(isRemotePath(descriptor)){
       tryCatch({
         response = httr::GET(descriptor)
         descriptor = httr::content(response, as = 'text')
