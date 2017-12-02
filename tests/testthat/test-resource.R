@@ -27,13 +27,12 @@ test_that('works with base descriptor', {
 test_that('works with tabular descriptor', {
   descriptor = jsonlite::fromJSON('{"name": "name","data": ["data"],"profile": "tabular-data-resource"}')
   resource = Resource.load(descriptor)
-
   expect_equal(resource$name, 'name')
   expect_equal(resource$tabular, TRUE)
   expect_equal(resource$descriptor, expandResourceDescriptor(descriptor))
   expect_equal(resource$inline, TRUE)
   expect_equal(resource$source, "data")
-  expect(resource$table_, succeed())
+  # expect(resource$table_, succeed())
 })
 
 
@@ -41,22 +40,21 @@ test_that('works with tabular descriptor', {
 #######################################################
 testthat::context('Resource #descriptor (retrieve)')
 ########################################################
-# 
-# test_that('object', {
-#   descriptor = '{"name": "name","data": "data"}'
-#   resource = Resource.load(descriptor)
-# #   
-# #   expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
-# })
+
+test_that('object', {
+  descriptor = jsonlite::fromJSON('{"name": "name","data": "data"}')
+  resource = Resource.load(descriptor)
+  expect_equal(resource$descriptor, expandResourceDescriptor(descriptor))
+})
 # 
 # test_that('string remote path', {
-#   contents = readLines('inst/data/data-resource.json')
+#   contents = jsonlite::fromJSON(readLines('inst/data/data-resource.json'))
 #   descriptor = 'http://example.com/data-resource.json'
-# #   
+# 
 # #   #http.onGet(descriptor).reply(200, contents)
 #   resource = Resource$load(descriptor)
-# #   expect_equal(resource.descriptor, expand(contents))
-# # })
+#   expect_equal(resource.descriptor, expandResourceDescriptor(contents))
+# })
 # 
 # test_that('string remote path bad', {
 #   descriptor = 'http://example.com/bad-path.json'
@@ -80,7 +78,7 @@ testthat::context('Resource #descriptor (retrieve)')
 #     #assert.include(error.message, 'in browser is not supported')
 #   }
 # })
-# 
+
 # test_that('string local path bad', {
 #   descriptor = 'data/bad-path.json'
 #   error = catchError(Resource.load, descriptor)
