@@ -218,25 +218,25 @@ expandResourceDescriptor = function (descriptor) {
     
     # Schema
     #schema = descriptor$schema
-    if ( is.empty(descriptor$resource$schema) | isTRUE(descriptor$resource$schema != "undefined") ) {
+    if ( is.empty(descriptor$schema)| is.null(descriptor$schema) | !isTRUE(descriptor$schema != "undefined") ) {
       
       #for (field in ( if (is.empty(descriptor$schema$fields)) list() else descriptor$schema$fields) ) {
-      descriptor$resource$schema$field$type = if (is.empty(descriptor$resource$schema$field$type)) config::get("DEFAULT_FIELD_TYPE") else descriptor$resource$schema$field$type
-      descriptor$resource$schema$field$format = if (is.empty(descriptor$resource$schema$field$format)) config::get("DEFAULT_FIELD_FORMAT") else descriptor$resource$schema$field$format
+      descriptor$schema$field$type = if (is.empty(descriptor$schema$field$type)) config::get("DEFAULT_FIELD_TYPE") else descriptor$schema$field$type
+      descriptor$schema$field$format = if (is.empty(descriptor$schema$field$format)) config::get("DEFAULT_FIELD_FORMAT") else descriptor$schema$field$format
       #}
-      descriptor$resource$schema$missingValues = if (is.empty(descriptor$resource$schema$missingValues)) config::get("DEFAULT_MISSING_VALUES") else descriptor$resource$schema$missingValues
+      descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues)) config::get("DEFAULT_MISSING_VALUES") else descriptor$schema$missingValues
     }
     
     # Dialect
     #dialect = descriptor$dialect
     
-    if (!is.empty(descriptor$resource$dialects) | isTRUE(descriptor$resource$dialects != "undefined") ) {
-      descriptor$resource$dialects = config::get("DEFAULT_DIALECT")
-      # for (c(key, value) in config::get("DEFAULT_DIALECT")) {
-      #   
-      #   if (!dialect.hasOwnProperty(key)) {
-      #     
-      #     dialect[[key]] = value
+    if (is.empty(descriptor$dialect) | !isTRUE(descriptor$dialect != "undefined") ) {
+      descriptor$dialect = config::get("DEFAULT_DIALECT")
+      # for (key in config::get("DEFAULT_DIALECT")) {
+      # 
+      #   if (!isTRUE(config::get("DEFAULT_DIALECT")[1] %in% descriptor$dialect)) {
+      # 
+      #     descriptor$dialect[[key]] = config::get("DEFAULT_DIALECT")
       #   }
       # }
     }

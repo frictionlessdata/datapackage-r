@@ -336,7 +336,7 @@ Resource <- R6::R6Class(
 Resource.load = function (descriptor = list(), basePath=NULL, strict = FALSE) {
   
   # Get base path
-  if (isUndefined(basePath)) basePath = locateDescriptor(descriptor)
+  if (is.null(basePath)) basePath = locateDescriptor(descriptor)
   
   # Process descriptor
   descriptor = retrieveDescriptor(descriptor)
@@ -351,7 +351,7 @@ inspectSource = function (data, path, basePath) {
   inspection = list()
   
   # Normalize path
-  if (isTRUE(!is.null(path)) && !is.list(path) ) path = {path} #normalizePath(basePath)
+  if (isTRUE(!is.null(path)) && !is.list(path) ) path = as.character(path) #normalizePath(basePath)
   
   # Blank
   if (isTRUE(is.null(data)) && isTRUE(is.null(path))) {
@@ -359,22 +359,19 @@ inspectSource = function (data, path, basePath) {
     inspection$blank = TRUE 
     
   # Inline  
-  }
-  if (isTRUE(!is.null(data))) {
+  } else if (isTRUE(!is.null(data))) {
     inspection$source = data
     inspection$inline = TRUE
     inspection$tabular = is.list(data)# && purrr::every(data, "is.list")
     
   # Local/Remote
-  } 
-  if (length(path) == 1) {
+  } else if (length(path) == 1) {
     
     # Remote
-    if (isRemotePath(path[1])) {
+    if (isTRUE(isRemotePath(path[1]))) {
       inspection$source = path[1]
       inspection$remote = TRUE
-  }
-    if (isTRUE(!is.null(basePath)) && isRemotePath(basePath)) {
+  } else if (isTRUE(!is.null(basePath) && isRemotePath(basePath))) {
     inspection$source = stringr::str_c(basePath, path[1], sep = "/")
     inspection$remote = TRUE
     
@@ -402,8 +399,7 @@ inspectSource = function (data, path, basePath) {
     
     
     # Multipart Local/Remote
-  } 
-  if (length(path) > 1) {
+  } else if (length(path) > 1) {
     inspections = purrr::map(path, function(item) inspectSource(NULL, item, basePath))
     assign(inspection, inspections[1])
     inspection$source = purrr::map(inspections, function(item) item$source)
