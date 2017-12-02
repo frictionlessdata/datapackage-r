@@ -14,6 +14,30 @@ before_install:
 env:
   global:
   - _R_CHECK_FORCE_SUGGESTS_=false
+-brew_packages:		
+ - jsonvalidate		
+ - V8		
+-r_packages:		
+ - config
+ - crul 
+ - curl
+ - covr		
+ - future		
+ - httr		
+ - iterators		
+ - jsonlite		
+ - purrr		
+ - R6		
+ - R.utils		
+ - Rcpp		
+ - RCurl		
+ - readr		
+ - roxygen2		
+ - stringr		
+ - tools
+ - urltools		
+ - utils
+ - webmockr 
 r_github_packages: 
  - okgreece/tableschema.r
  - hadley/devtools
