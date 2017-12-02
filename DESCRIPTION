@@ -11,7 +11,7 @@ Description: A library for working with Data Package (<http://frictionlessdata.i
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: brew, config, curl, future, httr, iterators, jsonlite, jsonvalidate, purrr, R6, R.utils, Rcpp, RCurl, readr, roxygen2, stringr, tableschema.r, tools, urltools, utils, V8, xml2
+Imports: brew, config, curl, future, httr, iterators, jsonlite, jsonvalidate, purrr, R6, R.utils, Rcpp, RCurl, readr, roxygen2, stringr, tools, urltools, utils, V8, xml2
 Remotes: 
     github::okgreece/tableschema.r, 
     github::hadley/devtools, 
