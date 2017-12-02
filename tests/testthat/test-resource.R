@@ -2,18 +2,27 @@ library(datapackage.r)
 library(testthat)
 library(foreach)
 library(stringr)
+library(crul)
+library(webmockr)
 
 # Tests
-testthat::context("Resource")
+testthat::context("Resource:")
 
-
+# # source(load("inst/data"))
+# specs <- dir("inst/data", full.names = TRUE)
+# for (spec in specs) {
+#   suppressMessages(
+#     sys.source(spec)
+#   )
+# }
+#source(specs)
 #######################################################
 testthat::context("Resource #load")
 ########################################################
 
 
 test_that('works with base descriptor', {
-  descriptor = jsonlite::fromJSON('{"name": "name","data": ["data"]}')
+  descriptor=jsonlite::fromJSON('{"name":"name","data":["data"]}')
   resource = Resource.load(descriptor)
 
   expect_equal(resource$name,'name')
@@ -25,7 +34,7 @@ test_that('works with base descriptor', {
 })
 
 test_that('works with tabular descriptor', {
-  descriptor = jsonlite::fromJSON('{"name": "name","data": ["data"],"profile": "tabular-data-resource"}')
+  descriptor=jsonlite::fromJSON('{"name":"name","data":["data"],"profile":"tabular-data-resource"}')
   resource = Resource.load(descriptor)
   expect_equal(resource$name, 'name')
   expect_equal(resource$tabular, TRUE)
@@ -36,26 +45,35 @@ test_that('works with tabular descriptor', {
 })
 
 
-
 #######################################################
 testthat::context('Resource #descriptor (retrieve)')
 ########################################################
 
 test_that('object', {
-  descriptor = jsonlite::fromJSON('{"name": "name","data": "data"}')
+  descriptor=jsonlite::fromJSON('{"name":"name","data":"data"}')
   resource = Resource.load(descriptor)
   expect_equal(resource$descriptor, expandResourceDescriptor(descriptor))
 })
-# 
-# test_that('string remote path', {
-#   contents = jsonlite::fromJSON(readLines('inst/data/data-resource.json'))
-#   descriptor = 'http://example.com/data-resource.json'
-# 
-# #   #http.onGet(descriptor).reply(200, contents)
-#   resource = Resource$load(descriptor)
-#   expect_equal(resource.descriptor, expandResourceDescriptor(contents))
+
+######## Needs exception
+# test_that('string path', {
+#   contents = jsonlite::fromJSON(system.file('data/data-resource.json',package = "datapackage.r"))
+#   descriptor = 'https://httpbin.org/data-resource.json'
+#   
+#   # Mocks
+#   (x = HttpClient$new(url = descriptor))
+#   (res = x$patch(path = "patch",
+#                   encode = "json",
+#                   body = jsonlite::fromJSON('{"name": "name","data": "data"}')
+#   ))
+#   contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
+#   ##
+#   
+#   resource = Resource.load(descriptor)
+#   expect_equal(resource$descriptor, expandResourceDescriptor(contents))
 # })
-# 
+
+
 # test_that('string remote path bad', {
 #   descriptor = 'http://example.com/bad-path.json'
 #  
@@ -66,18 +84,13 @@ test_that('object', {
 #   #assert.include(error.message, 'Can not retrieve remote')
 # })
 # 
-# test_that('string local path', {
-#   contents = require('data/data-resource.json')
-#   descriptor = 'inst/data/data-resource.json'
-#   if (process.env.USER_ENV != 'browser') {
-#     resource = Resource$load(descriptor)
-#     expect_equal(resource.descriptor, expand(contents))
-#   } else {
-#     error = catchError(Resource.load, descriptor)
-#     #assert.instanceOf(error, Error)
-#     #assert.include(error.message, 'in browser is not supported')
-#   }
-# })
+test_that('string local path', {
+  contents = jsonlite::fromJSON(readLines('inst/data/data-resource.json', encoding = "UTF-8", warn = FALSE, skipNul = T))
+  descriptor = 'data/data-resource.json'
+  resource = Resource.load(descriptor)
+  expect_equal(resource$descriptor, expandResourceDescriptor(contents))
+
+})
 
 # test_that('string local path bad', {
 #   descriptor = 'data/bad-path.json'
@@ -89,24 +102,21 @@ test_that('object', {
 #     #assert.include(error.message, 'in browser is not supported')
 #   }
 # })
-# 
-# 
-# 
-# #######################################################
-# testthat::context('Resource #descriptor (dereference)')
-# ########################################################
+
+
+
+#######################################################
+testthat::context('Resource #descriptor (dereference)')
+########################################################
 # test_that('general', {
-#   descriptor = 'data/data-resource-dereference.json'
-#   if (process.env.USER_ENV != 'browser') {
+#   descriptor = jsonlite::fromJSON(readLines('inst/data/data-resource-dereference.json',warn = FALSE))
 #     resource = Resource.load(descriptor)
-#     expect_equal(resource.descriptor, 
-#                  expand('{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}' ))
-#   } else {
-#     error = catchError(Resource.load, descriptor)
-#     #assert.instanceOf(error, Error)
-#     #assert.include(error.message, 'in browser')
-#   }
+#     expect_equal(resource$descriptor,
+#                  expandResourceDescriptor(jsonlite::fromJSON('{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}' )))
+# 
 # })
+# 
+# '{"resources":[{"name":"name1","data":["data"],"schema":"table-schema.json"},{"name":"name2","data":["data"],"dialect":"#/dialects/main"}],"dialects":{"main":{"delimiter":","}}'
 # 
 # test_that('pointer', {
 #   descriptor = '{"name": "name","data": "data","schema": "#/schemas/main","schemas": {"main": {"fields": [{"name": "name"}]}}}'
