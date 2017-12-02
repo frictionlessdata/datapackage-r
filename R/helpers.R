@@ -9,14 +9,14 @@ locateDescriptor = function (descriptor) {
     # Infer from path/url
     if (is.character(descriptor)){
       
-    if (dir.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=T)))
-        | file.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=F)))) {
-      
-      basePath = dirname(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=T)))
+    if ( file.exists(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE))) ) {
+      # dir.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=FALSE))) | 
+      #   file.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=FALSE))) |
+      basePath = dirname(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=TRUE)))
       
     } else if (tableschema.r::is.uri(descriptor)) {
       
-      basePath = dirname(descriptor)
+      basePath = dirname(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=TRUE)))#dirname(descriptor)
       
     } else basePath = ""
     } else basePath = ""
@@ -56,9 +56,9 @@ retrieveDescriptor = function (descriptor) {
         DataPackageError$new(message)
         
       })
-    } else if(file.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=F)))) {
+    } else if( file.exists(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE))) ) {
       tryCatch({
-        descriptor = jsonlite::fromJSON(readLines(descriptor,warn = FALSE))
+        descriptor = jsonlite::fromJSON(readLines(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE)),warn = FALSE))
         return(descriptor)
       }, 
       
