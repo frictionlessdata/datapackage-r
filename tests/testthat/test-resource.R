@@ -8,14 +8,7 @@ library(webmockr)
 # Tests
 testthat::context("Resource")
 
-# # source(load("inst/data"))
-# specs <- dir("inst/data", full.names = TRUE)
-# for (spec in specs) {
-#   suppressMessages(
-#     sys.source(spec)
-#   )
-# }
-#source(specs)
+
 #######################################################
 testthat::context("Resource #load")
 ########################################################
