@@ -2,8 +2,8 @@ library(datapackage.r)
 library(testthat)
 library(foreach)
 library(stringr)
-library(crul)
-library(webmockr)
+# library(crul)
+# library(webmockr)
 
 # Tests
 testthat::context("Resource")
