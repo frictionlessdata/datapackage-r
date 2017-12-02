@@ -11,7 +11,7 @@ Resource <- R6::R6Class(
   "Resource",
   
   public = list(
-    initialize = function (descriptor = list(), basePath, strict = FALSE, dataPackage = list()) {
+    initialize = function (descriptor, basePath, strict = FALSE, dataPackage = list()) {
       # Set attributes
       private$strict_ = strict
       private$errors_ = NULL
@@ -224,7 +224,9 @@ Resource <- R6::R6Class(
     }
     
   ),
+  
   private = list(
+    
     # Set attributes
     strict_ = NULL,
     errors_ = NULL,
@@ -239,6 +241,7 @@ Resource <- R6::R6Class(
     table_ = NULL,
     
     build_ = function () {
+      
       private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
       
@@ -271,6 +274,7 @@ Resource <- R6::R6Class(
       }
       
     },
+    
     getTable_ = function () {
       
       if(!isTRUE(!is.null(private$table_))) {
@@ -355,7 +359,7 @@ inspectSource = function (data, path, basePath) {
     inspection$blank = TRUE 
     
   # Inline  
-  } 
+  }
   if (isTRUE(!is.null(data))) {
     inspection$source = data
     inspection$inline = TRUE

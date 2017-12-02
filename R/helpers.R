@@ -9,7 +9,8 @@ locateDescriptor = function (descriptor) {
     # Infer from path/url
     if (is.character(descriptor)){
       
-    if (dir.exists(unlist(descriptor))) {
+    if (dir.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=T)))
+        | file.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=F)))) {
       
       basePath = dirname(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=T)))
       
@@ -39,21 +40,38 @@ retrieveDescriptor = function (descriptor) {
   
   if (is.character(descriptor)) {
     
-    # Local / Remote
+    # Remote
+    if(tableschema.r::is.uri(descriptor)){
       tryCatch({
-        # response = httr::GET(descriptor)
-        # descriptor = httr::content(response, as = 'text')
+        response = httr::GET(descriptor)
+        descriptor = httr::content(response, as = 'text')
         descriptor = jsonlite::fromJSON(descriptor)
         return(descriptor)
       }, 
       
       error = function(e) {
         
-        message = stringr::str_interp('Can not retrieve/load descriptor "${descriptor}"')
+        message = stringr::str_interp('Can not retrieve remote descriptor "${descriptor}"')
         
         DataPackageError$new(message)
         
-    })
+      })
+    } else if(file.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=F)))) {
+      tryCatch({
+        descriptor = jsonlite::fromJSON(readLines(descriptor,warn = FALSE))
+        return(descriptor)
+      }, 
+      
+      error = function(e) {
+        
+        message = stringr::str_interp('Can not load local descriptor "${descriptor}"')
+        
+        DataPackageError$new(message)
+        
+      })
+    }
+    
+    
   } else  DataPackageError$new('Descriptor must be String, JSON or List')
 }
 
@@ -190,6 +208,7 @@ expandPackageDescriptor = function (descriptor) {
 expandResourceDescriptor = function (descriptor) {
   
   if (is.json(descriptor)) descriptor = jsonlite::fromJSON(descriptor)
+  
   # set default for profile and encoding
   descriptor$profile = if (isTRUE(is.empty(descriptor$profile))) config::get("DEFAULT_RESOURCE_PROFILE") else descriptor$profile
   descriptor$encoding = if (isTRUE(is.empty(descriptor$encoding))) config::get("DEFAULT_RESOURCE_ENCODING") else descriptor$encoding
@@ -199,20 +218,20 @@ expandResourceDescriptor = function (descriptor) {
     
     # Schema
     #schema = descriptor$schema
-    if ( !is.empty(descriptor$schema) | isTRUE(descriptor$schema != "undefined") ) {
+    if ( is.empty(descriptor$resource$schema) | isTRUE(descriptor$resource$schema != "undefined") ) {
       
       #for (field in ( if (is.empty(descriptor$schema$fields)) list() else descriptor$schema$fields) ) {
-      descriptor$schema$field$type = if (is.empty(descriptor$schema$field$type)) config::get("DEFAULT_FIELD_TYPE") else descriptor$schema$field$type
-      descriptor$schema$field$format = if (is.empty(descriptor$schema$field$format)) config::get("DEFAULT_FIELD_FORMAT") else descriptor$schema$field$format
+      descriptor$resource$schema$field$type = if (is.empty(descriptor$resource$schema$field$type)) config::get("DEFAULT_FIELD_TYPE") else descriptor$resource$schema$field$type
+      descriptor$resource$schema$field$format = if (is.empty(descriptor$resource$schema$field$format)) config::get("DEFAULT_FIELD_FORMAT") else descriptor$resource$schema$field$format
       #}
-      descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues)) config::get("DEFAULT_MISSING_VALUES") else descriptor$schema$missingValues
+      descriptor$resource$schema$missingValues = if (is.empty(descriptor$resource$schema$missingValues)) config::get("DEFAULT_MISSING_VALUES") else descriptor$resource$schema$missingValues
     }
     
     # Dialect
     #dialect = descriptor$dialect
     
-    if (!is.empty(descriptor$dialect) | isTRUE(descriptor$dialect != "undefined") ) {
-      descriptor$dialect = config::get("DEFAULT_DIALECT")
+    if (!is.empty(descriptor$resource$dialects) | isTRUE(descriptor$resource$dialects != "undefined") ) {
+      descriptor$resource$dialects = config::get("DEFAULT_DIALECT")
       # for (c(key, value) in config::get("DEFAULT_DIALECT")) {
       #   
       #   if (!dialect.hasOwnProperty(key)) {
