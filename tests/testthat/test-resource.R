@@ -21,20 +21,20 @@ test_that('works with base descriptor', {
   expect_equal(resource$descriptor, expandResourceDescriptor(descriptor))
   expect_equal(resource$inline, TRUE)
   expect_equal(resource$source, "data")
-  expect_equal(resource$table, NULL)
+  expect_null(resource$table)
 })
 
-# test_that('works with tabular descriptor', {
-#   descriptor = '{"name": "name","data": ["data"],"profile": "tabular-data-resource"}'
-#   #resource = Resource.load(descriptor)
-# 
-#   expect_equal(resource$name(), 'name')
-#   #expect_equal(resource$tabular(), TRUE)
-#   # expect_equal(resource$descriptor(), expandResourceDescriptor(descriptor))
-# #   expect_equal(resource$inline(), TRUE)
-# #   expect_equal(resource$source(), "['data']")
-# #   expect(resource$table)
-# })
+test_that('works with tabular descriptor', {
+  descriptor = jsonlite::fromJSON('{"name": "name","data": ["data"],"profile": "tabular-data-resource"}')
+  resource = Resource.load(descriptor)
+
+  expect_equal(resource$name, 'name')
+  expect_equal(resource$tabular, TRUE)
+  expect_equal(resource$descriptor, expandResourceDescriptor(descriptor))
+  expect_equal(resource$inline, TRUE)
+  expect_equal(resource$source, "data")
+  expect(resource$table_, succeed())
+})
 
 
 

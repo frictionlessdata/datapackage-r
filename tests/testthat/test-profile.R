@@ -25,7 +25,7 @@ testthat::context("Profile")
 #   test_that(stringr::str_interp('load registry "${PROFILES[[name]]}" profile'), {
 # 
 #     jsonschema = jsonlite::fromJSON(file.path(system.file(stringr::str_interp('profiles/${PROFILES[[name]]}.json'), package = "datapackage.r")))
-#     
+# 
 #     profile = Profile.load(PROFILES[[name]])
 # 
 #     expect_true(identical(profile$jsonschema, jsonschema))

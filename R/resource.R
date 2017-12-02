@@ -20,9 +20,6 @@ Resource <- R6::R6Class(
       private$currentDescriptor_ = descriptor
       private$dataPackage_ = dataPackage
       private$basePath_ = basePath
-
-      # Deprecate
-      private$table_ = private$getTable_()
       
       # Build instance
       private$build_()
@@ -151,7 +148,7 @@ Resource <- R6::R6Class(
       else if (identical(private$currentDescriptor_, private$nextDescriptor_)) return (FALSE)
       
       private$currentDescriptor_ = private$nextDescriptor_
-      private$table_=NULL
+      private$table_ = NULL
       private$build_()
       
       return (private$strict_)
@@ -171,56 +168,56 @@ Resource <- R6::R6Class(
     
     valid= function () {
       return(isTRUE(length(private$errors_)== 0))
-      },
+    },
     
     errors = function () {
       return(private$errors_)
-      },
+    },
     
     profile = function () {
       return(private$profile_)
-      },
+    },
     
     descriptor = function () {
       return(private$nextDescriptor_)
-      }, # Never use self.descriptor inside self class (!!!)
+    }, # Never use self.descriptor inside self class (!!!)
     
     name = function () {
       return(private$currentDescriptor_$name)
-      },
+    },
     
     inline = function () {
       return(private$sourceInspection_$inline)
-      },
+    },
     
     local = function () {
       return(private$sourceInspection_$local)
-      },
+    },
     
     remote = function () {
       return(private$sourceInspection_$remote)
-      },
+    },
     
     multipart = function () {
       return(private$sourceInspection_$multipart)
-      },
-    
+    },
+
     tabular = function () {
       if (isTRUE(private$currentDescriptor_$profile == 'tabular-data-resource')) return(TRUE)
       if (!isTRUE(private$strict_)) {
         if(isTRUE(private$currentDescriptor_$format %in% config::get("TABULAR_FORMATS"))) return(TRUE)
         if(isTRUE(private$sourceInspection_$tabular)) return(TRUE)
       }
-      return(FALSE)
+      if (!isTRUE(private$currentDescriptor_$profile == 'tabular-data-resource')) return(FALSE)
     },
     
     source = function () {
       return(private$sourceInspection_$source)
-      },
+    },
     
     headers = function () {
       if (!isTRUE(self$tabular)) return(NULL) else return(private$getTable_()$headers)
-      },
+    },
     
     schema = function () {
       if (!isTRUE(self$tabular)) return(NULL) else return(private$getTable_()$schema)
@@ -240,7 +237,7 @@ Resource <- R6::R6Class(
     relations_ = NULL,
     # Deprecated
     table_ = NULL,
-
+    
     build_ = function () {
       private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
@@ -276,7 +273,7 @@ Resource <- R6::R6Class(
     },
     getTable_ = function () {
       
-      if(!isTRUE(private$table_)) {
+      if(!isTRUE(!is.null(private$table_))) {
         
         # Resource -> Regular
         if (!isTRUE(self$tabular)) {

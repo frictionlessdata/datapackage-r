@@ -17,7 +17,8 @@ locateDescriptor = function (descriptor) {
       
       basePath = dirname(descriptor)
       
-    }} else basePath = "."
+    } else basePath = ""
+    } else basePath = ""
     
   return (basePath)
 }
@@ -190,8 +191,8 @@ expandResourceDescriptor = function (descriptor) {
   
   if (is.json(descriptor)) descriptor = jsonlite::fromJSON(descriptor)
   # set default for profile and encoding
-  descriptor$profile = if (is.empty(descriptor$profile) | !exists("descriptor$profile") ) config::get("DEFAULT_RESOURCE_PROFILE") else descriptor$profile
-  descriptor$encoding = if (is.empty(descriptor$encoding) | !exists("descriptor$encoding") ) config::get("DEFAULT_RESOURCE_ENCODING") else descriptor$encoding
+  descriptor$profile = if (isTRUE(is.empty(descriptor$profile))) config::get("DEFAULT_RESOURCE_PROFILE") else descriptor$profile
+  descriptor$encoding = if (isTRUE(is.empty(descriptor$encoding))) config::get("DEFAULT_RESOURCE_ENCODING") else descriptor$encoding
   
   # tabular-data-resource
   if (descriptor$profile != 'tabular-data-resource') {
