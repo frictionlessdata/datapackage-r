@@ -19,7 +19,6 @@ env:
  - V8		
 -r_packages:		
  - config
- - crul 
  - curl
  - covr		
  - future		
@@ -37,7 +36,6 @@ env:
  - tools
  - urltools		
  - utils
- - webmockr 
 r_github_packages: 
  - okgreece/tableschema.r
  - hadley/devtools
