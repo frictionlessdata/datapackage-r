@@ -14,7 +14,9 @@ before_install:
 env:
   global:
   - _R_CHECK_FORCE_SUGGESTS_=false
-
+r_github_packages: 
+ - okgreece/tableschema.r
+ - hadley/devtools
 addons:
   apt:
     packages:
