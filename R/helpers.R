@@ -14,7 +14,7 @@ locateDescriptor = function (descriptor) {
       #   file.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=FALSE))) |
       basePath = dirname(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=TRUE)))
       
-    } else if (tableschema.r::is.uri(descriptor)) {
+    } else if (isRemotePath(descriptor)) {
       
       basePath = dirname(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=TRUE)))#dirname(descriptor)
       
