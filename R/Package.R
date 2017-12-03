@@ -14,7 +14,7 @@ Package <- R6::R6Class(
   class = TRUE,
   public=list( 
     #strict=FALSE,
-    initialize = function (descriptor = list(), basePath=NULL, pattern=NULL, strict = FALSE, profile = config::get("DEFAULT_DATA_PACKAGE_PROFILE")  ) {
+    initialize = function (descriptor = list(), basePath=NULL, pattern=NULL, strict = FALSE, profile = config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml")  ) {
       
       private$currentDescriptor_ = descriptor
       private$nextDescriptor_ = descriptor
@@ -47,7 +47,7 @@ Package <- R6::R6Class(
         private$build_()
       }
       # Profile
-      if (isTRUE(private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE"))) {
+      if (isTRUE(private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml"))) {
         
         if (length(private$resources)>=1 && isTRUE(purrr::every(private$resources_, function(resource) !is.empty(resource$tabular))) ) {
           private$currentDescriptor_$profile = 'tabular-data-package'
@@ -255,7 +255,7 @@ Package.load = function (descriptor="{}", basePath=NULL, strict = FALSE ) {
     descriptor.profile = unlist(map_profile)
     profile = Profile.load(descriptor.profile)
     
-  } else profile = Profile.load(config::get("DEFAULT_DATA_PACKAGE_PROFILE") )
+  } else profile = Profile.load(config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml") )
   
   descriptor = jsonlite::fromJSON(descriptor)
   return (Package$new(descriptor, basePath, strict, profile) )

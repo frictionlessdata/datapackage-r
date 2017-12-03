@@ -196,7 +196,7 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=N
 #' 
 expandPackageDescriptor = function (descriptor) {
   if (is.json(descriptor) ) descriptor = jsonlite::fromJSON(descriptor)
-  descriptor$profile = if (is.empty(descriptor$profile) ) config::get("DEFAULT_DATA_PACKAGE_PROFILE") else descriptor$profile
+  descriptor$profile = if (is.empty(descriptor$profile) ) config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml") else descriptor$profile
   
   # descriptor[["resources"]] = purrr::map(descriptor[["resources"]], expandResourceDescriptor)
   for (index in ( if (is.empty(descriptor$resources)) length(list()) else length(descriptor$resources)) ) {
@@ -217,35 +217,40 @@ expandResourceDescriptor = function (descriptor) {
   if (is.json(descriptor)) descriptor = jsonlite::fromJSON(descriptor)
   
   # set default for profile and encoding
-  descriptor$profile = if (isTRUE(is.empty(descriptor$profile))) config::get("DEFAULT_RESOURCE_PROFILE") else descriptor$profile
-  descriptor$encoding = if (isTRUE(is.empty(descriptor$encoding))) config::get("DEFAULT_RESOURCE_ENCODING") else descriptor$encoding
+  descriptor$profile = if (isTRUE(is.empty(descriptor$profile))) config::get("DEFAULT_RESOURCE_PROFILE",file = "config.yaml") else descriptor$profile
+  descriptor$encoding = if (isTRUE(is.empty(descriptor$encoding))) config::get("DEFAULT_RESOURCE_ENCODING",file = "config.yaml") else descriptor$encoding
   
   # tabular-data-resource
   if (descriptor$profile == 'tabular-data-resource') {
     
     # Schema
     #schema = descriptor$schema
-    if ( is.empty(descriptor$schema)| is.null(descriptor$schema) | !isTRUE(descriptor$schema != "undefined") ) {
+    if ( isTRUE(!is.empty(descriptor$schema)) | isTRUE(!is.null(descriptor$schema)) | isTRUE(!descriptor$schema == "undefined") ) {
       
       #for (field in ( if (is.empty(descriptor$schema$fields)) list() else descriptor$schema$fields) ) {
-      descriptor$schema$fields$type = if (is.empty(descriptor$schema$fields$type)) config::get("DEFAULT_FIELD_TYPE") else descriptor$schema$fields$type
-      descriptor$schema$fields$format = if (is.empty(descriptor$schema$fields$format)) config::get("DEFAULT_FIELD_FORMAT") else descriptor$schema$fields$format
+      descriptor$schema$fields$type = if (is.empty(descriptor$schema$fields$type)) config::get("DEFAULT_FIELD_TYPE",file = "config.yaml") else descriptor$schema$fields$type
+      descriptor$schema$fields$format = if (is.empty(descriptor$schema$fields$format)) config::get("DEFAULT_FIELD_FORMAT",file = "config.yaml") else descriptor$schema$fields$format
       #}
-      descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues)) config::get("DEFAULT_MISSING_VALUES") else descriptor$schema$missingValues
+      descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues)) config::get("DEFAULT_MISSING_VALUES",file = "config.yaml") else descriptor$schema$missingValues
     }
     
     # Dialect
     #dialect = descriptor$dialect
     
-    if (isTRUE(!is.null(descriptor$dialect)) | !isTRUE(descriptor$dialect != "undefined") ) {
-      descriptor$dialect = config::get("DEFAULT_DIALECT")
-      # for (key in config::get("DEFAULT_DIALECT")) {
-      # 
-      #   if (isTRUE(names(config::get("DEFAULT_DIALECT")) %in% names(descriptor$dialect))) {
-      # 
-      #     descriptor$dialect[[key]] = config::get("DEFAULT_DIALECT")
-      #   }
-      # }
+    if (isTRUE(!is.null(descriptor$dialect)) | isTRUE(!descriptor$dialect == "undefined") ) {
+      #descriptor$dialect = config::get("DEFAULT_DIALECT",file = "config.yaml")
+      # descriptor$dialect$lineTerminator="\r\n"
+      # descriptor$dialect$quoteChar="\""
+      # descriptor$dialect$escapeChar="\\"
+      
+      for (key in which(!names(config::get("DEFAULT_DIALECT",file = "config.yaml")) %in% names(descriptor$dialect))) {
+
+       # if (!names(config::get("DEFAULT_DIALECT",file = "config.yaml"))[key] %in% names(descriptor$dialect)) {
+
+          descriptor$dialect[[paste(names(config::get("DEFAULT_DIALECT",file = "config.yaml"))[key]) ]] = config::get("DEFAULT_DIALECT",file = "config.yaml")[key]
+      }
+      descriptor$dialect=lapply(descriptor$dialect, unlist, use.names=FALSE)
+      #}
     }
   }
   

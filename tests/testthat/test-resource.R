@@ -202,65 +202,67 @@ test_that('general resource', {
   expect_equal(resource$descriptor,jsonlite::fromJSON('{"name": "name","data": "data","profile": "data-resource","encoding": "utf-8"}'))
 })
 
-# test_that('tabular resource schema', {
-#   descriptor = jsonlite::fromJSON('{
-#     "name": "name",
-#     "data": "data",
-#     "profile": "tabular-data-resource",
-#     "schema": {
-#       "fields": [{"name": "name"}]
-#     }
-#   }')
-#   resource = Resource.load(descriptor)
-#   target_outcome = jsonlite::fromJSON('{
-#     "name": "name",
-#     "data": "data",
-#     "profile": "tabular-data-resource",
-#     "encoding": "utf-8",
-#     "schema": {
-#       "fields": [{"name": "name", "type": "string", "format": "default"}],
-#       "missingValues": [""]
-#     }
-#   }')
-#   expect_equal(resource$descriptor[sort(names(resource$descriptor))], target_outcome[sort(names(resource$descriptor))])
-# })
+test_that('tabular resource schema', {
+  descriptor = jsonlite::fromJSON('{
+    "name": "name",
+    "data": "data",
+    "profile": "tabular-data-resource",
+    "schema": {
+      "fields": [{"name": "name"}]
+    }
+  }')
+  resource = Resource.load(descriptor)
+  target_outcome = jsonlite::fromJSON('{
+    "name": "name",
+    "data": "data",
+    "profile": "tabular-data-resource",
+    "encoding": "utf-8",
+    "schema": {
+      "fields": [{"name": "name", "type": "string", "format": "default"}],
+      "missingValues": [""]
+    }
+  }')
+  expect_equal(resource$descriptor[sort(names(resource$descriptor))], target_outcome[sort(names(target_outcome))])
+})
 
-# test_that('tabular resource dialect', {
-#   
-#   descriptor = jsonlite::fromJSON('{
-#     "name": "name",
-#     "data": "data",
-#     "profile": "tabular-data-resource",
-#     "dialect": {
-#       "delimiter": "custom"
-#     }
-#   }')
-#   
-#   resource = Resource.load(descriptor)
-#   
-#   target = jsonlite::fromJSON('{
-# 	"name": "name",
-# 	"data": "data",
-# 	"profile": "tabular-data-resource",
-# 	"encoding": "utf-8",
-# 	"dialect": {
-# 		"delimiter": "custom",
-# 		"doubleQuote": "TRUE",
-# 		"lineTerminator": "\\r\\n",
-# 		"quoteChar": "\\"",
-# 		"escapeChar": "\\\\",
-# 		"skipInitialSpace": "TRUE",
-# 		"header": "TRUE",
-# 		"caseSensitiveHeader": "FALSE"
-# 	}
-# }')
-#   expect_equal(resource$descriptor[sort(names(resource$descriptor))], target[sort(names(resource$descriptor))])
-# 
-# })
+test_that('tabular resource dialect', {
+
+  descriptor = jsonlite::fromJSON('{
+    "name": "name",
+    "data": "data",
+    "profile": "tabular-data-resource",
+    "dialect": {
+      "delimiter": "custom"
+    }
+  }')
+
+  resource = Resource.load(descriptor)
+
+  target = jsonlite::fromJSON('{
+	"name": "name",
+	"data": "data",
+	"profile": "tabular-data-resource",
+	"encoding": "utf-8",
+	"dialect": {
+		"delimiter": "custom",
+		"doubleQuote": "TRUE",
+		"lineTerminator": "\\r\\n",
+		"quoteChar": "\\"",
+		"escapeChar": "\\\\",
+		"skipInitialSpace": "TRUE",
+		"header": "TRUE",
+		"caseSensitiveHeader": "FALSE"
+	}
+}')
+  target$dialect$caseSensitiveHeader = FALSE
+  target$dialect$header = TRUE
+  target$dialect$skipInitialSpace = TRUE
+  target$dialect$doubleQuote = TRUE
+  expect_equal(resource$descriptor[sort(names(resource$descriptor))], target[sort(names(resource$descriptor))])
+
+})
 
 
-# 
-# 
 # #######################################################
 testthat::context('Resource #source/sourceType')
 # ########################################################

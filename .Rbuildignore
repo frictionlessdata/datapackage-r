@@ -1,5 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^config\.yaml$
 ^\.travis\.yml$
 ^\.coveralls\.yml$
 ^NEWS\.Rmd$
