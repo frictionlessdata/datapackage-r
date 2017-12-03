@@ -296,6 +296,7 @@ isSafePath = function (path) {
     
     R.utils::isAbsolutePath(path),
     grepl("\\|/", path),
+    grepl('\\.\\.',path),
     #path.includes(`..${pathModule.sep}`),
     startsWith(path, '~'),
     containsWindowsVar(path),

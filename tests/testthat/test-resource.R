@@ -266,7 +266,7 @@ test_that('tabular resource dialect', {
 # #######################################################
 testthat::context('Resource #source/sourceType')
 # ########################################################
-# 
+
 test_that('inline', {
   descriptor = jsonlite::fromJSON('{
   "name": "name",
@@ -289,30 +289,29 @@ test_that('local', {
 })
 
 # test_that('local base no base path', {
-#   
+# 
 #   descriptor = jsonlite::fromJSON('{"name": "name","path": ["table.csv"]}')
 #   err=Resource.load(descriptor, basePath= NULL)
 #   error = catchError(Resource.load(descriptor, basePath= NULL))
-#   assert.instanceOf(error, Error)
-#   assert.include(error.message, 'requires base path')
+#   expect_error(Resource.load(descriptor))
 # }
 # )
  
-# test_that('local bad not safe absolute', {
-#   descriptor = {
-#     name: 'name',
-#     path: ['/fixtures/table.csv'],
-#   }
-#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
-#   assert.instanceOf(error, Error)
-#   assert.include(error.message, 'not safe')
-# })
+test_that('local bad not safe absolute', {
+  descriptor = jsonlite::fromJSON('{
+    "name": "name",
+    "path": ["/fixtures/table.csv"]
+  }')
+  expect_error(Resource.load (descriptor,basePath= 'data'))
+})
 
+######## problem with regular expression for .. in function: isSafePath
 # test_that('local bad not safe traversing', {
-#   descriptor = {
-#     name: 'name',
-#     path: ['../fixtures/table.csv'],
-#   }
+#   descriptor = jsonlite::fromJSON('{
+#     "name": "name",
+#     "path": ["../fixtures/table.csv"]
+#   }')
+#   Resource.load (descriptor,basePath= 'data')
 #   error = catchError(Resource.load, descriptor, {basePath: 'data'})
 #   assert.instanceOf(error, Error)
 #   assert.include(error.message, 'not safe')
@@ -348,17 +347,17 @@ test_that('remote path remote and base path remote', {
   expect_equal(resource$remote, TRUE)
 })
 
-# test_that('multipart local', {
-#   descriptor = jsonlite::fromJSON('{
-#     "name": "name",
-#     "path": ["chunk1.csv", "chunk2.csv"]
-#   }')
-#   resource = Resource.load(descriptor, basePath = 'data')
-#   expect_equal(resource$source, "['data/chunk1.csv', 'data/chunk2.csv']")
-#   expect_equal(resource$local, true)
-#   expect_equal(resource$multipart, TRUE)
-# })
-# 
+test_that('multipart local', {
+  descriptor = jsonlite::fromJSON('{
+    "name": "name",
+    "path": ["chunk1.csv", "chunk2.csv"]
+  }')
+  resource = Resource.load(descriptor, basePath = 'data')
+  expect_equal(resource$source, unlist(jsonlite::fromJSON('["data/chunk1.csv", "data/chunk2.csv"]')))
+  #expect_equal(resource$local, TRUE)
+  expect_equal(resource$multipart, TRUE)
+})
+
 # test_that('multipart local bad no base path', {
 #   descriptor = {
 #     name: 'name',

@@ -12,7 +12,7 @@ testthat::context("helpers")
     list('data/country/data.csv', TRUE),
     list('data\\data.csv', TRUE),
     list('data\\country\\data.csv', TRUE),
-    #list('../data.csv', FALSE),
+    list('../data.csv', FALSE),
     list('~/data.csv', FALSE),
     list('~invalid_user/data.csv', FALSE),
     list('%userprofile%', FALSE),
