@@ -201,71 +201,72 @@ test_that('pointer bad', {
 testthat::context('Resource #descriptor (expand)')
 # ########################################################
 
-# test_that('general resource', {
+test_that('general resource', {
+  descriptor = jsonlite::fromJSON('{
+    "name": "name",
+    "data": "data"
+  }')
+  resource = Resource.load(descriptor)
+  expect_equal(resource$descriptor,jsonlite::fromJSON('{"name": "name","data": "data","profile": "data-resource","encoding": "utf-8"}'))
+})
+
+test_that('tabular resource schema', {
+  descriptor = jsonlite::fromJSON('{
+    "name": "name",
+    "data": "data",
+    "profile": "tabular-data-resource",
+    "schema": {
+      "fields": [{"name": "name"}]
+    }
+  }')
+  resource = Resource.load(descriptor)
+  target_outcome = jsonlite::fromJSON('{
+    "name": "name",
+    "data": "data",
+    "profile": "tabular-data-resource",
+    "encoding": "utf-8",
+    "schema": {
+      "fields": [{"name": "name", "type": "string", "format": "default"}],
+      "missingValues": [""]
+    }
+  }')
+  expect_equal(resource$descriptor[sort(names(resource$descriptor))], target_outcome[sort(names(resource$descriptor))])
+})
+
+# test_that('tabular resource dialect', {
+#   
 #   descriptor = jsonlite::fromJSON('{
 #     "name": "name",
-#     "data": "data"
+#     "data": "data",
+#     "profile": "tabular-data-resource",
+#     "dialect": {
+#       "delimiter": "custom"
+#     }
 #   }')
+#   
 #   resource = Resource.load(descriptor)
-#   expect_equal(resource$descriptor, {
-#     name: 'name',
-#     data: 'data',
-#     profile: 'data-resource',
-#     encoding: 'utf-8',
-#   })
-# })
+#   
+#   target = jsonlite::fromJSON('{
+# 	"name": "name",
+# 	"data": "data",
+# 	"profile": "tabular-data-resource",
+# 	"encoding": "utf-8",
+# 	"dialect": {
+# 		"delimiter": "custom",
+# 		"doubleQuote": "TRUE",
+# 		"lineTerminator": "\\r\\n",
+# 		"quoteChar": "\\"",
+# 		"escapeChar": "\\\\",
+# 		"skipInitialSpace": "TRUE",
+# 		"header": "TRUE",
+# 		"caseSensitiveHeader": "FALSE"
+# 	}
+# }')
+#   expect_equal(resource$descriptor[sort(names(resource$descriptor))], target[sort(names(resource$descriptor))])
 # 
-# test_that('tabular resource schema', {
-#   descriptor = {
-#     name: 'name',
-#     data: 'data',
-#     profile: 'tabular-data-resource',
-#     schema: {
-#       fields: [{name: 'name'}],
-#     },
-#   }
-#   resource = Resource.load(descriptor)
-#   expect_equal(resource.descriptor, {
-#     name: 'name',
-#     data: 'data',
-#     profile: 'tabular-data-resource',
-#     encoding: 'utf-8',
-#     schema: {
-#       fields: [{name: 'name', type: 'string', format: 'default'}],
-#       missingValues: [''],
-#     },
-#   })
 # })
-# 
-# test_that('tabular resource dialect', {
-#   descriptor = {
-#     name: 'name',
-#     data: 'data',
-#     profile: 'tabular-data-resource',
-#     dialect: {
-#       delimiter: 'custom',
-#     },
-#   }
-#   resource = Resource.load(descriptor)
-#   expect_equal(resource.descriptor, {
-#     name: 'name',
-#     data: 'data',
-#     profile: 'tabular-data-resource',
-#     encoding: 'utf-8',
-#     dialect: {
-#       delimiter: 'custom',
-#       doubleQuote: true,
-#       lineTerminator: '\r\n',
-#       quoteChar: '"',
-#       escapeChar: '\\',
-#       skipInitialSpace: true,
-#       header: true,
-#       caseSensitiveHeader: false,
-#     },
-#   })
-# })
-# 
-#  
+
+
 # 
 # 
 # #######################################################

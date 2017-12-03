@@ -223,8 +223,8 @@ expandResourceDescriptor = function (descriptor) {
     if ( is.empty(descriptor$schema)| is.null(descriptor$schema) | !isTRUE(descriptor$schema != "undefined") ) {
       
       #for (field in ( if (is.empty(descriptor$schema$fields)) list() else descriptor$schema$fields) ) {
-      descriptor$schema$field$type = if (is.empty(descriptor$schema$field$type)) config::get("DEFAULT_FIELD_TYPE") else descriptor$schema$field$type
-      descriptor$schema$field$format = if (is.empty(descriptor$schema$field$format)) config::get("DEFAULT_FIELD_FORMAT") else descriptor$schema$field$format
+      descriptor$schema$fields$type = if (is.empty(descriptor$schema$fields$type)) config::get("DEFAULT_FIELD_TYPE") else descriptor$schema$fields$type
+      descriptor$schema$fields$format = if (is.empty(descriptor$schema$fields$format)) config::get("DEFAULT_FIELD_FORMAT") else descriptor$schema$fields$format
       #}
       descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues)) config::get("DEFAULT_MISSING_VALUES") else descriptor$schema$missingValues
     }
@@ -232,11 +232,11 @@ expandResourceDescriptor = function (descriptor) {
     # Dialect
     #dialect = descriptor$dialect
     
-    if (is.empty(descriptor$dialect) | !isTRUE(descriptor$dialect != "undefined") ) {
+    if (isTRUE(!is.null(descriptor$dialect)) | !isTRUE(descriptor$dialect != "undefined") ) {
       descriptor$dialect = config::get("DEFAULT_DIALECT")
       # for (key in config::get("DEFAULT_DIALECT")) {
       # 
-      #   if (!isTRUE(config::get("DEFAULT_DIALECT")[1] %in% descriptor$dialect)) {
+      #   if (isTRUE(names(config::get("DEFAULT_DIALECT")) %in% names(descriptor$dialect))) {
       # 
       #     descriptor$dialect[[key]] = config::get("DEFAULT_DIALECT")
       #   }
