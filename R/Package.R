@@ -232,7 +232,7 @@ Package <- R6::R6Class(
 #' @rdname Package.load
 #' @export
 
-Package.load = function (descriptor="{}", basePath=NULL, strict = FALSE ) {
+Package.load = function (descriptor=list(), basePath=NULL, strict = FALSE ) {
   
   # Get base path
   
