@@ -9,16 +9,21 @@ locateDescriptor = function (descriptor) {
     # Infer from path/url
     if (is.character(descriptor)){
       
-    if ( file.exists(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE))) ) {
+    # if ( file.exists(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE)) ) {
       # dir.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=FALSE))) | 
       #   file.exists(tools::file_path_as_absolute(normalizePath(descriptor,winslash = "\\",mustWork=FALSE))) |
-      basePath = dirname(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=TRUE)))
+      if (isRemotePath(descriptor)) {
+        # basePath = dirname(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=TRUE)))#dirname(descriptor)
+        basePath = dirname(descriptor)
+      } else if (isTRUE(grepl('inst',descriptor))) {
+        basePath = stringr::str_c(dirname(descriptor),sep = '/') 
+        
+      } else if (!isTRUE(grepl('inst',descriptor))) {
+        basePath = stringr::str_c('inst', dirname(descriptor),sep = '/') 
+      }
+      #basePath = dirname(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=TRUE))
+      #else basePath = stringr::str_c('inst', dirname(descriptor),sep = '/')
       
-    } else if (isRemotePath(descriptor)) {
-      
-      basePath = dirname(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=TRUE)))#dirname(descriptor)
-      
-    } else basePath = ""
     } else basePath = ""
     
   return (basePath)
@@ -56,9 +61,9 @@ retrieveDescriptor = function (descriptor) {
         DataPackageError$new(message)$message
         
       })
-    } else if( file.exists(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE))) ) {
+    } else if( file.exists(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE)) ) {
       tryCatch({
-        descriptor = jsonlite::fromJSON(readLines(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE)),warn = FALSE))
+        descriptor = jsonlite::fromJSON(readLines(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE),warn = FALSE))
         return(descriptor)
       }, 
       
@@ -69,10 +74,10 @@ retrieveDescriptor = function (descriptor) {
         DataPackageError$new(message)$message
         
       })
-    }
+    } else  stop(DataPackageError$new('Can not load local descriptor "${descriptor}"')$message)
     
     
-  } else  stop(DataPackageError$new('Descriptor must be String, JSON or List'))
+  } else  stop(DataPackageError$new('Descriptor must be String, JSON or List')$message)
   
 }
 
@@ -158,7 +163,7 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=N
         stop(message$message)
       }
       
-      if (isTRUE( is.null(basePath) | basePath !="")) {
+      if (isTRUE( is.null(basePath) | basePath =="")) {
         message = DataPackageError$new(stringr::str_interp('Local URI "${value}" requires base path for resource[[${property}]]'))
         stop(message$message)
       }

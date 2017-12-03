@@ -2,8 +2,8 @@ library(datapackage.r)
 library(testthat)
 library(foreach)
 library(stringr)
-# library(crul)
-# library(webmockr)
+library(crul)
+library(webmockr)
 
 # Tests
 testthat::context("Resource")
@@ -49,29 +49,29 @@ test_that('object', {
 })
 
 ######## 
-# test_that('string path', {
-#   contents = jsonlite::fromJSON(system.file('data/data-resource.json',package = "datapackage.r"))
-#   descriptor = 'https://httpbin.org/data-resource.json'
-#   
-#   # Mocks
-#   (x = HttpClient$new(url = descriptor))
-#   (res = x$patch(path = "patch",
-#                   encode = "json",
-#                   body = jsonlite::fromJSON('{"name": "name","data": "data"}')
-#   ))
-#   contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
-#   ##
-#   
-#   resource = Resource.load(descriptor)
-#   expect_equal(resource$descriptor, expandResourceDescriptor(contents))
-# })
+test_that('string path', {
+  contents = jsonlite::fromJSON(system.file('data/data-resource.json',package = "datapackage.r"))
+  descriptor = 'https://httpbin.org/data-resource.json'
+
+  # Mocks
+  (x = HttpClient$new(url = descriptor))
+  (res = x$patch(path = "patch",
+                  encode = "json",
+                  body = jsonlite::fromJSON('{"name": "name","data": "data"}')
+  ))
+  contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
+  ##
+  
+  resource = Resource.load(descriptor)
+  
+  # needs extra sorting
+  expect_equal(resource$descriptor[sort(names(resource$descriptor))], 
+               expandResourceDescriptor(contents)[sort(names(resource$descriptor))])
+})
 
 
 test_that('string remote path bad', {
   descriptor = 'http://example.com/bad-path.json'
-  # http.onGet(descriptor).reply(500)
-  # error = Resource.load(descriptor)
-  #assert.instanceOf(error, Error)
   expect_error(Resource.load(descriptor))
 })
 
@@ -85,14 +85,7 @@ test_that('string local path', {
 
 test_that('string local path bad', {
   descriptor = 'data/bad-path.json'
-  #error = Resource.load(descriptor)
-  #error = catchError(Resource.load, descriptor)
-  #assert.instanceOf(error, Error)
-  #if (process.env.USER_ENV != 'browser') {
-    #assert.include(error.message, 'Can not retrieve local')
-  #} else {
     expect_error(Resource.load(descriptor))
-  # }
 })
 
 
@@ -100,6 +93,7 @@ test_that('string local path bad', {
 #######################################################
 testthat::context('Resource #descriptor (dereference)')
 ########################################################
+
 # test_that('general', {
 # descriptor = jsonlite::fromJSON(readLines('inst/data/data-resource-dereference.json',warn = FALSE))
 #   descriptor = 'inst/data/data-resource-dereference.json'
