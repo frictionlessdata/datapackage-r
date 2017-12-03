@@ -100,34 +100,36 @@ test_that('string local path bad', {
 #######################################################
 testthat::context('Resource #descriptor (dereference)')
 ########################################################
-test_that('general', {
-  descriptor = jsonlite::fromJSON(readLines('inst/data/data-resource-dereference.json',warn = FALSE))
-    resource = Resource.load(descriptor)
-    desired_outcome = expandResourceDescriptor(jsonlite::fromJSON('{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'))
-    expect_false(identical(resource$descriptor,desired_outcome ))
-
-})
+# test_that('general', {
+# descriptor = jsonlite::fromJSON(readLines('inst/data/data-resource-dereference.json',warn = FALSE))
+#   descriptor = 'inst/data/data-resource-dereference.json'
+#     resource = Resource.load(descriptor)
+#     desired_outcome = expandResourceDescriptor(jsonlite::fromJSON('{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'))
+#     expect_false(identical(resource$descriptor,desired_outcome ))
+# 
+# })
 
 # '{"resources":[{"name":"name1","data":["data"],"schema":"table-schema.json"},{"name":"name2","data":["data"],"dialect":"#/dialects/main"}],"dialects":{"main":{"delimiter":","}}'
+
+test_that('pointer', {
+  descriptor = jsonlite::fromJSON('{"name": "name","data": "data","schema": "#/schemas/main","schemas": {"main": {"fields": [{"name": "name"}]}}}')
+  resource = Resource.load(descriptor)
+  expect_equal(resource$descriptor,
+               expandResourceDescriptor( jsonlite::fromJSON('{"name":"name","data":"data","schema":{"fields":[{"name":"name"}]},"schemas":{"main":{"fields":[{"name":"name"}]}}}' )))
+})
 # 
-# test_that('pointer', {
-#   descriptor = jsonlite::fromJSON('{"name": "name","data": "data","schema": "#/schemas/main","schemas": {"main": {"fields": [{"name": "name"}]}}}')
-#   resource = Resource.load(descriptor)
-#   expect_equal(resource$descriptor,expandResourceDescriptor( '{"name":"name","data":"data","schema":{"fields":[{"name":"name"}]},"schemas":{"main":{"fields":[{"name":"name"}]}}}' ))
-# })
 # 
-# 
-# test_that('pointer bad', {
-#   descriptor = jsonlite::fromJSON('{"name": "name", "data": "data", "schema": "#/schemas/main"}')
-#   error = Resource.load(descriptor)
-#   assert.instanceOf(error, Error)
-#   expect_error(Resource.load(descriptor), 'Not resolved Pointer URI')
-# })
+test_that('pointer bad', {
+  descriptor = jsonlite::fromJSON('{"name": "name", "data": "data", "schema": "#/schemas/main"}')
+  # error = Resource.load(descriptor)
+  # assert.instanceOf(error, Error)
+  expect_error(Resource.load(descriptor))#, 'Not resolved Pointer URI')
+})
 # 
 # test_that('remote', {
 #   descriptor = {name: 'name', data: 'data', schema: 'http://example.com/schema'}
 #   http.onGet(descriptor.schema).reply(200, {fields: [{name: 'name'}]})
-#   resource = Resource.load(descriptor)
+#   resource = Resoursce.load(descriptor)
 #   expect_equal(resource.descriptor, expand({name: 'name', data: 'data', schema: {fields: [{name: 'name'}]}}))
 # })
 # 
