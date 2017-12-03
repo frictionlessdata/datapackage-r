@@ -22,7 +22,7 @@ DataPackageError <- R6::R6Class(
   
     active = list(
       
-    multiple = function () {
+      multiple = function () {
       if (length(self$error) %in% c(0,1) ) return (FALSE) else return (TRUE)
     },
     

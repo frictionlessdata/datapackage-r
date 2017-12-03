@@ -53,7 +53,7 @@ retrieveDescriptor = function (descriptor) {
         
         message = stringr::str_interp('Can not retrieve remote descriptor "${descriptor}"')
         
-        DataPackageError$new(message)
+        DataPackageError$new(message)$message
         
       })
     } else if( file.exists(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE))) ) {
@@ -66,13 +66,14 @@ retrieveDescriptor = function (descriptor) {
         
         message = stringr::str_interp('Can not load local descriptor "${descriptor}"')
         
-        DataPackageError$new(message)
+        DataPackageError$new(message)$message
         
       })
     }
     
     
   } else  stop(DataPackageError$new('Descriptor must be String, JSON or List'))
+  
 }
 
 # #' Dereference descriptor
@@ -99,14 +100,14 @@ retrieveDescriptor = function (descriptor) {
 #   return (descriptor)
 # }
 
-# #' Dereference resource descriptor
-# #' @param descriptor descriptor
-# #' @param basePath basePath
-# #' @param baseDescriptor baseDescriptor
-# #' @rdname dereferenceResourceDescriptor
-# #' @export
-# #' 
-# 
+#' Dereference resource descriptor
+#' @param descriptor descriptor
+#' @param basePath basePath
+#' @param baseDescriptor baseDescriptor
+#' @rdname dereferenceResourceDescriptor
+#' @export
+#'
+
 
 dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=NULL) {
   #conditions
@@ -114,65 +115,65 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=N
   if (is.json(baseDescriptor)) descriptor = jsonlite::fromJSON(descriptor)
   
   if (is.null(baseDescriptor)| is.empty(baseDescriptor) | !exists("baseDescriptor")) baseDescriptor = descriptor
+  
   #set list properties
   PROPERTIES = list('dialect','schema')
 
-  # complex loop to simplify later
-
+  
   for (property in PROPERTIES) {
 
-    value = descriptor[property]
+    value = descriptor[[property]]
     
     # URI -> No
     if (!is.character(value)) {
       # continue
 
       # URI -> Pointer
-    } else if(startsWith(value,'#') ) {
-      tryCatch({
-        descriptor[[property]] = purrr::compact(baseDescriptor, value[[2]] )
-      },
-      error = function(e) {
-        message = stringr::str_interp('Not resolved Pointer URI "${value}" for resource[[${property}]]')
-        DataPackageError$new(message)
-      })
-
+    } else if(startsWith(unlist(value),'#')) {
+ 
+        descriptor[[property]] = descriptor.pointer(value, descriptor)
+        
+        if (is.null(descriptor[[property]])) {
+          message = DataPackageError$new(stringr::str_interp('Not resolved Pointer URI "${value}" for resource[[${property}]]'))
+          stop(message$message)
+        }
+        
       # URI -> Remote
       # TODO: remote base path also will lead to remote case!
-    } else if (isRemotePath(value)) {
+    } else if (isRemotePath(unlist(value))) {
       tryCatch({
-        response = httr::GET(value)
-        descriptor[[property]] = httr::content(response, as = 'text')
+        # response = httr::GET(value)
+        descriptor[[property]] = jsonlite::fromJSON(value)#httr::content(response, as = 'text')
       },
       error = function(e) {
-        message = stringr::str_interp('Not resolved Remote URI "${value}" for resource[[${property}]]')
-        DataPackageError$new(message)
+        message = DataPackageError$new(stringr::str_interp('Not resolved Remote URI "${value}" for resource[[${property}]]'))
+        stop(message$message)
       })
 
       # URI -> Local
     } else {
-      # if (config::get("IS_BROWSER")) {
-      #   message = 'Local URI dereferencing in browser is not supported'
-      #   DataPackageError$new(message)
-      # }
-      if (!isSafePath(value)) {
-        message = stringr::str_interp('Not safe path in Local URI "${value}" for resource[[${property}]]')
-        DataPackageError$new(message)
+
+      if (!isTRUE(isSafePath(unlist(value)))) {
+        message = DataPackageError$new(stringr::str_interp('Not safe path in Local URI "${value}" for resource[[${property}]]'))
+        stop(message$message)
       }
-      if (isUndefined(basePath)) {
-        message = stringr::str_interp('Local URI "${value}" requires base path for resource[[${property}]]')
-        DataPackageError$new(message)
+      
+      if (isTRUE( is.null(basePath) | basePath !="")) {
+        message = DataPackageError$new(stringr::str_interp('Local URI "${value}" requires base path for resource[[${property}]]'))
+        stop(message$message)
       }
+      
       tryCatch({
         # TODO: support other that Unix OS
-        fullPath = paste(basePath, value, sep = '/')
+        fullPath = stringr::str_c(basePath, value, sep = '/')
         # TODO: rebase on promisified fs.readFile (async)
-        contents = readLines(fullPath, 'utf-8')
-        descriptor[[property]] = jsonlite::fromJSON(contents)
+        descriptor[[property]] = jsonlite::fromJSON(fullPath)
+        # contents = readLines(fullPath, 'utf-8')
+        # descriptor[[property]] = jsonlite::fromJSON(contents)
       },
       error = function(e) {
-        message = stringr::str_interp('Not resolved Local URI "${value}" for resource[[${property}]]')
-        DataPackageError$new(message)
+        message = DataPackageError$new(stringr::str_interp('Not resolved Local URI "${value}" for resource[[${property}]]'))
+        stop(message$message)
       })
 
     }
@@ -215,7 +216,7 @@ expandResourceDescriptor = function (descriptor) {
   descriptor$encoding = if (isTRUE(is.empty(descriptor$encoding))) config::get("DEFAULT_RESOURCE_ENCODING") else descriptor$encoding
   
   # tabular-data-resource
-  if (descriptor$profile != 'tabular-data-resource') {
+  if (descriptor$profile == 'tabular-data-resource') {
     
     # Schema
     #schema = descriptor$schema
@@ -425,6 +426,20 @@ get.descriptor.path = function(directory= "."){
   
 }
 
+#' descriptor pointer
+#' @param value value
+#' @param descriptor descriptor
+#' @rdname descriptor.pointer
+#' @export
+#'
+descriptor.pointer <- function(value,descriptor) {
+  
+  if (startsWith(as.character(value),"#")){  
+    pointer = paste(deparse(substitute(descriptor)),paste(unlist(stringr::str_split(as.character(value),"/"))[-1],collapse="$"),sep="$")
+    value =  eval(parse(text=pointer))
+}
+return(value)
+}
 # #' Catch Error
 # #' @param expr expr 
 # #' @rdname catchError

@@ -341,7 +341,7 @@ Resource.load = function (descriptor = list(), basePath=NULL, strict = FALSE) {
   
   # Process descriptor
   descriptor = retrieveDescriptor(descriptor)
-  #descriptor = dereferenceResourceDescriptor(descriptor, basePath)
+  descriptor = dereferenceResourceDescriptor(descriptor, basePath)
   
   return (Resource$new(descriptor, basePath, strict))
 }
