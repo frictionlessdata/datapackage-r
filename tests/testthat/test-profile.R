@@ -17,65 +17,68 @@ PROFILES = list(
 
 # Tests
 
+########################################
 testthat::context("Profile")
+########################################
 
+foreach(name = 1:length(PROFILES) ) %do% {
 
-# foreach(name = 1:length(PROFILES) ) %do% {
-# 
-#   test_that(stringr::str_interp('load registry "${PROFILES[[name]]}" profile'), {
-# 
-#     jsonschema = jsonlite::fromJSON(file.path(system.file(stringr::str_interp('profiles/${PROFILES[[name]]}.json'), package = "datapackage.r")))
-# 
-#     profile = Profile.load(PROFILES[[name]])
-# 
-#     expect_true(identical(profile$jsonschema, jsonschema))
-#   })
-# }
+  test_that(stringr::str_interp('load registry "${PROFILES[[name]]}" profile'), {
 
-# test_that('load remote profile', {
-#   url = 'http://example.com/data-package.json'
-#   jsonschema = system.file('profiles/data-package.json', package = "datapackage.r")
-#   #httr::GET(url)$status_code #200
-#   #profile = Profile.load(url)
-#   expect_equal(profile$name, 'data package')
-#   expect_equal(profile$jsonschema, jsonschema)
-# })
-# 
+    jsonschema = jsonlite::fromJSON(stringr::str_interp('inst/profiles/${PROFILES[[name]]}.json'))
+
+    profile = Profile.load(PROFILES[[name]])
+
+    expect_true(identical(profile$jsonschema, jsonschema))
+  })
+}
+
+test_that('load remote profile', {
+  url = 'http://example.com/data-package.json'
+  jsonschema = jsonlite::fromJSON('inst/profiles/data-package.json')
+
+  profile = Profile.load(url)
+  expect_equal(profile$name, 'data-package')
+  expect_equal(profile$jsonschema, jsonschema)
+})
+
 # test_that('throw loading bad registry profile', {
 #   name = 'bad-data-package'
-#   # expect_error(Profile$load(name))
+#   expect_error(Profile.load(name))
 # })
-# 
-# 
-# 
+
+
+
 # test_that('throw loading bad remote profile', {
 #   name = 'http://example.com/profile.json'
-#   #http.onGet(name).reply(400)
-#   # expect_error(Profile$load(name))
+  #http.onGet(name).reply(400)
+  # expect_error(Profile$load(name))
 # })
+
+
+########################################
+testthat::context('Profile #validate')
+########################################
+
+test_that('returns true for valid descriptor', {
+  descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
+  profile = Profile.load('data-package')
+  expect_true(profile$validate(descriptor)$valid)
+})
+
+# test_that('errors for invalid descriptor', {
+#   descriptor = "{}"
+#   profile = Profile.load('data-package')
+#   valid_errors = profile$validate(descriptor)
 # 
-# 
-# ##
-# testthat::context('Profile #validate')
-# 
-# test_that('returns true for valid descriptor', {
-#   descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
-#   #profile = Profile.load('data-package')
-#   #expect_true(profile$validate(descriptor)$valid)
+#   expect_error(valid_errors$)
+#   expect_equal_to_reference(valid_errors$errors[1], "Error")
 # })
-# 
-# # test_that('errors for invalid descriptor', {
-# #   descriptor = "{}"
-# #   profile = Profile.load('data-package')
-# #   valid_errors = profile$validate(descriptor)
-# #   
-# #   expect_error(valid_errors.valid)
-# #   expect_equal_to_reference(valid_errors$errors[1], "Error")
-# # })
-# 
-# ##
+# # 
+############################################
 # testthat::context('Profile #up-to-date')
-# 
+############################################
+
 # # foreach(name = 1:length(PROFILES) ) %do% {
 # #   test_that(stringr::str_interp('profile ${PROFILES[[name]]} should be up-to-date'), {
 # #     # if (process.env.USER_ENV == 'browser') this.skip()

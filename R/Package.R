@@ -237,27 +237,29 @@ Package.load = function (descriptor="{}", basePath=NULL, strict = FALSE ) {
   # Get base path
   
   if (is.null(basePath)) {
-    basePath = "C:/Users/Kleanthis-Okf/Documents/datapackage-r/inst/data" #locateDescriptor(descriptor)
+    basePath = locateDescriptor(descriptor)
   }
   
   # Process descriptor
-  descriptor = jsonlite::toJSON(jsonlite::fromJSON(descriptor)) #retrieveDescriptor(descriptor)
-  #descriptor = dereferencePackageDescriptor(descriptor, basePath)
+  descriptor = retrieveDescriptor(descriptor)
+  descriptor = dereferencePackageDescriptor(descriptor, basePath)
   
   # Get profile
   
-  fromjson = jsonlite::fromJSON(stringr::str_replace_all(descriptor, "[\r\n  ]" , "") )
-  
-  map_profile = purrr::compact(purrr::map(fromjson,"profile"))
-  
-  if ( (is.list(map_profile) & !purrr::is_empty(map_profile)) | (is.character(map_profile) & isTRUE(map_profile != "")) ) {
+  # fromjson = jsonlite::fromJSON(stringr::str_replace_all(descriptor, "[\r\n  ]" , "") )
+  # 
+  # map_profile = purrr::compact(purrr::map(fromjson,"profile"))
+  # 
+  # if ( (is.list(map_profile) & !purrr::is_empty(map_profile)) | (is.character(map_profile) & isTRUE(map_profile != "")) ) {
+  #   
+  #   descriptor.profile = unlist(map_profile)
+    # profile = Profile.load(descriptor.profile)
     
-    descriptor.profile = unlist(map_profile)
+  # } else 
+    descriptor.profile = if (is.null(descriptor$profile)) config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml") else descriptor$profile
     profile = Profile.load(descriptor.profile)
     
-  } else profile = Profile.load(config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml") )
-  
-  descriptor = jsonlite::fromJSON(descriptor)
+  # descriptor = jsonlite::fromJSON(descriptor)
   return (Package$new(descriptor, basePath, strict, profile) )
   
 }

@@ -10,11 +10,11 @@ testthat::context("Package")
 ###################################
 testthat::context("Package #load")
 ###################################
-# 
+
 # test_that('initializes with Object descriptor', {
-#   descriptor = system.file('data/dp1/datapackage.json', package = "datapackage.r")
+#   descriptor = 'inst/data/dp1/datapackage.json'
 #   dataPackage = Package.load(descriptor, basePath= 'data/dp1')
-# #  expect_equal(dataPackage$descriptor(), expandPackageDescriptor(descriptor))
+#  expect_equal(dataPackage$descriptor, expandPackageDescriptor(jsonlite::fromJSON(descriptor)))
 # })
 # 
 # test_that('initializes with URL descriptor', {

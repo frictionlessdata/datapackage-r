@@ -61,7 +61,7 @@ retrieveDescriptor = function (descriptor) {
         DataPackageError$new(message)$message
         
       })
-    } else if( file.exists(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE)) ) {
+    } else if( is.local.descriptor.path(descriptor) ) {
       tryCatch({
         descriptor = jsonlite::fromJSON(readLines(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE),warn = FALSE))
         return(descriptor)
@@ -81,29 +81,29 @@ retrieveDescriptor = function (descriptor) {
   
 }
 
-# #' Dereference descriptor
-# #' @param descriptor descriptor
-# #' @param basePath basePath
-# #' @rdname dereferencePackageDescriptor
-# #' @export
-# #' 
+#' Dereference descriptor
+#' @param descriptor descriptor
+#' @param basePath basePath
+#' @rdname dereferencePackageDescriptor
+#' @export
+#'
 
-# dereferencePackageDescriptor = function (descriptor, basePath) {
-#   # if (!is.character(descriptor)) descriptor = jsonlite::toJSON(descriptor)
-#   # descriptor2 = jsonlite::fromJSON(descriptor)
-#   # #descriptor[["resources"]] = purrr::map(descriptor[["resources"]], dereferenceResourceDescriptor, baseDescriptor = descriptor[["resources"]][[2]], basePath = basePath, descriptor = descriptor)
-#   # 
-#   # 
-#   # for (resource in descriptor2[["resources"]]){
-#   #   dereferenceResourceDescriptor(descriptor =resource, basePath = basePath, descriptor)}
-#   # # for (const [index, resource] of (descriptor.resources || []).entries()) {
-#   # #   # TODO: May be we should use Promise.all here
-#   # #   descriptor.resources[index] = await dereferenceResourceDescriptor(
-#   # #     resource, basePath, descriptor)
-#   # # }
-#   
-#   return (descriptor)
-# }
+dereferencePackageDescriptor = function (descriptor, basePath) {
+  # if (!is.character(descriptor)) descriptor = jsonlite::toJSON(descriptor)
+  # descriptor2 = jsonlite::fromJSON(descriptor)
+  # #descriptor[["resources"]] = purrr::map(descriptor[["resources"]], dereferenceResourceDescriptor, baseDescriptor = descriptor[["resources"]][[2]], basePath = basePath, descriptor = descriptor)
+  #
+  #
+  # for (resource in descriptor2[["resources"]]){
+  #   dereferenceResourceDescriptor(descriptor =resource, basePath = basePath, descriptor)}
+  # # for (const [index, resource] of (descriptor.resources || []).entries()) {
+  # #   # TODO: May be we should use Promise.all here
+  # #   descriptor.resources[index] = await dereferenceResourceDescriptor(
+  # #     resource, basePath, descriptor)
+  # # }
+
+  return (descriptor)
+}
 
 #' Dereference resource descriptor
 #' @param descriptor descriptor
@@ -273,7 +273,8 @@ expandResourceDescriptor = function (descriptor) {
 isRemotePath = function (path) {
   
   #if (!is.character(path)) FALSE else 
-  startsWith("http", unlist(strsplit(path,":")))[1] #startsWith("http", path) #message("Path should be character")
+  isTRUE( startsWith("http", unlist(strsplit(path,":")))[1] |
+            startsWith("https", unlist(strsplit(path,":")))[1] )
 }
 
 #' Is safe path
@@ -406,35 +407,26 @@ is.empty = function(list){
 }
 
 
-#' Get descriptor path
+#' Is Local Descriptor Path
 #' 
-#' @description Find descriptor path in directory
-#' 
-#' @usage get.descriptor.path(directory= ".")
-#' 
+#' @param descriptor descriptor
 #' @param directory A character vector of full path name. The default corresponds to the working directory specified by \code{\link[base]{getwd}}
 #' 
-#' @rdname get.descriptor.path
+#' @rdname is.local.descriptor.path
 #' 
 #' @export
 #' 
 
-get.descriptor.path = function(directory= "."){
+is.local.descriptor.path = function(descriptor, directory= "."){
+
+  #descriptor.path=path.expand(paste0(basePath,"/datapackage.json"))
   
-  # datapackage.json(descriptor) exists?
+  isTRUE(any( descriptor %in% list.files(path = directory, recursive = TRUE) | 
+                grep(descriptor , list.files(path = directory, recursive = TRUE)) | 
+                file.exists(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE)) ))
   
-  files=list.files(path = directory, recursive = FALSE)
-  
-  exist=grepl("datapackage.json", files, fixed = FALSE, ignore.case = FALSE)
-  
-  if (any(exist)==TRUE){
-    
-    descriptor.path=path.expand(paste0(getwd(),"/datapackage.json"))
-    
-    descriptor.path
-    
-  } else message("Descriptor file (datapackage.json) does not exists.")
-  
+  ## Future to test in other folders and include
+  # if grep(basename(descriptor) , list.files(path = directory, recursive = TRUE))
 }
 
 #' descriptor pointer

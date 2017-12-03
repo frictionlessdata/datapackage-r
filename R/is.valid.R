@@ -28,7 +28,7 @@ is.valid = function(descriptor,schema=NULL)  {
   class(validate)="logical"
   
   #.print.validator(valid)
-  validation=list(valid=as.vector(validate), errors=attr(validate,"errors"))
+  validation=list(valid=validate, errors=attr(validate,"errors"))
   return(validation)
 }
 

@@ -60,6 +60,7 @@ test_that('string path', {
                   body = jsonlite::fromJSON('{"name": "name","data": "data"}')
   ))
   contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
+  descriptor=contents
   ##
   
   resource = Resource.load(descriptor)
@@ -76,7 +77,7 @@ test_that('string remote path bad', {
 })
 
 test_that('string local path', {
-  contents = jsonlite::fromJSON(readLines('inst/data/data-resource.json', encoding = "UTF-8", warn = FALSE, skipNul = T))
+  contents = jsonlite::fromJSON('inst/data/data-resource.json')
   descriptor = 'data/data-resource.json'
   resource = Resource.load(descriptor)
   expect_equal(resource$descriptor, expandResourceDescriptor(contents))
@@ -346,7 +347,7 @@ test_that('multipart local', {
 #     "name": "name",
 #     "path": ["chunk1.csv", "chunk2.csv"]
 #   }')
-#   expect_error(Resource.load(descriptor,basePath= ""))
+#   expect_error(Resource.load(descriptor,basePath= NULL))
 # })
 
 test_that('multipart local bad not safe absolute', {
@@ -422,7 +423,7 @@ test_that('multipart remote path remote and base path remote', {
 # #######################################################
 # testthat::context('Resource #table')
 # ########################################################
-# # 
+
 # test_that('general resource', {
 #   descriptor = jsonlite::fromJSON('{
 #     "name": "name",
@@ -449,14 +450,15 @@ test_that('multipart remote path remote and base path remote', {
 #         ]
 #     }
 #   }')
+#   
 #   resource = Resource.load(descriptor)
-#   assert.instanceOf(resource$table, Table)
-#   expect_equal(resource$table$read(), [
-#     [180, 18, 'Tony'],
-#     [192, 32, 'Jacob'],
-#     ])
+#   
+#   #assert.instanceOf(resource$table, Table)
+#   
+#   expect_equal(resource$read(),
+#                jsonlite::fromJSON('[[180, 18, "Tony"], [192, 32, "Jacob"]]'))
 # })
-# 
+
 # test_that('tabular resource local', {
 #   #/ Skip test for browser
 #   if (process.env.USER_ENV === 'browser') {
