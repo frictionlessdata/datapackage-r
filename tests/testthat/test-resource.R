@@ -305,17 +305,13 @@ test_that('local bad not safe absolute', {
   expect_error(Resource.load (descriptor,basePath= 'data'))
 })
 
-######## problem with regular expression for .. in function: isSafePath
-# test_that('local bad not safe traversing', {
-#   descriptor = jsonlite::fromJSON('{
-#     "name": "name",
-#     "path": ["../fixtures/table.csv"]
-#   }')
-#   Resource.load (descriptor,basePath= 'data')
-#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
-#   assert.instanceOf(error, Error)
-#   assert.include(error.message, 'not safe')
-# })
+test_that('local bad not safe traversing', {
+  descriptor = jsonlite::fromJSON('{
+    "name": "name",
+    "path": ["../fixtures/table.csv"]
+  }')
+  expect_error(Resource.load (descriptor,basePath= 'data'))
+})
 
 test_that('remote', {
   descriptor = jsonlite::fromJSON('{
