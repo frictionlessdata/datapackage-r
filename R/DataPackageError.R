@@ -13,15 +13,15 @@ DataPackageError <- R6::R6Class(
 
   
   public = list(
-    
     message=NULL,
     error=NULL,
-    
     initialize = function (message, error=NULL){
       self$message <- message
       self$error <- error
-    },
-    
+    }),
+  
+    active = list(
+      
     multiple = function () {
       if (length(self$error) %in% c(0,1) ) return (FALSE) else return (TRUE)
     },
@@ -29,5 +29,5 @@ DataPackageError <- R6::R6Class(
     errors = function () {
       return (as.list(self$error))
     }
-  )
+    )
 )

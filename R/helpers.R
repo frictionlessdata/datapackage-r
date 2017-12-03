@@ -72,7 +72,7 @@ retrieveDescriptor = function (descriptor) {
     }
     
     
-  } else  DataPackageError$new('Descriptor must be String, JSON or List')
+  } else  stop(DataPackageError$new('Descriptor must be String, JSON or List'))
 }
 
 # #' Dereference descriptor
@@ -108,77 +108,78 @@ retrieveDescriptor = function (descriptor) {
 # #' 
 # 
 
-# dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=NULL) {
-#   #conditions
-#   if (is.json(descriptor)) descriptor = jsonlite::fromJSON(descriptor)
-#   if (is.json(baseDescriptor)) descriptor = jsonlite::fromJSON(descriptor)
-#   if (is.nuexll(baseDescriptor) | !exists("baseDescriptor")) baseDescriptor = descriptor
-#   #set list properties
-#   PROPERTIES = list('dialect','schema')
-#   
-#   # complex loop to simplify later
-#   
-#   for (property in PROPERTIES) {
-# 
-#     value = purrr::compact(purrr::map(jsonlite::fromJSON(descriptor),property))
-#     value = jsonlite::toJSON(value)
-#     # URI -> No
-#     if (!is.character(value)) {
-#       # continue
-# 
-#       # URI -> Pointer
-#     } else if (is.character(value)) if(startsWith(value,'#') ) {
-#       tryCatch({
-#         descriptor[[property]] = purrr::compact(baseDescriptor, value[[2]] )
-#       },
-#       error = function(e) {
-#         message = stringr::str_interp('Not resolved Pointer URI "${value}" for resource[[${property}]]')
-#         DataPackageError$new(message)
-#       })
-# 
-#       # URI -> Remote
-#       # TODO: remote base path also will lead to remote case!
-#     } else if (isRemotePath(value)) {
-#       tryCatch({
-#         response = httr::GET(value)
-#         descriptor[[property]] = httr::content(response, as = 'text')
-#       },
-#       error = function(e) {
-#         message = stringr::str_interp('Not resolved Remote URI "${value}" for resource[[${property}]]')
-#         DataPackageError$new(message)
-#       })
-# 
-#       # URI -> Local
-#     } else {
-#       # if (config::get("IS_BROWSER")) {
-#       #   message = 'Local URI dereferencing in browser is not supported'
-#       #   DataPackageError$new(message)
-#       # }
-#       if (!isSafePath(value)) {
-#         message = stringr::str_interp('Not safe path in Local URI "${value}" for resource[[${property}]]')
-#         DataPackageError$new(message)
-#       }
-#       if (isUndefined(basePath)) {
-#         message = stringr::str_interp('Local URI "${value}" requires base path for resource[[${property}]]')
-#         DataPackageError$new(message)
-#       }
-#       tryCatch({
-#         # TODO: support other that Unix OS
-#         fullPath = paste(basePath, value, sep = '/')
-#         # TODO: rebase on promisified fs.readFile (async)
-#         contents = readLines(fullPath, 'utf-8')
-#         descriptor[[property]] = jsonlite::fromJSON(contents)
-#       },
-#       error = function(e) {
-#         message = stringr::str_interp('Not resolved Local URI "${value}" for resource[[${property}]]')
-#         DataPackageError$new(message)
-#       })
-# 
-#     }
-#   }
-#   
-#   return (descriptor)
-# }
+dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=NULL) {
+  #conditions
+  if (is.json(descriptor)) descriptor = jsonlite::fromJSON(descriptor)
+  if (is.json(baseDescriptor)) descriptor = jsonlite::fromJSON(descriptor)
+  
+  if (is.null(baseDescriptor)| is.empty(baseDescriptor) | !exists("baseDescriptor")) baseDescriptor = descriptor
+  #set list properties
+  PROPERTIES = list('dialect','schema')
+
+  # complex loop to simplify later
+
+  for (property in PROPERTIES) {
+
+    value = descriptor[property]
+    
+    # URI -> No
+    if (!is.character(value)) {
+      # continue
+
+      # URI -> Pointer
+    } else if(startsWith(value,'#') ) {
+      tryCatch({
+        descriptor[[property]] = purrr::compact(baseDescriptor, value[[2]] )
+      },
+      error = function(e) {
+        message = stringr::str_interp('Not resolved Pointer URI "${value}" for resource[[${property}]]')
+        DataPackageError$new(message)
+      })
+
+      # URI -> Remote
+      # TODO: remote base path also will lead to remote case!
+    } else if (isRemotePath(value)) {
+      tryCatch({
+        response = httr::GET(value)
+        descriptor[[property]] = httr::content(response, as = 'text')
+      },
+      error = function(e) {
+        message = stringr::str_interp('Not resolved Remote URI "${value}" for resource[[${property}]]')
+        DataPackageError$new(message)
+      })
+
+      # URI -> Local
+    } else {
+      # if (config::get("IS_BROWSER")) {
+      #   message = 'Local URI dereferencing in browser is not supported'
+      #   DataPackageError$new(message)
+      # }
+      if (!isSafePath(value)) {
+        message = stringr::str_interp('Not safe path in Local URI "${value}" for resource[[${property}]]')
+        DataPackageError$new(message)
+      }
+      if (isUndefined(basePath)) {
+        message = stringr::str_interp('Local URI "${value}" requires base path for resource[[${property}]]')
+        DataPackageError$new(message)
+      }
+      tryCatch({
+        # TODO: support other that Unix OS
+        fullPath = paste(basePath, value, sep = '/')
+        # TODO: rebase on promisified fs.readFile (async)
+        contents = readLines(fullPath, 'utf-8')
+        descriptor[[property]] = jsonlite::fromJSON(contents)
+      },
+      error = function(e) {
+        message = stringr::str_interp('Not resolved Local URI "${value}" for resource[[${property}]]')
+        DataPackageError$new(message)
+      })
+
+    }
+  }
+
+  return (descriptor)
+}
 
 
 
@@ -423,3 +424,29 @@ get.descriptor.path = function(directory= "."){
   } else message("Descriptor file (datapackage.json) does not exists.")
   
 }
+
+# #' Catch Error
+# #' @param expr expr 
+# #' @rdname catchError
+# #' @export
+# #' 
+
+# catchError <- function(expr) {
+#   
+#   warn <- err <- NULL
+#   
+#   value <- withCallingHandlers(
+#     
+#     tryCatch( expr,
+#               
+#               error=function(e) {
+#                 err <<- e
+#                 NULL
+#              }), 
+#     warning=function(w) {
+#       warn <<- w
+#       invokeRestart("muffleWarning")
+#     })
+#   
+#   list(value = value, warnings = warn, errors = err)
+# }

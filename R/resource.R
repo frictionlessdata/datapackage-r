@@ -31,7 +31,7 @@ Resource <- R6::R6Class(
       
       # Error for non tabular
       if(!isTRUE(self$tabular)){
-        DataPackageError$new('Methods iter/read are not supported for non tabular data')
+        stop(DataPackageError$new('Methods iter/read are not supported for non tabular data')$message)
       }
       
       # Get relations
@@ -46,7 +46,7 @@ Resource <- R6::R6Class(
       
       # Error for non tabular
       if(!isTRUE(self$tabular)) {
-        DataPackageError$new('Methods iter/read are not supported for non tabular data')
+        stop(DataPackageError$new('Methods iter/read are not supported for non tabular data')$message)
       }
       
       # Get relations
@@ -65,7 +65,7 @@ Resource <- R6::R6Class(
       
       # Error for inline
       if (self$inline) {
-        DataPackageError$new('Methods iter/read are not supported for inline data')
+        stop(DataPackageError$new('Methods iter/read are not supported for inline data')$message)
       }
       
       byteStream = createByteStream(self$source, self$remote)
@@ -266,10 +266,11 @@ Resource <- R6::R6Class(
         
         if (isTRUE(private$strict_)) {
           
-          message = stringr::str_interp(
-            "There are ${length(valid_errors$errors)} validation errors (see 'error.errors')"
-          )
-          DataPackageError$new(message, valid_errors$errors)
+          error = DataPackageError$new(message, valid_errors$errors)
+          
+          message = stringr::str_interp("There are ${length(valid_errors$errors)} validation errors (see 'error$errors')")
+          
+          stop(error$message)
         }
       }
       
@@ -286,7 +287,7 @@ Resource <- R6::R6Class(
         
         # Resource -> Multipart
         if (isTRUE(self$multipart_)) {
-          DataPackageError$new('Resource$table does not support multipart resources')
+          stop(DataPackageError$new('Resource$table does not support multipart resources')$message)
         }
         
         # Resource -> Tabular
@@ -379,11 +380,11 @@ inspectSource = function (data, path, basePath) {
   } else {
     # Path is not safe
     if (!isTRUE(isSafePath(path[1]))) {
-      DataPackageError$new('Local path "${path[1]}" is not safe')
+      stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" is not safe'))$message)
     }
     # Not base path
     if (isTRUE(is.null(basePath))) {
-      DataPackageError$new('Local path "${path[1]}" requires base path')
+      stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" requires base path'))$message)
     }
     
     inspection$source = stringr::str_c(basePath, path[1], sep = '/')
