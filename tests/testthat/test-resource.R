@@ -50,7 +50,7 @@ test_that('object', {
 
 ######## 
 test_that('string path', {
-  contents = jsonlite::fromJSON(system.file('data/data-resource.json',package = "datapackage.r"))
+  contents = jsonlite::fromJSON('inst/data/data-resource.json')
   descriptor = 'https://httpbin.org/data-resource.json'
 
   # Mocks
