@@ -2,33 +2,33 @@ library(datapackage.r)
 library(testthat)
 library(foreach)
 library(stringr)
+library(crul)
+library(webmockr)
 
 # Tests
 
-# testthat::context("Package")
+testthat::context("Package")
 
 ###################################
-# testthat::context("Package #load")
+testthat::context("Package #load")
 ###################################
 
-# test_that('initializes with Object descriptor', {
-#   descriptor = 'inst/data/dp1/datapackage.json'
-#   dataPackage = Package.load(descriptor, basePath= 'inst/data/dp1')
-#  expect_true(identical(lapply(dataPackage$descriptor,unlist), lapply(expandPackageDescriptor(jsonlite::fromJSON(descriptor)),unlist)))
-# })
-#
-# test_that('initializes with URL descriptor', {
-#   descriptor = system.file('data/dp1/datapackage.json')
-#   dataPackage = Package.load(
-#     'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
-# #  expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
-# })
+test_that('initializes with Object descriptor', {
+  descriptor = 'inst/data/dp1/datapackage.json'
+  dataPackage = Package.load(descriptor, basePath= 'inst/data/dp1')
+  expect_true(identical(dataPackage$descriptor,expandPackageDescriptor(jsonlite::fromJSON(descriptor))))
+  # expect_true(identical(lapply(dataPackage$descriptor,unlist,use.names=F, recursive = FALSE), lapply(expandPackageDescriptor(jsonlite::fromJSON(descriptor)),unlist,use.names=F, recursive = FALSE)))
+})
+
+test_that('initializes with URL descriptor', {
+  descriptor = jsonlite::fromJSON('inst/data/dp1/datapackage.json')
+  dataPackage = Package.load(
+    'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
+ expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
+})
 
 # test_that('throws errors for invalid datapackage in strict mode', {
-#   error = catchError(Package.load, {}, {strict: true})
-#   assert.instanceOf(error, Error)
-#   assert.instanceOf(error.errors[0], Error)
-#   assert.include(error.errors[0].message, 'required property')
+#   expect_error(Package.load(list(),strict=TRUE))
 # })
 
 # test_that('stores errors for invalid datapackage', {
@@ -38,18 +38,20 @@ library(stringr)
 #   assert.include(dataPackage.errors[0].message, 'required property')
 #   assert.isFalse(dataPackage.valid)
 # })
-
-# test_that('loads relative resource', async function() {
+# 
+# test_that('loads relative resource', {
 #   # TODO: For now tableschema doesn't support in-browser table.read
 #   # if (process.env.USER_ENV === 'browser') {
 #   #   this.skip()
 #   # }
 #   descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
 #   dataPackage = Package.load(descriptor)
+#   
 #   dataPackage.resources[0].descriptor.profile = 'tabular-data-resource'
 #   data = dataPackage.resources[0].table.read()
 #   expect_equal(data, [['gb', 100], ['us', 200], ['cn', 300]])
 # })
+
 # 
 # test_that('loads resource from absolute URL', async function() {
 #   # TODO: For now tableschema doesn't support in-browser table.read
@@ -91,29 +93,34 @@ library(stringr)
 # })
 # 
 # })
-# 
-# ###################################################
-# testthat::context("Package #descriptor (retrieve)")
-# ###################################################
-# 
-# test_that('object', {
-#   descriptor = {
-#     resources: [
-#       {name: 'name', data: ['data']},
-#       ],
-#   }
-#   dataPackage = Package.load(descriptor)
-#   expect_equal(dataPackage.descriptor, expand(descriptor))
-# })
-# 
-# test_that('string remote path', {
-#   contents = require('../data/data-package.json')
-#   descriptor = 'http://example.com/data-package.json'
-#   http.onGet(descriptor).reply(200, contents)
-#   dataPackage = Package.load(descriptor)
-#   expect_equal(dataPackage.descriptor, expand(contents))
-# })
-# 
+
+###################################################
+testthat::context("Package #descriptor (retrieve)")
+###################################################
+
+test_that('object', {
+  descriptor = jsonlite::fromJSON('{"resources": [{"name": "name", "data": ["data"]}]}')
+  dataPackage = Package.load(descriptor)
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
+})
+
+test_that('string remote path', {
+  target.contents = jsonlite::fromJSON('inst/data/data-package.json',flatten = T,simplifyVector = T)
+  descriptor = 'https://httpbin.org/data-resource.json'
+  # Mocks
+  (x = HttpClient$new(url = descriptor))
+  (res = x$patch(path = "patch",
+                 encode = "json",
+                 body = target.contents
+  ))
+  ##
+  target.contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
+  descriptor.response=jsonlite::fromJSON(res$parse("UTF-8"))$json
+  dataPackage = Package.load(descriptor.response)
+  
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(target.contents))
+})
+ 
 # test_that('string remote path bad', {
 #   descriptor = 'http://example.com/bad-path.json'
 #   http.onGet(descriptor).reply(500)
@@ -145,25 +152,23 @@ library(stringr)
 #     assert.include(error.message, 'in browser is not supported')
 #   }
 # })
-# 
-# ######################################################
-# testthat::context("Package #descriptor (dereference)")
-# ######################################################
-# 
+
+######################################################
+testthat::context("Package #descriptor (dereference)")
+######################################################
+
 # 
 # test_that('mixed', {
-#   descriptor = 'data/data-package-dereference.json'
-#   if (process.env.USER_ENV !== 'browser') {
+#   descriptor = jsonlite::fromJSON('inst/data/data-package-dereference.json',flatten = F)
+#   str(descriptor)
 #     dataPackage = Package.load(descriptor)
-#     expect_equal(dataPackage.descriptor.resources, [
+#     
+#     expect_equal( dataPackage.descriptor.resources, 
+#                   [
 #       {name: 'name1', data: ['data'], schema: {fields: [{name: 'name'}]}},
 #       {name: 'name2', data: ['data'], dialect: {delimiter: ','}},
-#       ].map(expandResource))
-#   } else {
-#     error = catchError(Package.load, descriptor)
-#     assert.instanceOf(error, Error)
-#     assert.include(error.message, 'in browser')
-#   }
+#       ].map(expandResourceDescriptor))
+# 
 # })
 # 
 # test_that('pointer', {

@@ -14,7 +14,7 @@ Package <- R6::R6Class(
   class = TRUE,
   public=list( 
     #strict=FALSE,
-    initialize = function (descriptor = list(), basePath=NULL, pattern=NULL, strict = FALSE, profile = config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml")  ) {
+    initialize = function (descriptor, basePath=NULL, pattern=NULL, strict = FALSE, profile = config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml")  ) {
       
       private$currentDescriptor_ = descriptor
       private$nextDescriptor_ = descriptor
@@ -207,11 +207,11 @@ Package <- R6::R6Class(
       #   }
       # }
       
-      # Update resources
-      private$resources_=as.list(rep(0,length(names(private$currentDescriptor_$resources))))
-      names(private$resources_)=names(private$currentDescriptor_$resources)
-      
-      
+      # # Update resources
+      # private$resources_=as.list(rep(0,length(names(private$currentDescriptor_$resources))))
+      # names(private$resources_)=names(private$currentDescriptor_$resources)
+      # 
+      # 
       # for (index in private$currentDescriptor_$resources) {
       #   #private$resources_[index]
       #   

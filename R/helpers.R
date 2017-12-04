@@ -103,12 +103,11 @@ dereferencePackageDescriptor = function (descriptor, basePath) {
   
   if (is.json(descriptor) ) descriptor = jsonlite::fromJSON(descriptor)
   
-  for (index in ( if (is.empty(descriptor$resources)) length(list()) else length(descriptor$resources)) ) {
-    descriptor$resources[[index]] = dereferenceResourceDescriptor(descriptor$resources[index], basePath, descriptor)
+  for (index in ( if (is.empty(descriptor$resources)) length(list()) else names(descriptor$resources)) ) {
+    descriptor$resources[index] = dereferenceResourceDescriptor(descriptor$resources[index], basePath, descriptor)
   }
   #names(descriptor$resources)
   #descriptor = jsonlite::toJSON(descriptor)
-  #return (descriptor)
 
   return (descriptor)
 }
@@ -207,9 +206,10 @@ expandPackageDescriptor = function (descriptor) {
   descriptor$profile = if (is.empty(descriptor$profile) ) config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml") else descriptor$profile
   
   # descriptor[["resources"]] = purrr::map(descriptor[["resources"]], expandResourceDescriptor)
-  for (index in ( if (is.empty(descriptor$resources)) length(list()) else length(descriptor$resources)) ) {
-    descriptor$resources[[index]] = expandResourceDescriptor(descriptor$resources[index])
-  }
+  #for (index in ( if (is.empty(descriptor$resources)) length(list()) else length(descriptor$resources)) ) {
+  descriptor["resources"] = lapply(descriptor["resources"],expandResourceDescriptor)
+  #descriptor$resources[[index]] = expandResourceDescriptor(descriptor$resources[index])
+  #}
   #names(descriptor$resources)
   #descriptor = jsonlite::toJSON(descriptor)
   return (descriptor)
@@ -225,8 +225,8 @@ expandResourceDescriptor = function (descriptor) {
   if (is.json(descriptor)) descriptor = jsonlite::fromJSON(descriptor)
   
   # set default for profile and encoding
-  descriptor$profile = if (isTRUE(is.empty(descriptor$profile))) config::get("DEFAULT_RESOURCE_PROFILE",file = "config.yaml") else descriptor$profile
-  descriptor$encoding = if (isTRUE(is.empty(descriptor$encoding))) config::get("DEFAULT_RESOURCE_ENCODING",file = "config.yaml") else descriptor$encoding
+  descriptor$profile = if (isTRUE(is.null(descriptor$profile))) config::get("DEFAULT_RESOURCE_PROFILE",file = "config.yaml") else descriptor$profile
+  descriptor$encoding = if (isTRUE(is.null(descriptor$encoding))) config::get("DEFAULT_RESOURCE_ENCODING",file = "config.yaml") else descriptor$encoding
   
   # tabular-data-resource
   if (descriptor$profile == 'tabular-data-resource') {

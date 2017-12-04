@@ -86,18 +86,19 @@ Resource <- R6::R6Class(
       
       return (stream.on)
     },
+    
     infer = function() {
       
       descriptor = private$currentDescriptor_
       
       # Blank -> Stop
-      if (isTRUE(private$sourceInspection_$blank)) return(descriptor)
+      if (isTRUE(is.null(private$sourceInspection_$blank))) return(descriptor)
       
       # Name 
-      if (isTRUE(!is.null(descriptor$name))) descriptor$name = private$sourceInspection_$name
+      if (!is.null(descriptor$name)) descriptor$name = private$sourceInspection_$name
       
       # Only for inline
-      if (!isTRUE(private$inline_)) {
+      if (!is.null(private$inline_)) {
         # Format 
         if (isTRUE(!is.null(descriptor$format))) descriptor$format = private$sourceInspection_$format
         
@@ -301,12 +302,15 @@ Resource <- R6::R6Class(
     },
     
     getRelations_ = function () {
-      if (isTRUE(private$relations_)) {
+      if (isTRUE(private$relations_ == FALSE)) {
         # Prepare resources
         resources = list()
         if (isTRUE(!is.null(private$getTable_())) && isTRUE(!is.null((private$getTable_()$schema)))) {
+          
           for (fk in private$getTable_()$schema$foreignKeys) {
+            
             resources[fk$reference$resource] = resources[fk$reference$resource]
+            
             for (field in fk$reference$fields) {
               push(resources[fk$reference$resource], field)
             }
