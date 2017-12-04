@@ -5,18 +5,18 @@ library(stringr)
 
 # Tests
 
-testthat::context("Package")
+# testthat::context("Package")
 
 ###################################
-testthat::context("Package #load")
+# testthat::context("Package #load")
 ###################################
 
 # test_that('initializes with Object descriptor', {
 #   descriptor = 'inst/data/dp1/datapackage.json'
-#   dataPackage = Package.load(descriptor, basePath= 'data/dp1')
-#  expect_equal(dataPackage$descriptor, expandPackageDescriptor(jsonlite::fromJSON(descriptor)))
+#   dataPackage = Package.load(descriptor, basePath= 'inst/data/dp1')
+#  expect_true(identical(lapply(dataPackage$descriptor,unlist), lapply(expandPackageDescriptor(jsonlite::fromJSON(descriptor)),unlist)))
 # })
-# 
+#
 # test_that('initializes with URL descriptor', {
 #   descriptor = system.file('data/dp1/datapackage.json')
 #   dataPackage = Package.load(
