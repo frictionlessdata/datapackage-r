@@ -24,7 +24,7 @@ test_that('initializes with URL descriptor', {
   descriptor = jsonlite::fromJSON('inst/data/dp1/datapackage.json')
   dataPackage = Package.load(
     'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
- expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
 })
 
 # test_that('throws errors for invalid datapackage in strict mode', {
@@ -129,29 +129,18 @@ test_that('string remote path', {
 #   assert.include(error.message, 'Can not retrieve remote')
 # })
 # 
-# test_that('string local path', {
-#   contents = require('../data/data-package.json')
-#   descriptor = 'data/data-package.json'
-#   if (process.env.USER_ENV !== 'browser') {
-#     dataPackage = Package.load(descriptor)
-#     expect_equal(dataPackage.descriptor, expand(contents))
-#   } else {
-#     error = catchError(Package.load, descriptor)
-#     assert.instanceOf(error, Error)
-#     assert.include(error.message, 'in browser is not supported')
-#   }
-# })
-# 
-# test_that('string local path bad', {
-#   descriptor = 'data/bad-path.json'
-#   error = catchError(Package.load, descriptor)
-#   assert.instanceOf(error, Error)
-#   if (process.env.USER_ENV !== 'browser') {
-#     assert.include(error.message, 'Can not retrieve local')
-#   } else {
-#     assert.include(error.message, 'in browser is not supported')
-#   }
-# })
+
+test_that('string local path', {
+  contents =  jsonlite::fromJSON('inst/data/data-package.json')
+  descriptor = 'inst/data/data-package.json'
+  dataPackage = Package.load(descriptor)
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(contents))
+ })
+
+test_that('string local path bad', {
+  descriptor = 'inst/data/bad-path.json'
+  expect_error(Package.load(descriptor))
+})
 
 ######################################################
 testthat::context("Package #descriptor (dereference)")
@@ -277,93 +266,107 @@ testthat::context("Package #descriptor (dereference)")
 # })
 # 
 # 
-# #################################################
-# testthat::context("Package #descriptor (expand)")
-# #################################################
-# 
-# test_that('resource', {
-#   descriptor = {
-#     resources: [
-#       {
-#         name: 'name',
-#         data: ['data'],
-#       },
-#       ],
-#   }
-#   dataPackage = Package.load(descriptor)
-#   expect_equal(dataPackage.descriptor, {
-#     profile: 'data-package',
-#     resources: [
-#       {
-#         name: 'name',
-#         data: ['data'],
-#         profile: 'data-resource',
-#         encoding: 'utf-8',
-#       },
-#       ],
-#   })
-# })
-# 
+#################################################
+testthat::context("Package #descriptor (expand)")
+#################################################
+
+test_that('resource', {
+  descriptor = jsonlite::fromJSON('{
+    "resources": [
+      {
+        "name": "name",
+        "data": ["data"]
+      }
+      ]
+  }')
+  
+  target = jsonlite::fromJSON('{
+    "profile": "data-package",
+    "resources": [
+      {
+        "name": "name",
+        "data": ["data"],
+        "profile": "data-resource",
+        "encoding": "utf-8"
+      }
+      ]
+  }')
+  
+  dataPackage = Package.load(descriptor)
+  expect_equal(dataPackage$descriptor[sort(names(target))],target) # sort names by target to match
+})
+
 # test_that('tabular resource schema', {
-#   descriptor = {
-#     resources: [
-#       {
-#         name: 'name',
-#         data: ['data'],
-#         profile: 'tabular-data-resource',
-#         schema: {fields: [{name: 'name'}]},
-#       },
-#       ],
-#   }
+#   
+#   descriptor = jsonlite::fromJSON( '{
+#   	"resources": [{
+#   		"name": "name",
+#   		"data": ["data"],
+#   		"profile": "tabular-data-resource",
+#   		"schema": {
+#   			"fields": {"name": "name"}
+#   		}
+#   	}]
+#   }')
+#   
+#   target = jsonlite::fromJSON('{
+#       "profile": "data-package",
+#       "resources": [{
+#         "name": "name",
+#         "data": ["data"],
+#         "profile": "tabular-data-resource",
+#         "encoding": "utf-8",
+#         "schema": {
+#           "fields": [{"name": "name", "type": "string", "format": "default"}],
+#           "missingValues": ""
+#         }
+#       }]
+#     }')
+#   
 #   dataPackage = Package.load(descriptor)
-#   expect_equal(dataPackage.descriptor, {
-#     profile: 'data-package',
-#     resources: [{
-#       name: 'name',
-#       data: ['data'],
-#       profile: 'tabular-data-resource',
-#       encoding: 'utf-8',
-#       schema: {
-#         fields: [{name: 'name', type: 'string', format: 'default'}],
-#         missingValues: [''],
-#       },
-#     }],
-#   })
+#   target$resources = target$resources[names(dataPackage$descriptor$resources)] #sort target resources to match
+#   target = target[names(dataPackage$descriptor)] #sort target to match
+#   expect_equal(dataPackage$descriptor, target)
 # })
-# 
+
 # test_that('tabular resource dialect', {
-#   descriptor = {
-#     resources: [
+#   
+#   descriptor = jsonlite::fromJSON('{
+#     "resources": [
 #       {
-#         name: 'name',
-#         data: ['data'],
-#         profile: 'tabular-data-resource',
-#         dialect: {delimiter: 'custom'},
-#       },
-#       ],
-#   }
+#         "name": "name",
+#         "data": ["data"],
+#         "profile": "tabular-data-resource",
+#         "dialect": {"delimiter": "custom"}
+#       }
+#       ]
+#   }')
+#   
+#   target = jsonlite::fromJSON('{
+#     "profile": "data-package",
+#     "resources": [{
+#     "name": "name",
+#     "data": ["data"],
+#     "profile": "tabular-data-resource",
+#     "encoding": "utf-8",
+#     "dialect": {
+#         "delimiter": "custom",
+#         "doubleQuote": "TRUE",
+#         "lineTerminator": "\\r\\n",
+#         "quoteChar": "\\"",
+#         "escapeChar": "\\\\",
+#         "skipInitialSpace": "TRUE",
+#         "header": "TRUE",
+#         "caseSensitiveHeader": "FALSE"
+#     }
+#   }]
+#  }')
+#   
 #   dataPackage = Package.load(descriptor)
-#   expect_equal(dataPackage.descriptor, {
-#     profile: 'data-package',
-#     resources: [{
-#       name: 'name',
-#       data: ['data'],
-#       profile: 'tabular-data-resource',
-#       encoding: 'utf-8',
-#       dialect: {
-#         delimiter: 'custom',
-#         doubleQuote: true,
-#         lineTerminator: '\r\n',
-#         quoteChar: '"',
-#         escapeChar: '\\',
-#         skipInitialSpace: true,
-#         header: true,
-#         caseSensitiveHeader: false,
-#       },
-#     }],
-#   })
+#   
+#   expect_equal(dataPackage$descriptor, target)
 # })
-# 
+
 # ###################################################
 # testthat::context("Package #resources")
 # ###################################################
