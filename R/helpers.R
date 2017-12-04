@@ -63,8 +63,19 @@ retrieveDescriptor = function (descriptor) {
       })
     } else if( is.local.descriptor.path(descriptor) ) {
       tryCatch({
+        
+        if ('inst/data'== dirname(descriptor) | dirname(descriptor) == "." | dirname(descriptor)==""){
         descriptor = jsonlite::fromJSON(readLines(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE),warn = FALSE))
         return(descriptor)
+        
+        } else if ( grepl('inst', dirname(descriptor)) ){
+          descriptor = jsonlite::fromJSON(readLines(normalizePath(stringr::str_c(dirname(descriptor), basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE),warn = FALSE))
+          return(descriptor)
+        } else {
+          descriptor = jsonlite::fromJSON(readLines(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=FALSE),warn = FALSE))
+          return(descriptor)
+        }
+        
       }, 
       
       error = function(e) {
@@ -89,18 +100,15 @@ retrieveDescriptor = function (descriptor) {
 #'
 
 dereferencePackageDescriptor = function (descriptor, basePath) {
-  # if (!is.character(descriptor)) descriptor = jsonlite::toJSON(descriptor)
-  # descriptor2 = jsonlite::fromJSON(descriptor)
-  # #descriptor[["resources"]] = purrr::map(descriptor[["resources"]], dereferenceResourceDescriptor, baseDescriptor = descriptor[["resources"]][[2]], basePath = basePath, descriptor = descriptor)
-  #
-  #
-  # for (resource in descriptor2[["resources"]]){
-  #   dereferenceResourceDescriptor(descriptor =resource, basePath = basePath, descriptor)}
-  # # for (const [index, resource] of (descriptor.resources || []).entries()) {
-  # #   # TODO: May be we should use Promise.all here
-  # #   descriptor.resources[index] = await dereferenceResourceDescriptor(
-  # #     resource, basePath, descriptor)
-  # # }
+  
+  if (is.json(descriptor) ) descriptor = jsonlite::fromJSON(descriptor)
+  
+  for (index in ( if (is.empty(descriptor$resources)) length(list()) else length(descriptor$resources)) ) {
+    descriptor$resources[[index]] = dereferenceResourceDescriptor(descriptor$resources[index], basePath, descriptor)
+  }
+  #names(descriptor$resources)
+  #descriptor = jsonlite::toJSON(descriptor)
+  #return (descriptor)
 
   return (descriptor)
 }
@@ -202,7 +210,7 @@ expandPackageDescriptor = function (descriptor) {
   for (index in ( if (is.empty(descriptor$resources)) length(list()) else length(descriptor$resources)) ) {
     descriptor$resources[[index]] = expandResourceDescriptor(descriptor$resources[index])
   }
-  names(descriptor$resources)
+  #names(descriptor$resources)
   #descriptor = jsonlite::toJSON(descriptor)
   return (descriptor)
 }
@@ -271,7 +279,7 @@ expandResourceDescriptor = function (descriptor) {
 #' 
 
 isRemotePath = function (path) {
-  
+  if (!is.character(path)) path = as.character(path)
   #if (!is.character(path)) FALSE else 
   isTRUE( startsWith("http", unlist(strsplit(path,":")))[1] |
             startsWith("https", unlist(strsplit(path,":")))[1] )

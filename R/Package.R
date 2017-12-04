@@ -21,7 +21,8 @@ Package <- R6::R6Class(
       private$profile_ = profile
       private$strict_ = strict
       private$resources_=list()
-      
+      # Build instance
+      private$build_()
     },
     
     infer = function (pattern = FALSE) {
@@ -190,37 +191,42 @@ Package <- R6::R6Class(
       
       
       # Instantiate profile
-      private$profile_ = Profile.load(private$currentDescriptor_)$profile
+      # private$profile_ = Profile.load(private$currentDescriptor_)$profile
       
       # Validate descriptor
-      #private$errors_=list()
-      
-      valid_errors= private$profile_$validate(private$currentDescriptor_)
-      
-      if (!isTRUE(valid_errors$valid)) {
-        private$errors_ = valid_errors$errors
-        
-        if (isTRUE(private$strict_)) {
-          message = stringr::str_interp("There are ${length(valid_errors$errors)} validation errors (see 'valid_errors$errors')")
-          DataPackageError$new(message)
-        }
-      }
+      # private$errors_=list()
+      # 
+      # valid_errors= private$profile_$validate(private$currentDescriptor_)
+      # 
+      # if (!isTRUE(valid_errors$valid)) {
+      #   private$errors_ = valid_errors$errors
+      #   
+      #   if (isTRUE(private$strict_)) {
+      #     message = stringr::str_interp("There are ${length(valid_errors$errors)} validation errors (see 'valid_errors$errors')")
+      #     stop(DataPackageError$new(message)$message)
+      #   }
+      # }
       
       # Update resources
-      # list current descriptor
-      for (index in private$currentDescriptor_$resources) {
-        #private$resources_[index]
-        
-        if ( purrr::is_empty(private$resources_[index]) || 
-             !identical(private$resources_[index]$descriptor, private$currentDescriptor_$resources[index]) ||
-             (!purrr::is_empty((private$resources_[index]$schema)) && length(private$resources_[index]$schema$foreignKeys)>1)) {
-          
-          private$resources_[index] = Resource.load( private$currentDescriptor_$resources[index],
-                                                     strict = private$strict_, 
-                                                     basePath = private$basePath_, 
-                                                     dataPackage = self)
-        }
-      }
+      private$resources_=as.list(rep(0,length(names(private$currentDescriptor_$resources))))
+      names(private$resources_)=names(private$currentDescriptor_$resources)
+      
+      
+      # for (index in private$currentDescriptor_$resources) {
+      #   #private$resources_[index]
+      #   
+      #   if ( isTRUE(private$resources_[[index]]!=0) || 
+      #        
+      #        !identical(private$resources_[index]$descriptor, 
+      #                   private$currentDescriptor_$resources[index]) ||
+      #        
+      #        (isTRUE(!is.null(private$resources_[index]$schema)) && length(private$resources_[index]$schema$foreignKeys)>1)) {
+      #     
+      #     private$resources_[[index]] = Resource.load( private$currentDescriptor_$resources[[index]],
+      #                                                  strict = private$strict_, 
+      #                                                  basePath = private$basePath_)
+      #   }
+      # }
     }
   )
 )
@@ -236,7 +242,7 @@ Package.load = function (descriptor=list(), basePath=NULL, strict = FALSE ) {
   
   # Get base path
   
-  if (is.null(basePath)) {
+  if (isUndefined(basePath)) {
     basePath = locateDescriptor(descriptor)
   }
   

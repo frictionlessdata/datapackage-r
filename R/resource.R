@@ -248,7 +248,7 @@ Resource <- R6::R6Class(
       # Inspect source
       
       private$sourceInspection_ = inspectSource( private$currentDescriptor_$data,
-                                                 private$currentDescriptor_$path,
+                                                 as.character(private$currentDescriptor_$path),
                                                  private$basePath_
                                                  )
       
@@ -379,7 +379,7 @@ inspectSource = function (data, path, basePath) {
     # Local
   } else {
     # Path is not safe
-    if (!isTRUE(isSafePath(path[1]))) {
+    if ( isTRUE(isSafePath(path[1]==FALSE)) |  isTRUE(isSafePath(as.character(path[1]))==FALSE) ) {
       stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" is not safe'))$message)
     }
     # Not base path
