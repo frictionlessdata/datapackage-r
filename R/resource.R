@@ -335,10 +335,11 @@ Resource <- R6::R6Class(
 #' @param descriptor descriptor
 #' @param basePath basePath
 #' @param strict strict
+#' @param dataPackage dataPackage
 #' @rdname Resource.load
 #' @export
 
-Resource.load = function (descriptor = list(), basePath=NULL, strict = FALSE) {
+Resource.load = function (descriptor = list(), basePath=NULL, strict = FALSE, dataPackage = list() ) {
   
   # Get base path
   if (is.null(basePath)) basePath = locateDescriptor(descriptor)
@@ -347,7 +348,7 @@ Resource.load = function (descriptor = list(), basePath=NULL, strict = FALSE) {
   descriptor = retrieveDescriptor(descriptor)
   descriptor = dereferenceResourceDescriptor(descriptor, basePath)
   
-  return (Resource$new(descriptor, basePath, strict))
+  return (Resource$new(descriptor, basePath, strict, dataPackage))
 }
 
 # inspect Source

@@ -380,8 +380,8 @@ test_that('tabular resource schema', {
 # })
 #
 # test_that('add', {
-#   descriptor = require('../data/dp1/datapackage.json')
-#   dataPackage = Package.load(descriptor, {basePath: 'data/dp1'})
+#   descriptor = jsonlite::fromJSON('inst/data/dp1/datapackage.json')
+#   dataPackage = Package.load(descriptor, basePath='inst/data/dp1')
 #   resource = dataPackage.addResource({name: 'name', data: ['test']})
 #   assert.isOk(resource)
 #   assert.lengthOf(dataPackage.resources, 2)

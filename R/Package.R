@@ -207,23 +207,23 @@ Package <- R6::R6Class(
       #   }
       # }
       
-      # # Update resources
+      # Update resources
       # private$resources_=as.list(rep(0,length(names(private$currentDescriptor_$resources))))
       # names(private$resources_)=names(private$currentDescriptor_$resources)
-      # 
-      # 
+
+
       # for (index in private$currentDescriptor_$resources) {
       #   #private$resources_[index]
-      #   
-      #   if ( isTRUE(private$resources_[[index]]!=0) || 
-      #        
-      #        !identical(private$resources_[index]$descriptor, 
+      # 
+      #   if ( isTRUE(private$resources_[[index]]!=0) ||
+      # 
+      #        !identical(private$resources_[index]$descriptor,
       #                   private$currentDescriptor_$resources[index]) ||
-      #        
+      # 
       #        (isTRUE(!is.null(private$resources_[index]$schema)) && length(private$resources_[index]$schema$foreignKeys)>1)) {
-      #     
+      # 
       #     private$resources_[[index]] = Resource.load( private$currentDescriptor_$resources[[index]],
-      #                                                  strict = private$strict_, 
+      #                                                  strict = private$strict_,
       #                                                  basePath = private$basePath_)
       #   }
       # }

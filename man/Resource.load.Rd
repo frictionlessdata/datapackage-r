@@ -4,7 +4,8 @@
 \alias{Resource.load}
 \title{Resource.load}
 \usage{
-Resource.load(descriptor = list(), basePath = NULL, strict = FALSE)
+Resource.load(descriptor = list(), basePath = NULL, strict = FALSE,
+  dataPackage = list())
 }
 \arguments{
 \item{descriptor}{descriptor}
@@ -12,6 +13,8 @@ Resource.load(descriptor = list(), basePath = NULL, strict = FALSE)
 \item{basePath}{basePath}
 
 \item{strict}{strict}
+
+\item{dataPackage}{dataPackage}
 }
 \description{
 Resource.load
