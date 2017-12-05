@@ -203,7 +203,6 @@ test_that('tabular resource schema', {
       "fields": [{"name": "name"}]
     }
   }')
-  resource = Resource.load(descriptor)
   target_outcome = jsonlite::fromJSON('{
     "name": "name",
     "data": "data",
@@ -214,6 +213,9 @@ test_that('tabular resource schema', {
       "missingValues": [""]
     }
   }')
+  
+  resource = Resource.load(descriptor)
+  
   expect_equal(resource$descriptor[sort(names(resource$descriptor))], target_outcome[sort(names(target_outcome))])
 })
 

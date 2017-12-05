@@ -207,7 +207,7 @@ expandPackageDescriptor = function (descriptor) {
   
   # descriptor[["resources"]] = purrr::map(descriptor[["resources"]], expandResourceDescriptor)
   #for (index in ( if (is.empty(descriptor$resources)) length(list()) else length(descriptor$resources)) ) {
-  descriptor["resources"] = lapply(descriptor["resources"],expandResourceDescriptor)
+  descriptor["resources"] = purrr::map(descriptor["resources"],expandResourceDescriptor)
   #descriptor$resources[[index]] = expandResourceDescriptor(descriptor$resources[index])
   #}
   #names(descriptor$resources)
@@ -229,17 +229,20 @@ expandResourceDescriptor = function (descriptor) {
   descriptor$encoding = if (isTRUE(is.null(descriptor$encoding))) config::get("DEFAULT_RESOURCE_ENCODING",file = "config.yaml") else descriptor$encoding
   
   # tabular-data-resource
-  if (descriptor$profile == 'tabular-data-resource') {
+  if (isTRUE(descriptor$profile == 'tabular-data-resource')) {
     
     # Schema
     #schema = descriptor$schema
     if ( isTRUE(!is.empty(descriptor$schema)) | isTRUE(!is.null(descriptor$schema)) | isTRUE(!descriptor$schema == "undefined") ) {
-      
+      fields = list()
       #for (field in ( if (is.empty(descriptor$schema$fields)) list() else descriptor$schema$fields) ) {
-      descriptor$schema$fields$type = if (is.empty(descriptor$schema$fields$type)) config::get("DEFAULT_FIELD_TYPE",file = "config.yaml") else descriptor$schema$fields$type
-      descriptor$schema$fields$format = if (is.empty(descriptor$schema$fields$format)) config::get("DEFAULT_FIELD_FORMAT",file = "config.yaml") else descriptor$schema$fields$format
+      fields$type = if (is.empty(descriptor$schema$fields$type)) config::get("DEFAULT_FIELD_TYPE",file = "config.yaml") else descriptor$schema$fields$type
+      fields$format = if (is.empty(descriptor$schema$fields$format)) config::get("DEFAULT_FIELD_FORMAT",file = "config.yaml") else descriptor$schema$fields$format
       #}
+      
+      descriptor$schema$fields = as.data.frame(append(descriptor$schema$fields,fields),stringsAsFactors = FALSE)
       descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues)) config::get("DEFAULT_MISSING_VALUES",file = "config.yaml") else descriptor$schema$missingValues
+      
     }
     
     # Dialect

@@ -296,41 +296,42 @@ test_that('resource', {
   expect_equal(dataPackage$descriptor[sort(names(target))],target) # sort names by target to match
 })
 
-# test_that('tabular resource schema', {
-#   
-#   descriptor = jsonlite::fromJSON( '{
-#   	"resources": [{
-#   		"name": "name",
-#   		"data": ["data"],
-#   		"profile": "tabular-data-resource",
-#   		"schema": {
-#   			"fields": {"name": "name"}
-#   		}
-#   	}]
-#   }')
-#   
-#   target = jsonlite::fromJSON('{
-#       "profile": "data-package",
-#       "resources": [{
-#         "name": "name",
-#         "data": ["data"],
-#         "profile": "tabular-data-resource",
-#         "encoding": "utf-8",
-#         "schema": {
-#           "fields": [{"name": "name", "type": "string", "format": "default"}],
-#           "missingValues": ""
-#         }
-#       }]
-#     }')
-#   
-#   dataPackage = Package.load(descriptor)
-#   target$resources = target$resources[names(dataPackage$descriptor$resources)] #sort target resources to match
-#   target = target[names(dataPackage$descriptor)] #sort target to match
-#   expect_equal(dataPackage$descriptor, target)
-# })
+test_that('tabular resource schema', {
+
+  descriptor = jsonlite::fromJSON( '{
+  	"resources": [{
+  		"name": "name",
+  		"data": ["data"],
+  		"profile": "tabular-data-resource",
+  		"schema": {
+  			"fields": [{"name": "name"}]
+  		}
+  	}]
+  }')
+
+  target = jsonlite::fromJSON('{
+      "profile": "data-package",
+      "resources": [{
+        "name": "name",
+        "data": ["data"],
+        "profile": "tabular-data-resource",
+        "encoding": "utf-8",
+        "schema": {
+          "fields": {"name": "name", "type": "string", "format": "default"},
+          "missingValues": ""
+        }
+      }]
+    }')
+
+  dataPackage = Package.load(descriptor)
+  #target$resources = target$resources[names(dataPackage$descriptor$resources)] #sort target resources to match
+  target = target[names(dataPackage$descriptor)] #sort target to match
+  target$resources = target$resources[names(dataPackage$descriptor$resources)] #sort target to match
+  expect_equal(dataPackage$descriptor, target)
+})
 
 # test_that('tabular resource dialect', {
-#   
+# 
 #   descriptor = jsonlite::fromJSON('{
 #     "resources": [
 #       {
@@ -341,7 +342,7 @@ test_that('resource', {
 #       }
 #       ]
 #   }')
-#   
+# 
 #   target = jsonlite::fromJSON('{
 #     "profile": "data-package",
 #     "resources": [{
@@ -361,23 +362,23 @@ test_that('resource', {
 #     }
 #   }]
 #  }')
-#   
+# 
 #   dataPackage = Package.load(descriptor)
-#   
+# 
 #   expect_equal(dataPackage$descriptor, target)
 # })
 
-# ###################################################
+###################################################
 # testthat::context("Package #resources")
-# ###################################################
-# 
+###################################################
+
 # test_that('names', {
-#   descriptor = require('../data/data-package-multiple-resources.json')
-#   dataPackage = Package.load(descriptor, {basePath: 'data'})
-#   assert.lengthOf(dataPackage.resources, 2)
-#   expect_equal(dataPackage.resourceNames, ['name1', 'name2'])
+#   descriptor = jsonlite::fromJSON('inst/data/data-package-multiple-resources.json')
+#   dataPackage = Package.load(descriptor, basePath = 'inst/data')
+#   expect_length(dataPackage$resources, 2)
+#   expect_equal(dataPackage$resourceNames, jsonlite::fromJSON('["name1", "name2"]'))
 # })
-# 
+#
 # test_that('add', {
 #   descriptor = require('../data/dp1/datapackage.json')
 #   dataPackage = Package.load(descriptor, {basePath: 'data/dp1'})
