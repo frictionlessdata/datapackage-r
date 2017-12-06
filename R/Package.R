@@ -14,15 +14,19 @@ Package <- R6::R6Class(
   class = TRUE,
   public=list( 
     #strict=FALSE,
-    initialize = function (descriptor, basePath=NULL, pattern=NULL, strict = FALSE, profile = config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml")  ) {
+    initialize = function (descriptor= list(), basePath=NULL, pattern=NULL, strict = FALSE, profile = config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml")  ) {
       
       private$currentDescriptor_ = descriptor
       private$nextDescriptor_ = descriptor
-      private$profile_ = profile
+      #private$profile_ = profile
       private$strict_ = strict
       private$resources_=list()
+      private$profile_ = Profile.load(profile)
+      
       # Build instance
       private$build_()
+      
+      
     },
     
     infer = function (pattern = FALSE) {
@@ -143,19 +147,28 @@ Package <- R6::R6Class(
     },
     
     valid = function () {
-      return (isTRUE(length(private$errors_) == 0 && unlist(purrr::map(private$resources_, function(x) validate(jsonlite::toJSON(x))$valid)) )) #&& unlist(purrr::map(q, function(x) validate(jsonlite::toJSON(x))$valid))
+      return (isTRUE(length(private$errors_<1))) #== 0 && unlist(purrr::map(private$resources_, function(x) validate(jsonlite::toJSON(x))$valid)) )) 
+      
+      #&& unlist(purrr::map(q, function(x) validate(jsonlite::toJSON(x))$valid))
       # return (isTRUE(length(private$errors_) == 0 && unlist(purrr::map(private$resources_, function(x) validate(jsonlite::toJSON(x))$valid)) )) #&& unlist(purrr::map(q, function(x) validate(jsonlite::toJSON(x))$valid))
     },
     
     errors = function() {
       
+      errors = private$errors_
+      
+      for (index in private$resources_) {
+        
+        if (!isTRUE(private$resources_[index]$valid)) {
+          errors = append(errors, DataPackageError$new('Resource "${private$resources_[index]$name || index}" validation error(s)')$message)
+        }
+      }
+      return (errors)
     }, 
     
     resources = function() {
       return (private$resources_)
     }
-    
-    
     
   ),
   
@@ -189,23 +202,17 @@ Package <- R6::R6Class(
       private$currentDescriptor_ = expandPackageDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
       
-      
-      # Instantiate profile
-      # private$profile_ = Profile.load(private$currentDescriptor_)$profile
-      
       # Validate descriptor
-      # private$errors_=list()
-      # 
-      # valid_errors= private$profile_$validate(private$currentDescriptor_)
-      # 
-      # if (!isTRUE(valid_errors$valid)) {
-      #   private$errors_ = valid_errors$errors
-      #   
-      #   if (isTRUE(private$strict_)) {
-      #     message = stringr::str_interp("There are ${length(valid_errors$errors)} validation errors (see 'valid_errors$errors')")
-      #     stop(DataPackageError$new(message)$message)
-      #   }
-      # }
+       valid_errors= private$profile_$validate(private$currentDescriptor_)
+       
+       if (!isTRUE(valid_errors$valid)) {
+         private$errors_ = valid_errors$errors
+
+         if (isTRUE(private$strict_)) {
+           message = stringr::str_interp("There are ${length(valid_errors$errors)} validation errors (see 'valid_errors$errors')")
+           stop(DataPackageError$new(message)$message)
+         }
+       }
       
       # Update resources
       # private$resources_=as.list(rep(0,length(names(private$currentDescriptor_$resources))))
@@ -262,8 +269,7 @@ Package.load = function (descriptor=list(), basePath=NULL, strict = FALSE ) {
     # profile = Profile.load(descriptor.profile)
     
   # } else 
-    descriptor.profile = if (is.null(descriptor$profile)) config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml") else descriptor$profile
-    profile = Profile.load(descriptor.profile)
+    profile = if (is.null(descriptor$profile)) config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml") else descriptor$profile
     
   # descriptor = jsonlite::fromJSON(descriptor)
   return (Package$new(descriptor, basePath, strict, profile) )

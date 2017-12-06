@@ -27,18 +27,18 @@ test_that('initializes with URL descriptor', {
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
 })
 
-# test_that('throws errors for invalid datapackage in strict mode', {
-#   expect_error(Package.load(list(),strict=TRUE))
-# })
+test_that('throws errors for invalid datapackage in strict mode', {
+  expect_error(Package.load(list(),strict=TRUE))
+})
 
-# test_that('stores errors for invalid datapackage', {
-#   dataPackage = Package.load()
-#   assert.instanceOf(dataPackage.errors, Array)
-#   assert.instanceOf(dataPackage.errors[0], Error)
-#   assert.include(dataPackage.errors[0].message, 'required property')
-#   assert.isFalse(dataPackage.valid)
-# })
-# 
+test_that('stores errors for invalid datapackage', {
+  dataPackage = Package.load()
+  # assert.instanceOf(dataPackage.errors, Array)
+  # assert.instanceOf(dataPackage.errors[0], Error)
+  # assert.include(dataPackage.errors[0].message, 'required property')
+  expect_false(dataPackage$valid)
+})
+
 # test_that('loads relative resource', {
 #   # TODO: For now tableschema doesn't support in-browser table.read
 #   # if (process.env.USER_ENV === 'browser') {

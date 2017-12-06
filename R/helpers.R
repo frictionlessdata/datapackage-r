@@ -202,6 +202,7 @@ dereferenceResourceDescriptor = function (descriptor, basePath, baseDescriptor=N
 #' @export
 #' 
 expandPackageDescriptor = function (descriptor) {
+  if (isTRUE(descriptor=="{}" | descriptor == "[]")) descriptor = list()
   if (is.json(descriptor) ) descriptor = jsonlite::fromJSON(descriptor)
   descriptor$profile = if (is.empty(descriptor$profile) ) config::get("DEFAULT_DATA_PACKAGE_PROFILE",file = "config.yaml") else descriptor$profile
   
