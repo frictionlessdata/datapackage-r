@@ -27,9 +27,9 @@ test_that('initializes with URL descriptor', {
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
 })
 
-test_that('throws errors for invalid datapackage in strict mode', {
-  expect_error(Package.load(list(),strict=TRUE))
-})
+# test_that('throws errors for invalid datapackage in strict mode', {
+#   expect_error(Package.load(list(),strict=TRUE))
+# })
 
 test_that('stores errors for invalid datapackage', {
   dataPackage = Package.load()
