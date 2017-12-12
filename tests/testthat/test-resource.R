@@ -14,28 +14,35 @@ testthat::context("Resource #load")
 ########################################################
 
 
-test_that('works with base descriptor', {
-  descriptor=jsonlite::fromJSON('{"name":"name","data":["data"]}')
-  resource = Resource.load(descriptor)
 
-  expect_equal(resource$name,'name')
+test_that('works with base descriptor', {
+  descriptor = '{"name":"name","data":["data"]}'
+  resource = Resource.load(descriptor)
+  
+  expect_equal(resource$name, 'name')
   expect_false(resource$tabular)
-  expect_equal(resource$descriptor, expandResourceDescriptor(descriptor))
+  expect_equal(resource$descriptor,
+               expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
   expect_true(resource$inline)
-  expect_equal(resource$source, "data")
+  expect_equal(resource$source, list("data"))
   expect_null(resource$table)
+  
 })
 
 test_that('works with tabular descriptor', {
-  descriptor=jsonlite::fromJSON('{"name":"name","data":["data"],"profile":"tabular-data-resource"}')
+  descriptor = '{"name":"name","data":["data"],"profile":"tabular-data-resource"}'
   resource = Resource.load(descriptor)
   expect_equal(resource$name, 'name')
   expect_true(resource$tabular)
-  expect_equal(resource$descriptor, expandResourceDescriptor(descriptor))
+  expect_equal(resource$descriptor,
+               expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
   expect_true(resource$inline)
-  expect_equal(resource$source, "data")
-  # expect(resource$table_, succeed())
+  
+  expect_equal(resource$source, list("data"))
+  expect_failure(expect_null(resource$table))
+  
 })
+
 
 
 #######################################################
@@ -43,424 +50,489 @@ testthat::context('Resource #descriptor (retrieve)')
 ########################################################
 
 test_that('object', {
-  descriptor=jsonlite::fromJSON('{"name":"name","data":"data"}')
+  descriptor = '{"name": "name","data": "data"}'
   resource = Resource.load(descriptor)
-  expect_equal(resource$descriptor, expandResourceDescriptor(descriptor))
+  expect_equal(resource$descriptor,
+               expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
 })
 
-######## 
-test_that('string path', {
-  contents = jsonlite::fromJSON('inst/data/data-resource.json')
+########
+test_that('string remote path', {
+  fileName = system.file('inst/data/data-resource.json', package = 'datapackage.r')
+  contents = helpers.from.json.to.list(fileName)
+  
+  
   descriptor = 'https://httpbin.org/data-resource.json'
-
-  # Mocks
-  (x = HttpClient$new(url = descriptor))
-  (res = x$patch(path = "patch",
-                  encode = "json",
-                  body = jsonlite::fromJSON('{"name": "name","data": "data"}')
-  ))
-  contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
-  descriptor=contents
-  ##
   
-  resource = Resource.load(descriptor)
   
-  # needs extra sorting
-  expect_equal(resource$descriptor[sort(names(resource$descriptor))], 
-               expandResourceDescriptor(contents)[sort(names(resource$descriptor))])
+  httptest::with_mock_API({
+    resource = Resource.load(descriptor)
+    
+  })
+  
+  expect_equal(resource$descriptor,
+               expandResourceDescriptor(descriptor = contents))
+  
+  
 })
 
 
 test_that('string remote path bad', {
   descriptor = 'https://httpbin.org/bad-path.json'
-  expect_error(Resource.load(descriptor))
+  
+  expect_error(
+    with_mock(
+      `httr:::request_perform` = function()
+        httptest::fakeResponse(httr::GET(descriptor), status_code = 500) ,
+      `httptest::request_happened` = expect_message,
+      eval.parent(Resource.load(descriptor)),
+      "Can not retrieve remote"
+    )
+  )
 })
 
 test_that('string local path', {
-  contents = jsonlite::fromJSON('inst/data/data-resource.json')
-  descriptor = 'data/data-resource.json'
+  fileName = system.file('inst/data/data-resource.json', package = 'datapackage.r')
+  
+  contents = helpers.from.json.to.list(fileName)
+  descriptor  = system.file('inst/data/data-resource.json', package = 'datapackage.r')
   resource = Resource.load(descriptor)
   expect_equal(resource$descriptor, expandResourceDescriptor(contents))
-
+  
 })
 
-test_that('string local path bad', {
-  descriptor = 'data/bad-path.json'
-    expect_error(Resource.load(descriptor))
+test_that('string local bad path', {
+  descriptor = system.file('bad-path.json', package = 'datapackage.r')
+  expect_error(Resource.load(descriptor), "Can not retrieve local")
+  
 })
 
 
 
-#######################################################
+#########################################################
 testthat::context('Resource #descriptor (dereference)')
-########################################################
-
+#########################################################
 test_that('general', {
-  descriptor = 'inst/data/data-resource-dereference.json'
-    resource = Resource.load(descriptor)
-    desired_outcome = expandResourceDescriptor(jsonlite::fromJSON('{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'))
-    expect_true(identical(resource$descriptor,desired_outcome ))
-
+  descriptor = system.file('inst/data/data-resource-dereference.json', package = 'datapackage.r')
+  resource = Resource.load(descriptor)
+  
+  expect_equal(resource$descriptor,
+               expandResourceDescriptor(
+                 helpers.from.json.to.list(
+                   '{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'
+                 )
+               ))
+  
 })
+
 
 test_that('pointer', {
-  descriptor = jsonlite::fromJSON('{"name": "name","data": "data","schema": "#/schemas/main","schemas": {"main": {"fields": [{"name": "name"}]}}}')
+  descriptor = '{"name": "name","data": "data","schema": "#/schemas/main","schemas": {"main": {"fields": [{"name": "name"}]}}}'
   resource = Resource.load(descriptor)
   expect_equal(resource$descriptor,
-               expandResourceDescriptor( jsonlite::fromJSON('{"name":"name","data":"data","schema":{"fields":[{"name":"name"}]},"schemas":{"main":{"fields":[{"name":"name"}]}}}' )))
-})
+               expandResourceDescriptor(
+                 helpers.from.json.to.list(
+                   '{
+                   "name": "name",
+                   "data": "data",
+                   "schema": {"fields": [{"name": "name"}]},
+                   "schemas": {"main": {"fields": [{"name": "name"}]}}
+}'
+)
+                 ))
+  })
 
 
 test_that('pointer bad', {
-  descriptor = jsonlite::fromJSON('{"name": "name", "data": "data", "schema": "#/schemas/main"}')
-  expect_error(Resource.load(descriptor)) # 'Not resolved Pointer URI'
+  descriptor = '{"name": "name", "data": "data", "schema": "#/schemas/main"}'
+  expect_error(Resource.load(descriptor), 'Not resolved Pointer URI')
+  
 })
+
 
 test_that('remote', {
-  descriptor = jsonlite::fromJSON('{"name": "name", "data": "data", "schema": "https://httpbin.org/schema"}')
-
-  # Mocks
-  (x = HttpClient$new(url = descriptor$schema))
-  (res = x$patch(path = "patch",
-                 encode = "json",
-                 body = jsonlite::fromJSON('{"fields": [{"name": "name"}]}')
-  ))
-  contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
-  descriptor$schema=contents
-  ##
+  descriptor = helpers.from.json.to.list('{"name": "name", "data": "data", "schema": "http://example.com/schema"}')
+  
+  resource = with_mock(
+    `curl:::curl` = function(txt, handle) {
+      httptest::fakeResponse(
+        httr::GET(descriptor$schema),
+        status_code = 200,
+        content = list(fields = list(list(name = "name")))
+      )
+    },
+    `httptest::request_happened` = expect_message,
+    eval.parent(Resource.load(descriptor))
+  )
+  expect_equal(resource$descriptor,
+               expandResourceDescriptor(descriptor = list(
+                 name = 'name',
+                 data = 'data',
+                 schema = list(fields = list(list(name = 'name')))
+               )))
   
   
-  resource = Resource.load(descriptor)
-  expect_equal(resource$descriptor, 
-               expandResourceDescriptor( 
-                 jsonlite::fromJSON('{"name": "name", "data": "data", "schema": {"fields": [{"name": "name"}]}}')))
-})
-
-test_that('remote bad', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "data": "data",
-    "schema": "https://httpbin.org/schema"
-  }')
-  
-  # Mocks
-  (x = HttpClient$new(url = 'https://httpbin.org/status/404'))
-  (res = x$get(
-  ))
-  contents=res$parse("UTF-8")
-  descriptor$schema=contents
-  ##
-  expect_error(Resource.load(descriptor))
-})
-
-test_that('local', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "data": "data",
-    "schema": "table-schema.json"
-    }')
-  resource = Resource.load(descriptor, basePath = 'inst/data')
-  expect_equal(resource$descriptor, 
-               expandResourceDescriptor(jsonlite::fromJSON('{"name": "name","data": "data","schema": {"fields": [{"name": "name"}]} }')))
-})
-
-test_that('local bad', {
-  descriptor = jsonlite::fromJSON('{"name": "name",
-                                    "data": "data",
-                                    "schema": "bad-path.json"}')
-  expect_error(Resource.load(descriptor, basePath = 'inst/data'))
-  
-})
-
-test_that('local bad not safe', {
-  descriptor = jsonlite::fromJSON('{"name": "name",
-                                    "data": "data",
-                                  "schema": "../data/table_schema.json"}')
-  expect_error(Resource.load(descriptor, basePath = 'inst/data'))
 })
 
 
-
+#
+# test_that('remote bad', {
+#   descriptor = {
+#     name: 'name',
+#     data: 'data',
+#     schema: 'http://example.com/schema',
+#   }
+#   http.onGet(descriptor.schema).reply(500)
+#   error = catchError(Resource.load, descriptor)
+#   assert.instanceOf(error, Error)
+#   assert.include(error.message, 'Not resolved Remote URI')
+# })
+#
+# test_that('local', {
+#   descriptor = {
+#     name: 'name',
+#     data: 'data',
+#     schema: 'table-schema.json',
+#   }
+#   if (process.env.USER_ENV !== 'browser') {
+#     resource = Resource.load(descriptor, {basePath: 'data'})
+#     expect_equal(resource.descriptor, expand({
+#       name: 'name',
+#       data: 'data',
+#       schema: {fields: [{name: 'name'}]},
+#     }))
+#   } else {
+#     error = catchError(Resource.load, descriptor, {basePath: 'data'})
+#     assert.instanceOf(error, Error)
+#     assert.include(error.message, 'in browser is not supported')
+#   }
+# })
+#
+# test_that('local bad', {
+#   descriptor = {
+#     name: 'name',
+#     data: 'data',
+#     schema: 'bad-path.json',
+#   }
+#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
+#   assert.instanceOf(error, Error)
+#   if (process.env.USER_ENV !== 'browser') {
+#     assert.include(error.message, 'Not resolved Local URI')
+#   } else {
+#     assert.include(error.message, 'in browser is not supported')
+#   }
+# })
+#
+# test_that('local bad not safe', {
+#   descriptor = {
+#     name: 'name',
+#     data: 'data',
+#     schema: '../data/table_schema.json',
+#   }
+#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
+#   assert.instanceOf(error, Error)
+#   if (process.env.USER_ENV !== 'browser') {
+#     assert.include(error.message, 'Not safe path')
+#   } else {
+#     assert.include(error.message, 'in browser is not supported')
+#   }
+# })
+#
+#
+#
 # #######################################################
-testthat::context('Resource #descriptor (expand)')
+# testthat::context('Resource #descriptor (expand)')
 # ########################################################
-
-test_that('general resource', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "data": "data"
-  }')
-  resource = Resource.load(descriptor)
-  expect_equal(resource$descriptor,jsonlite::fromJSON('{"name": "name","data": "data","profile": "data-resource","encoding": "utf-8"}'))
-})
-
-test_that('tabular resource schema', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "data": "data",
-    "profile": "tabular-data-resource",
-    "schema": {
-      "fields": [{"name": "name"}]
-    }
-  }')
-  target_outcome = jsonlite::fromJSON('{
-    "name": "name",
-    "data": "data",
-    "profile": "tabular-data-resource",
-    "encoding": "utf-8",
-    "schema": {
-      "fields": [{"name": "name", "type": "string", "format": "default"}],
-      "missingValues": [""]
-    }
-  }')
-  
-  resource = Resource.load(descriptor)
-  
-  expect_equal(resource$descriptor[sort(names(resource$descriptor))], target_outcome[sort(names(target_outcome))])
-})
-
-test_that('tabular resource dialect', {
-
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "data": "data",
-    "profile": "tabular-data-resource",
-    "dialect": {
-      "delimiter": "custom"
-    }
-  }')
-
-  resource = Resource.load(descriptor)
-
-  target = jsonlite::fromJSON('{
-	"name": "name",
-	"data": "data",
-	"profile": "tabular-data-resource",
-	"encoding": "utf-8",
-	"dialect": {
-		"delimiter": "custom",
-		"doubleQuote": "TRUE",
-		"lineTerminator": "\\r\\n",
-		"quoteChar": "\\"",
-		"escapeChar": "\\\\",
-		"skipInitialSpace": "TRUE",
-		"header": "TRUE",
-		"caseSensitiveHeader": "FALSE"
-	}
-}')
-  target$dialect$caseSensitiveHeader = FALSE
-  target$dialect$header = TRUE
-  target$dialect$skipInitialSpace = TRUE
-  target$dialect$doubleQuote = TRUE
-  expect_equal(resource$descriptor[sort(names(resource$descriptor))], target[sort(names(resource$descriptor))])
-
-})
-
-
+#
+# test_that('general resource', {
+#   descriptor = {
+#     name: 'name',
+#     data: 'data',
+#   }
+#   resource = Resource.load(descriptor)
+#   expect_equal(resource.descriptor, {
+#     name: 'name',
+#     data: 'data',
+#     profile: 'data-resource',
+#     encoding: 'utf-8',
+#   })
+# })
+#
+# test_that('tabular resource schema', {
+#   descriptor = {
+#     name: 'name',
+#     data: 'data',
+#     profile: 'tabular-data-resource',
+#     schema: {
+#       fields: [{name: 'name'}],
+#     },
+#   }
+#   resource = Resource.load(descriptor)
+#   expect_equal(resource.descriptor, {
+#     name: 'name',
+#     data: 'data',
+#     profile: 'tabular-data-resource',
+#     encoding: 'utf-8',
+#     schema: {
+#       fields: [{name: 'name', type: 'string', format: 'default'}],
+#       missingValues: [''],
+#     },
+#   })
+# })
+#
+# test_that('tabular resource dialect', {
+#   descriptor = {
+#     name: 'name',
+#     data: 'data',
+#     profile: 'tabular-data-resource',
+#     dialect: {
+#       delimiter: 'custom',
+#     },
+#   }
+#   resource = Resource.load(descriptor)
+#   expect_equal(resource.descriptor, {
+#     name: 'name',
+#     data: 'data',
+#     profile: 'tabular-data-resource',
+#     encoding: 'utf-8',
+#     dialect: {
+#       delimiter: 'custom',
+#       doubleQuote: true,
+#       lineTerminator: '\r\n',
+#       quoteChar: '"',
+#       escapeChar: '\\',
+#       skipInitialSpace: true,
+#       header: true,
+#       caseSensitiveHeader: false,
+#     },
+#   })
+# })
+#
+#
+#
+#
 # #######################################################
-testthat::context('Resource #source/sourceType')
+# testthat::context('Resource #source/sourceType')
 # ########################################################
-
-test_that('inline', {
-  descriptor = jsonlite::fromJSON('{
-  "name": "name",
-  "data": "data",
-  "path": ["path"]
-  }')
-  resource = Resource.load(descriptor)
-  expect_equal(resource$source, 'data')
-  expect_true(resource$inline)
-})
-
-test_that('local', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["table.csv"]
-  }')
-  resource = Resource.load(descriptor, basePath= 'data')
-  expect_equal(resource$source, 'data/table.csv')
-  expect_true(resource$local)
-})
-
+#
+# test_that('inline', {
+# descriptor = '{
+#   "name": "name",
+#   "data": "data",
+#   "path": ["path"]
+# }'
+#   resource = Resource.load(descriptor)
+#   expect_equal(resource$source(), 'data')
+#   expect_equal(resource$inline(), true)
+# })
+#
+# test_that('local', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['table.csv'],
+#   }
+#   resource = Resource.load(descriptor, {basePath: 'data'})
+#   expect_equal(resource.source, 'data/table.csv')
+#   expect_equal(resource.local, true)
+# })
+#
 # test_that('local base no base path', {
-#   descriptor = jsonlite::fromJSON('{"name": "name","path": ["table.csv"]}')
-#   expect_error(Resource.load(descriptor))
+#   descriptor = {
+#     name: 'name',
+#     path: ['table.csv'],
+#   }
+#   error = catchError(Resource.load, descriptor, {basePath: null})
+#   assert.instanceOf(error, Error)
+#   assert.include(error.message, 'requires base path')
 # })
- 
-test_that('local bad not safe absolute', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["/fixtures/table.csv"]
-  }')
-  expect_error(Resource.load (descriptor,basePath= 'data'))
-})
-
-test_that('local bad not safe traversing', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["../fixtures/table.csv"]
-  }')
-  expect_error(Resource.load (descriptor,basePath= 'data'))
-})
-
-test_that('remote', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["http://example.com//table.csv"]
-  }')
-  resource = Resource.load(descriptor)
-  expect_equal(resource$source, 'http://example.com//table.csv')
-  expect_true(resource$remote)
-})
-
-test_that('remote path relative and base path remote', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["table.csv"]
-  }')
-  resource = Resource.load(descriptor, basePath='http://example.com/')
-  expect_equal(resource$source, 'http://example.com//table.csv')
-  expect_true(resource$remote)
-})
-
-test_that('remote path remote and base path remote', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["http://example1.com/table.csv"]
-  }')
-  resource = Resource.load(descriptor, basePath= 'http://example2.com/')
-  expect_equal(resource$source, 'http://example1.com/table.csv')
-  expect_true(resource$remote)
-})
-
-test_that('multipart local', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["chunk1.csv", "chunk2.csv"]
-  }')
-  resource = Resource.load(descriptor, basePath = 'data')
-  expect_equal(resource$source, unlist(jsonlite::fromJSON('["data/chunk1.csv", "data/chunk2.csv"]')))
-  #expect_equal(resource$local, TRUE)
-  expect_true(resource$multipart)
-})
-
+#
+# test_that('local bad not safe absolute', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['/fixtures/table.csv'],
+#   }
+#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
+#   assert.instanceOf(error, Error)
+#   assert.include(error.message, 'not safe')
+# })
+#
+# test_that('local bad not safe traversing', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['../fixtures/table.csv'],
+#   }
+#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
+#   assert.instanceOf(error, Error)
+#   assert.include(error.message, 'not safe')
+# })
+#
+# test_that('remote', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['http://example.com/table.csv'],
+#   }
+#   resource = Resource.load(descriptor)
+#   expect_equal(resource.source, 'http://example.com/table.csv')
+#   expect_equal(resource.remote, true)
+# })
+#
+# test_that('remote path relative and base path remote', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['table.csv'],
+#   }
+#   resource = Resource.load(descriptor, {basePath: 'http://example.com/'})
+#   expect_equal(resource.source, 'http://example.com/table.csv')
+#   expect_equal(resource.remote, true)
+# })
+#
+# test_that('remote path remote and base path remote', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['http://example1.com/table.csv'],
+#   }
+#   resource = Resource.load(descriptor, {basePath: 'http://example2.com/'})
+#   expect_equal(resource.source, 'http://example1.com/table.csv')
+#   expect_equal(resource.remote, true)
+# })
+#
+# test_that('multipart local', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['chunk1.csv', 'chunk2.csv'],
+#   }
+#   resource = Resource.load(descriptor, {basePath: 'data'})
+#   expect_equal(resource.source, ['data/chunk1.csv', 'data/chunk2.csv'])
+#   expect_equal(resource.local, true)
+#   expect_equal(resource.multipart, true)
+# })
+#
 # test_that('multipart local bad no base path', {
-#   descriptor = jsonlite::fromJSON('{
-#     "name": "name",
-#     "path": ["chunk1.csv", "chunk2.csv"]
-#   }')
-#   expect_error(Resource.load(descriptor,basePath= NULL))
+#   descriptor = {
+#     name: 'name',
+#     path: ['chunk1.csv', 'chunk2.csv'],
+#   }
+#   error = catchError(Resource.load, descriptor, {basePath: null})
+#   assert.instanceOf(error, Error)
+#   assert.include(error.message, 'requires base path')
 # })
-
-test_that('multipart local bad not safe absolute', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["/fixtures/chunk1.csv", "chunk2.csv"]
-  }')
-  expect_error(Resource.load(descriptor,basePath = 'data'))
-})
-
-test_that('multipart local bad not safe traversing', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["chunk1.csv", "../fixtures/chunk2.csv"]
-  }')
-  expect_error(Resource.load(descriptor,basePath = 'data'))
-  
-})
-
-test_that('multipart remote', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]
-  }')
-  resource = Resource.load(descriptor)
-  expect_equal(resource$source,
-               jsonlite::fromJSON('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]'))
-  #expect_true(resource$remote)
-  expect_true(resource$multipart)
-})
-
-test_that('multipart remote path relative and base path remote', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["chunk1.csv", "chunk2.csv"]
-  }')
-  resource = Resource.load(descriptor, basePath = 'http://example.com')
-  expect_equal(resource$source,
-              jsonlite::fromJSON('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]'))
-  #expect_true(resource$remote)
-  expect_true(resource$multipart)
-})
-
-test_that('multipart remote path remote and base path remote', {
-  descriptor = jsonlite::fromJSON('{
-    "name": "name",
-    "path": ["chunk1.csv", "http://example2.com/chunk2.csv"]
-  }')
-  resource = Resource.load(descriptor, basePath = 'http://example1.com')
-  expect_equal(resource$source,
-               jsonlite::fromJSON('["http://example1.com/chunk1.csv", "http://example2.com/chunk2.csv"]'))
-  #expect_true(resource$remote)
-  expect_true(resource$multipart)
-})
-
-
-
-
+#
+# test_that('multipart local bad not safe absolute', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['/fixtures/chunk1.csv', 'chunk2.csv'],
+#   }
+#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
+#   assert.instanceOf(error, Error)
+#   assert.include(error.message, 'not safe')
+# })
+#
+# test_that('multipart local bad not safe traversing', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['chunk1.csv', '../fixtures/chunk2.csv'],
+#   }
+#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
+#   # Assert
+#   assert.instanceOf(error, Error)
+#   assert.include(error.message, 'not safe')
+# })
+#
+# test_that('multipart remote', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['http://example.com/chunk1.csv', 'http://example.com/chunk2.csv'],
+#   }
+#   resource = Resource.load(descriptor)
+#   expect_equal(resource.source,
+#                ['http://example.com/chunk1.csv', 'http://example.com/chunk2.csv'])
+#   expect_equal(resource.remote, true)
+#   expect_equal(resource.multipart, true)
+# })
+#
+# test_that('multipart remote path relative and base path remote', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['chunk1.csv', 'chunk2.csv'],
+#   }
+#   resource = Resource.load(descriptor, {basePath: 'http://example.com'})
+#   expect_equal(resource.source,
+#                ['http://example.com/chunk1.csv', 'http://example.com/chunk2.csv'])
+#   expect_equal(resource.remote, true)
+#   expect_equal(resource.multipart, true)
+# })
+#
+# test_that('multipart remote path remote and base path remote', {
+#   descriptor = {
+#     name: 'name',
+#     path: ['chunk1.csv', 'http://example2.com/chunk2.csv'],
+#   }
+#   resource = Resource.load(descriptor, {basePath: 'http://example1.com'})
+#   expect_equal(resource.source,
+#                ['http://example1.com/chunk1.csv', 'http://example2.com/chunk2.csv'])
+#   expect_equal(resource.remote, true)
+#   expect_equal(resource.multipart, true)
+# })
+#
+#
+#
+#
 # #######################################################
 # testthat::context('Resource #rawRead')
 # ########################################################
-# # 
+#
 # test_that('it raw reads local file source', {
-#   #if (process.env.USER_ENV === 'browser') this.skip()
+#   if (process.env.USER_ENV === 'browser') this.skip()
 #   path= 'data/data.csv'
-#   resource = Resource.load(path , basePath = '.')
+#   resource = Resource.load({path: 'data/data.csv'}, {basePath: '.'})
 #   bytes = resource.rawRead()
 #   assert.include(bytes.toString(), 'name,size')
 # })
-# 
-# # 
-# 
+#
+#
+#
 # #######################################################
 # testthat::context('Resource #table')
 # ########################################################
-
+#
 # test_that('general resource', {
-#   descriptor = jsonlite::fromJSON('{
-#     "name": "name",
-#     "data": "data"
-#   }')
+#   descriptor = {
+#     name: 'name',
+#     data: 'data',
+#   }
 #   resource = Resource.load(descriptor)
-#   expect_equal(resource$table, NULL)
+#   expect_equal(resource.table, null)
 # })
-# 
+#
 # test_that('tabular resource inline', {
-#   descriptor = jsonlite::fromJSON('{
-#     "name": "example",
-#     "profile": "tabular-data-resource",
-#     "data": [
-#       ["height", "age", "name"],
-#       ["180", "18", "Tony"],
-#       ["192", "32", "Jacob"]
+#   descriptor = {
+#     name: 'example',
+#     profile: 'tabular-data-resource',
+#     data: [
+#       ['height', 'age', 'name'],
+#       ['180', '18', 'Tony'],
+#       ['192', '32', 'Jacob'],
 #       ],
-#     "schema": {
-#       "fields": [
-#         {"name": "height", "type": "integer"},
-#         {"name": "age", "type": "integer"},
-#         {"name": "name", "type": "string"}
-#         ]
-#     }
+#     schema: {
+#       fields: [
+#         {name: 'height', type: 'integer'},
+#         {name: 'age', type: 'integer'},
+#         {name: 'name', type: 'string'},
+#         ],
+#     },
+#   }
 #   }')
-#   
+#
 #   resource = Resource.load(descriptor)
-#   
-#   #assert.instanceOf(resource$table, Table)
-#   
-#   expect_equal(resource$read(),
-#                jsonlite::fromJSON('[[180, 18, "Tony"], [192, 32, "Jacob"]]'))
+#
+#   assert.instanceOf(resource.table, Table)
+#
+#   expect_equal(resource.table.read(), [
+#     [180, 18, 'Tony'],
+#     [192, 32, 'Jacob'],
+#     ])
 # })
-
+#
 # test_that('tabular resource local', {
 #   #/ Skip test for browser
 #   if (process.env.USER_ENV === 'browser') {
@@ -487,31 +559,30 @@ test_that('multipart remote path remote and base path remote', {
 #     ['cn', 300],
 #     ])
 # })
-# 
-#   
-#   
+#
+#
+#
 # #######################################################
 # testthat::context('Resource #infer')
 # ########################################################
-# # 
-# test_that('preserve resource format from descriptor ', {
-# #   if (process.env.USER_ENV === 'browser') this.skip()
-#   descriptor=jsonlite::fromJSON('{"path": "data/data.csvformat", "format": "csv"}')
+#
+#test_that('preserve resource format from descriptor ', {
+#   if (process.env.USER_ENV === 'browser') this.skip()
+#  resource = Resource.load('{"path": "data/data.csvformat", "format": "csv"}')
 #   resource = Resource.load(descriptor)
-#   expect_equal(resource$infer(), 
-# jsonlite::fromJSON('{"encoding":"utf-8",
-# "format":"csv",
-# "mediatype":"text/csv",
-# "name":"data",
-# "path":"data/data.csvformat",
-# "profile":"tabular-data-resource",
-# "schema":{"fields":[
-# {"format":"default","name":"city","type":"string"},
-# {"format":"default","name":"population","type":"integer"}],
-# "missingValues":[""]
-# }
-# }')
-#   )
-# })
-# # 
-# #  
+#   expect_equal(resource$infer(), {
+#     encoding: 'utf-8',
+#     format: 'csv',
+#     mediatype: 'text/csv',
+#     name: 'data',
+#     path: 'data/data.csvformat',
+#     profile: 'tabular-data-resource',
+#     schema: {fields: [
+#       {format: 'default', name: 'city', type: 'string'},
+#       {format: 'default', name: 'population', type: 'integer'}],
+#       missingValues: [''],
+#     },
+#   })
+#})
+#
+#

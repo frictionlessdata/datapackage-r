@@ -1,13 +1,13 @@
 #' Resource class
 #' 
 #' @docType class
-#' @importFrom R6 R6Class
+#' @importFrom R6 R6Class BinaryReadableConnection
 #' @export
 #' @include helpers.R
 #' @return Object of \code{\link{R6Class}} .
 #' @format \code{\link{R6Class}} object.
 
-Resource <- R6::R6Class(
+Resource <- R6Class(
   "Resource",
   
   public = list(
@@ -45,7 +45,7 @@ Resource <- R6::R6Class(
     read = function(relations = FALSE, options = list()) {
       
       # Error for non tabular
-      if(!isTRUE(self$tabular)) {
+      if (!isTRUE(self$tabular)) {
         stop(DataPackageError$new('Methods iter/read are not supported for non tabular data')$message)
       }
       
@@ -53,7 +53,7 @@ Resource <- R6::R6Class(
       if (isTRUE(relations)) {
         relations = private$getRelations_()
       }
-      return (private$getTable_()$read(relations, options))
+      return(private$getTable_()$read(relations, options))
     },
     
     checkRelations = function() {
@@ -69,22 +69,20 @@ Resource <- R6::R6Class(
       }
       
       byteStream = createByteStream(self$source, self$remote)
-      return (byteStream) #if (stream) byteStream else new S2A(byteStream)
+      return(byteStream) #if (stream) byteStream else new S2A(byteStream)
     },
     
     rawRead = function() {
-      
       iterator = self$rawIter(stream = TRUE)
       count = 0
       repeat {
         count = count + 1
         stream.on =  iterators::nextElem(iterator)
-        if (count == length(iterator) ){
+        if (count == length(iterator) ) {
           break
         }
       }
-      
-      return (stream.on)
+      return(stream.on)
     },
     
     infer = function() {
@@ -113,7 +111,7 @@ Resource <- R6::R6Class(
           repeat {
             count = count + 1
             bytes =  iterators::nextElem(iterator)
-            if (count == length(iterator) ){
+            if (count == length(iterator) ) {
               break
             }
           }
@@ -132,7 +130,7 @@ Resource <- R6::R6Class(
         
         # Profile
         if (isTRUE(descriptor$profile == config::get("DEFAULT_RESOURCE_PROFILE",file = "config.yaml"))) {
-          if (isTRUE(self.tabular)) descriptor$profile = 'tabular-data-resource'
+          if (isTRUE(self$tabular)) descriptor$profile = 'tabular-data-resource'
         }
         
         # Save descriptor
@@ -141,18 +139,21 @@ Resource <- R6::R6Class(
         
         return(descriptor)
       }
+      
+      # Save descriptor
+      private$currentDescriptor_ = jsonlite::toJSON(descriptor,auto_unbox = TRUE)
+      private$build_()
+      
+      return(jsonlite::toJSON(descriptor,auto_unbox = TRUE))
     },
     
-    commit = function (strict) {
-      
+    commit = function(strict=NULL) {
       if (is.logical(strict)) private$strict_ = strict
-      else if (identical(private$currentDescriptor_, private$nextDescriptor_)) return (FALSE)
-      
+      else if (identical(private$currentDescriptor_, private$nextDescriptor_)) return(FALSE)
       private$currentDescriptor_ = private$nextDescriptor_
       private$table_ = NULL
       private$build_()
-      
-      return (private$strict_)
+      return(TRUE)
     },
     
     save = function(target) {
@@ -167,61 +168,65 @@ Resource <- R6::R6Class(
   
   active = list(
     
-    valid= function () {
+    valid = function() {
       return(isTRUE(length(private$errors_)== 0))
     },
     
-    errors = function () {
+    errors = function() {
       return(private$errors_)
     },
     
-    profile = function () {
+    profile = function() {
       return(private$profile_)
     },
     
-    descriptor = function () {
+    descriptor = function() {
       return(private$nextDescriptor_)
     }, # Never use self.descriptor inside self class (!!!)
     
-    name = function () {
+    name = function() {
       return(private$currentDescriptor_$name)
     },
     
-    inline = function () {
+    inline = function() {
       return(private$sourceInspection_$inline)
     },
     
-    local = function () {
+    local = function() {
       return(private$sourceInspection_$local)
     },
     
-    remote = function () {
+    remote = function() {
       return(private$sourceInspection_$remote)
     },
     
-    multipart = function () {
+    multipart = function() {
       return(private$sourceInspection_$multipart)
     },
 
-    tabular = function () {
+    tabular = function() {
       if (isTRUE(private$currentDescriptor_$profile == 'tabular-data-resource')) return(TRUE)
       if (!isTRUE(private$strict_)) {
-        if(isTRUE(private$currentDescriptor_$format %in% config::get("TABULAR_FORMATS",file = "config.yaml"))) return(TRUE)
-        if(isTRUE(private$sourceInspection_$tabular)) return(TRUE)
+        if (isTRUE(private$currentDescriptor_$format %in% config::get("TABULAR_FORMATS"))) return(TRUE)
+        if (isTRUE(private$sourceInspection_$tabular)) return(TRUE)
       }
-      if (!isTRUE(private$currentDescriptor_$profile == 'tabular-data-resource')) return(FALSE)
+     return(FALSE)
     },
     
-    source = function () {
+    source = function() {
       return(private$sourceInspection_$source)
     },
     
-    headers = function () {
+    headers = function() {
       if (!isTRUE(self$tabular)) return(NULL) else return(private$getTable_()$headers)
     },
     
-    schema = function () {
+    schema = function() {
       if (!isTRUE(self$tabular)) return(NULL) else return(private$getTable_()$schema)
+    },
+    
+    table = function() {
+      return(private$getTable_())
     }
     
   ),
@@ -241,11 +246,9 @@ Resource <- R6::R6Class(
     # Deprecated
     table_ = NULL,
     
-    build_ = function () {
-      
+    build_ = function() {
       private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
-      
       # Inspect source
       
       private$sourceInspection_ = inspectSource( private$currentDescriptor_$data,
@@ -254,10 +257,14 @@ Resource <- R6::R6Class(
                                                  )
       
       # Instantiate profile
-      private$profile_ = Profile.load(private$currentDescriptor_$profile)
+      private$profile_ = Profile$new(private$currentDescriptor_$profile)
+
+      
       
       # Validate descriptor
       private$errors_ = list()
+
+
       
       valid_errors = private$profile_$validate(private$currentDescriptor_)
       
@@ -277,20 +284,18 @@ Resource <- R6::R6Class(
       
     },
     
-    getTable_ = function () {
+    getTable_ = function() {
       
-      if(!isTRUE(!is.null(private$table_))) {
-        
+      if (!isTRUE(!is.null(private$table_))) {
         # Resource -> Regular
         if (!isTRUE(self$tabular)) {
-          return (NULL)
+          return(NULL)
         }
         
         # Resource -> Multipart
         if (isTRUE(self$multipart_)) {
           stop(DataPackageError$new('Resource$table does not support multipart resources')$message)
         }
-        
         # Resource -> Tabular
         options = list()
         schemaDescriptor = private$currentDescriptor_$schema
@@ -301,7 +306,7 @@ Resource <- R6::R6Class(
       
     },
     
-    getRelations_ = function () {
+    getRelations_ = function() {
       if (isTRUE(private$relations_ == FALSE)) {
         # Prepare resources
         resources = list()
@@ -318,17 +323,39 @@ Resource <- R6::R6Class(
         }
         # Fill Relations
         private$relations_ = list()
-        for (resource in resources) {
-          if(isTRUE(!is.null(resource)) && isTRUE(!is.null(private$dataPackage_)) ) {}
-          private$relations_ [resource] = 
-            if (!is.null(private$relations_ [resource])) private$relations_ [resource] else list()
-          data = if (isTRUE(!is.null(resource))) private$dataPackage_$getResource(resource)
-          if (isTRUE(data$tabular)) private$relations_[resource] = data$read(keyed = TRUE)
+        
+        for (resource in purrr::list_along(resources)) {
+          
+          #if (resource && !this._dataPackage) continue
+          
+          private$relations_[resource] = if (is.null(private$relations_[resource])) private$relations_[resource] else list()
+          data = if (!is.null(resource)) private$dataPackage_$get_resource(resource) else resource
+          
+          if (data$tabular) {
+            private$relations_[resource] = read(data, keyed = TRUE)
+          }
         }
+        
       }
       return(private$relations_)
     }
-  )
+    
+   
+    
+    
+  ) )
+
+
+
+
+# Internal
+DIALECT_KEYS = c(
+  'delimiter',
+  'doubleQuote',
+  'lineTerminator',
+  'quoteChar',
+  'escapeChar',
+  'skipInitialSpace'
 )
 
 #' Resource.load
@@ -339,7 +366,7 @@ Resource <- R6::R6Class(
 #' @rdname Resource.load
 #' @export
 
-Resource.load = function (descriptor = list(), basePath=NULL, strict = FALSE, dataPackage = list() ) {
+Resource.load = function(descriptor = list(), basePath=NULL, strict = FALSE, dataPackage = list() ) {
   
   # Get base path
   if (is.null(basePath)) basePath = locateDescriptor(descriptor)
@@ -348,14 +375,11 @@ Resource.load = function (descriptor = list(), basePath=NULL, strict = FALSE, da
   descriptor = retrieveDescriptor(descriptor)
   descriptor = dereferenceResourceDescriptor(descriptor, basePath)
   
-  return (Resource$new(descriptor, basePath, strict, dataPackage))
+  return(Resource$new(descriptor, basePath, strict, dataPackage))
 }
 
-# inspect Source
-inspectSource = function (data, path, basePath) {
-  
+inspectSource = function(data, path, basePath) {
   inspection = list()
-  
   # Normalize path
   if (isTRUE(!is.null(path)) && !is.list(path) ) path = as.character(path) #normalizePath(basePath)
   
@@ -366,9 +390,10 @@ inspectSource = function (data, path, basePath) {
     
   # Inline  
   } else if (isTRUE(!is.null(data))) {
+
     inspection$source = data
     inspection$inline = TRUE
-    inspection$tabular = is.list(data)# && purrr::every(data, "is.list")
+    inspection$tabular = purrr::every(data, is.list)
     
   # Local/Remote
   } else if (length(path) == 1) {
@@ -384,7 +409,7 @@ inspectSource = function (data, path, basePath) {
     # Local
   } else {
     # Path is not safe
-    if ( isTRUE(isSafePath(path[1]==FALSE)) |  isTRUE(isSafePath(as.character(path[1]))==FALSE) ) {
+    if ( isTRUE(isSafePath(path[1] == FALSE)) |  isTRUE(isSafePath(as.character(path[1])) == FALSE) ) {
       stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" is not safe'))$message)
     }
     # Not base path
@@ -398,7 +423,7 @@ inspectSource = function (data, path, basePath) {
     
     # Inspect
     inspection$format = tools::file_ext(path[1])[1]
-    inspection$name = basename(tools::list_files_with_exts(dir=path, exts=stringr::str_interp('.${inspection$format}') ))
+    inspection$name = basename(tools::list_files_with_exts(dir = path, exts = stringr::str_interp('.${inspection$format}') ))
     inspection$mediatype = stringr::str_interp('text/${inspection$format}')
     inspection$tabular = inspection$format %in% config::get("TABULAR_FORMATS",file = "config.yaml")
     
@@ -411,35 +436,50 @@ inspectSource = function (data, path, basePath) {
     inspection$source = unlist(purrr::map(inspections, function(item) item$source))
     inspection$multipart = TRUE
   }
+
   
-  return (inspection)
+  return(inspection)
 
 }
 
 
-createByteStream = function (source, remote) {
+createByteStream = function(source, remote) {
   
-  stream=list()
+  stream = list()
   
   # Remote source
   if (isTRUE(remote)) {
     
-    response = httr::GET(source) #await axios.get(source)
-    response.data = httr::content(response, as = 'text')
-    stream = tableschema.r::Readable$new()
-    push(stream, response.data)
-    push(stream, NULL)
-    # response = await axios.get(source, {responseType: 'stream'})
-    # stream = response.data
-    
-    # Local source
-  } else {
-    # if (config.IS_BROWSER) {
-    #   stop(DataPackageError$new('Local paths are not supported in the browser'))
-    # } else {
-    connection = file(source)
-    stream = tableschema.r::ReadableConnection$new(options = list(source = connection))
-  }
+    connection = url(source) #await axios.get(source)
   
-  return (stream)
+  } else {
+
+    connection = file(source)
+  }
+  stream = BinaryReadableConnection$new(list(source = connection))
+  
+  return(stream)
+}
+
+#' Resource.load
+#' @param descriptor descriptor
+#' @param basePath basePath
+#' @param strict strict
+#' @rdname Resource.load
+#' @export
+
+Resource.load = function(descriptor, basePath=NULL, strict = FALSE) {
+
+  # Get base path
+  if (isUndefined(basePath)) {
+    basePath = locateDescriptor(descriptor)
+  }
+
+  # Process descriptor
+  descriptor = retrieveDescriptor(descriptor)
+
+
+  descriptor = dereferenceResourceDescriptor(descriptor, basePath)
+
+  return(Resource$new(descriptor, basePath, strict))
 }

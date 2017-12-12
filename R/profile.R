@@ -19,10 +19,28 @@ Profile <- R6::R6Class(
   lock_object = FALSE,
   class = TRUE,
   public = list(
-    initialize=function(profile){
-      private$profile_ = profile
-      private$build_()
-    },
+    
+    initialize = function(profile) {
+      if (is.character(profile)) {
+        profile = tryCatch({
+          
+          profile =  system.file(stringr::str_interp("profiles/${profile}.json"), package = "datapackage.r")
+         
+          
+        }, 
+        error = function(){
+          stop(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))
+        }, 
+        warning = function() {
+          stop(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))
+        })
+      }
+
+      private$jsonschema_ = profile
+
+      
+
+      },
 
     validate = function(descriptor){
       
