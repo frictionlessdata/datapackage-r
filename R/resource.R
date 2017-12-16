@@ -1,7 +1,7 @@
 #' Resource class
 #' 
 #' @docType class
-#' @importFrom R6 R6Class BinaryReadableConnection
+#' @importFrom R6 R6Class
 #' @export
 #' @include helpers.R
 #' @return Object of \code{\link{R6Class}} .
@@ -284,23 +284,27 @@ Resource <- R6Class(
       
     },
     
-    getTable_ = function() {
-      
-      if (!isTRUE(!is.null(private$table_))) {
+    getTable_ = function () {
+      #if (isTRUE(is.character(private$currentDescriptor_))) private$currentDescriptor_ = jsonlite::fromJSON(private$currentDescriptor_)
+      if(!isTRUE(!is.null(private$table_))) {
+        
         # Resource -> Regular
         if (!isTRUE(self$tabular)) {
-          return(NULL)
+          return (NULL)
         }
         
         # Resource -> Multipart
         if (isTRUE(self$multipart_)) {
           stop(DataPackageError$new('Resource$table does not support multipart resources')$message)
         }
+        
         # Resource -> Tabular
         options = list()
         schemaDescriptor = private$currentDescriptor_$schema
-        schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema$new(schemaDescriptor) else NULL
-        private$table_ = tableschema.r::Table$new(schema , options)
+        schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::schema.load(jsonlite::toJSON(schemaDescriptor)) else NULL
+        schema = schema$value()
+        table_ = tableschema.r::table.load( self$source, schema = schema, options)
+        private$table_ = table_$value()
       }
       return(private$table_)
       
@@ -461,25 +465,25 @@ createByteStream = function(source, remote) {
   return(stream)
 }
 
-#' Resource.load
-#' @param descriptor descriptor
-#' @param basePath basePath
-#' @param strict strict
-#' @rdname Resource.load
-#' @export
-
-Resource.load = function(descriptor, basePath=NULL, strict = FALSE) {
-
-  # Get base path
-  if (isUndefined(basePath)) {
-    basePath = locateDescriptor(descriptor)
-  }
-
-  # Process descriptor
-  descriptor = retrieveDescriptor(descriptor)
-
-
-  descriptor = dereferenceResourceDescriptor(descriptor, basePath)
-
-  return(Resource$new(descriptor, basePath, strict))
-}
+# #' Resource.load
+# #' @param descriptor descriptor
+# #' @param basePath basePath
+# #' @param strict strict
+# #' @rdname Resource.load
+# #' @export
+# 
+# Resource.load = function(descriptor, basePath=NULL, strict = FALSE) {
+# 
+#   # Get base path
+#   if (isUndefined(basePath)) {
+#     basePath = locateDescriptor(descriptor)
+#   }
+# 
+#   # Process descriptor
+#   descriptor = retrieveDescriptor(descriptor)
+# 
+# 
+#   descriptor = dereferenceResourceDescriptor(descriptor, basePath)
+# 
+#   return(Resource$new(descriptor, basePath, strict))
+# }

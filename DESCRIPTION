@@ -28,8 +28,6 @@ Collate:
     'Package.R'
     'helpers.R'
     'profile.R'
-    'tableschemaerror.R'
-    'constraints.R'
     'binary.readable.connection.r'
     'binary.readable.r'
     'errors.R'

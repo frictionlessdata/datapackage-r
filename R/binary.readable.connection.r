@@ -3,13 +3,12 @@
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @include constraints.R
-#' @include tableschemaerror.R
 #' @include profile.R
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} .
 #' @format \code{\link{R6Class}} object.
-BinaryReadableConnection <- R6Class(
+
+BinaryReadableConnection <- R6::R6Class(
   "BinaryReadableConnection",
   
   public = list(
@@ -22,7 +21,7 @@ BinaryReadableConnection <- R6Class(
       open(private$connection_)
       return(iterators::iter(function(){
         if (length(value <- readBin(private$connection_, integer(), size = 1)) > 0) {
-         
+          
           private$index_ = private$index_ + 1
           
           return(value)
@@ -37,7 +36,7 @@ BinaryReadableConnection <- R6Class(
       }))
     }
     
-  
+    
     
   ),
   active = list(
@@ -61,8 +60,8 @@ BinaryReadableConnection <- R6Class(
     pipeDestination_ = list(),
     flowing_ = FALSE
     
-   
-  
+    
+    
     
     
   )
