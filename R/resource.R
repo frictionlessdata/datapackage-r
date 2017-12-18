@@ -371,15 +371,22 @@ DIALECT_KEYS = c(
 
 Resource.load = function(descriptor = list(), basePath=NULL, strict = FALSE, dataPackage = list() ) {
   
-  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
-    descriptor = helpers.from.json.to.list(descriptor)
-  } else if (is.character(descriptor)&& jsonlite::validate(descriptor)){
-    descriptor = helpers.from.json.to.list(descriptor)
-  }
+
   
   # Get base path
   if (is.null(basePath)) basePath = locateDescriptor(descriptor)
   
+  # if (is.character(descriptor) && 
+  #     (isSafePath(descriptor) | isRemotePath(descriptor)) ){
+  #   
+  #   descriptor = helpers.from.json.to.list(descriptor)
+  #   
+  # } else if (is.character(descriptor) && 
+  #            jsonlite::validate(descriptor)){
+  #   
+  #   descriptor = helpers.from.json.to.list(descriptor)
+  #   
+  # }
   # Process descriptor
   descriptor = retrieveDescriptor(descriptor)
   descriptor = dereferenceResourceDescriptor(descriptor, basePath)
