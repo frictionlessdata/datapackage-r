@@ -191,7 +191,9 @@ test_that('local', {
 }'
   resource = Resource.load(descriptor, basePath = 'inst/data')
   expect_equal(resource$descriptor, 
-               expandResourceDescriptor(helpers.from.json.to.list('{"name": "name","data": "data","schema": {"fields": [{"name": "name"}]} }')))
+               expandResourceDescriptor(
+                 helpers.from.json.to.list(
+                   '{"name": "name","data": "data","schema": {"fields": [{"name": "name"}]} }')))
   })
 
 test_that('local bad', {
@@ -220,18 +222,20 @@ test_that('general resource', {
   "data": "data"
 }'
   resource = Resource.load(descriptor)
-  expect_equal(resource$descriptor,jsonlite::fromJSON('{"name": "name","data": "data","profile": "data-resource","encoding": "utf-8"}'))
+  expect_equal(resource$descriptor, 
+               helpers.from.json.to.list(
+                 '{"name": "name","data": "data","profile": "data-resource","encoding": "utf-8"}'))
   })
 
 test_that('tabular resource schema', {
-  descriptor = helpers.from.json.to.list('{
+  descriptor = '{
                                          "name": "name",
                                          "data": "data",
                                          "profile": "tabular-data-resource",
                                          "schema": {
                                          "fields": [{"name": "name"}]
                                          }
-}')
+}'
   target_outcome = jsonlite::fromJSON('{
                                       "name": "name",
                                       "data": "data",
@@ -247,33 +251,41 @@ test_that('tabular resource schema', {
   
   expect_equal(resource$descriptor[sort(names(resource$descriptor))], target_outcome[sort(names(target_outcome))])
 })
-# test_that('tabular resource dialect', {
-#   descriptor = {
-#     name: 'name',
-#     data: 'data',
-#     profile: 'tabular-data-resource',
-#     dialect: {
-#       delimiter: 'custom',
-#     },
-#   }
-#   resource = Resource.load(descriptor)
-#   expect_equal(resource.descriptor, {
-#     name: 'name',
-#     data: 'data',
-#     profile: 'tabular-data-resource',
-#     encoding: 'utf-8',
-#     dialect: {
-#       delimiter: 'custom',
-#       doubleQuote: true,
-#       lineTerminator: '\r\n',
-#       quoteChar: '"',
-#       escapeChar: '\\',
-#       skipInitialSpace: true,
-#       header: true,
-#       caseSensitiveHeader: false,
-#     },
-#   })
-# })
+
+
+
+test_that('tabular resource dialect', {
+  
+  descriptor =  '{
+                                  "name": "name",
+                                  "data": "data",
+                                  "profile": "tabular-data-resource",
+                                  "dialect": {
+                                  "delimiter": "custom"
+                                  }
+}'
+
+  resource = Resource.load(descriptor)
+  
+  target = helpers.from.json.to.list('{
+                              "name": "name",
+                              "data": "data",
+                              "profile": "tabular-data-resource",
+                              "encoding": "utf-8",
+                              "dialect": {
+                              "delimiter": "custom",
+                              "doubleQuote": true,
+                              "lineTerminator": "\\r\\n",
+                              "quoteChar": "\\"",
+                              "escapeChar": "\\\\",
+                              "skipInitialSpace": true,
+                              "header": true,
+                              "caseSensitiveHeader": false
+                              }
+                              }')
+  
+  expect_equal(resource$descriptor[sort(names(resource$descriptor))], target[sort(names(target))]) # extra sorting to match lists
+})
 
 
 
@@ -367,8 +379,8 @@ test_that('multipart local', {
   "path": ["chunk1.csv", "chunk2.csv"]
 }'
   resource = Resource.load(descriptor, basePath = 'data')
-  expect_equal(resource$source, unlist(jsonlite::fromJSON('["data/chunk1.csv", "data/chunk2.csv"]')))
-  #expect_equal(resource$local, TRUE)
+  expect_equal(resource$source, unlist(helpers.from.json.to.list('["data/chunk1.csv", "data/chunk2.csv"]')))
+  # expect_equal(resource$local, TRUE)
   expect_true(resource$multipart)
 })
 

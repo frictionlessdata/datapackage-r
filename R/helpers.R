@@ -16,9 +16,10 @@ locateDescriptor = function(descriptor) {
     } else if (isTRUE(grepl('inst', descriptor))) {
       basePath = stringr::str_c(dirname(descriptor), sep = '/')
       
-    } else if (!isTRUE(grepl('inst', descriptor))) {
+    } else if (isTRUE(!grepl('inst', descriptor)) && isTRUE(!jsonlite::validate(descriptor))) {
       basePath = stringr::str_c('inst', dirname(descriptor), sep = '/')
-    }
+    } else
+      basePath = ""
     #basePath = dirname(tools::file_path_as_absolute(normalizePath(stringr::str_c('inst/data',basename(descriptor),sep = '/'),winslash = "\\",mustWork=TRUE))
     #else basePath = stringr::str_c('inst', dirname(descriptor),sep = '/')
     
@@ -284,9 +285,9 @@ expandPackageDescriptor = function(descriptor) {
 #'
 expandResourceDescriptor = function(descriptor) {
   
-  if (is.json(descriptor)) 
+  if (is.json(descriptor)) {
     descriptor = helpers.from.json.to.list(descriptor)
-  
+  }
   
   if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
     descriptor = helpers.from.json.to.list(descriptor)
@@ -295,15 +296,18 @@ expandResourceDescriptor = function(descriptor) {
   }
   # set default for profile and encoding
   
-  descriptor$profile = if (isTRUE(is.null(descriptor$profile)))
+  descriptor$profile = if (isTRUE(is.null(descriptor$profile))){
     config::get("DEFAULT_RESOURCE_PROFILE", file = "config.yaml")
-  else
+  } else {
     descriptor$profile
+  }
   
-  descriptor$encoding = if (isTRUE(is.null(descriptor$encoding)))
+  
+  descriptor$encoding = if (isTRUE(is.null(descriptor$encoding))){
     config::get("DEFAULT_RESOURCE_ENCODING", file = "config.yaml")
-  else
+  } else {
     descriptor$encoding
+  }
   
   # tabular-data-resource
   if (isTRUE(descriptor$profile == 'tabular-data-resource')) {
