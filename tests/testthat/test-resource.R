@@ -89,10 +89,10 @@ test_that('string remote path bad', {
 })
 
 test_that('string local path', {
-  fileName = system.file('data/data-resource.json', package = 'datapackage.r')
+  fileName = 'inst/data/data-resource.json'
   
   contents = helpers.from.json.to.list(fileName)
-  descriptor  = system.file('data/data-resource.json', package = 'datapackage.r')
+  descriptor  = 'inst/data/data-resource.json'
   resource = Resource.load(descriptor)
   expect_equal(resource$descriptor, expandResourceDescriptor(contents))
   
@@ -110,7 +110,7 @@ test_that('string local bad path', {
 testthat::context('Resource #descriptor (dereference)')
 #########################################################
 test_that('general', {
-  descriptor = system.file('data/data-resource-dereference.json', package = 'datapackage.r')
+  descriptor = 'inst/data/data-resource-dereference.json'
   resource = Resource.load(descriptor)
   
   expect_equal(resource$descriptor,

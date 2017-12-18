@@ -26,7 +26,8 @@ Profile <- R6::R6Class(
       
       if (is.character(private$profile_)) {
         
-        private$profile_ = system.file(stringr::str_interp("profiles/${private$profile_}.json"), package = "datapackage.r")
+        private$profile_ = stringr::str_interp("inst/profiles/${private$profile_}.json")
+        # private$profile_ = system.file(stringr::str_interp("profiles/${private$profile_}.json"), package = "datapackage.r")
         
         if(private$profile_ =="" | is.null(private$profile_)) {
           
