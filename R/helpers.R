@@ -101,9 +101,16 @@ retrieveDescriptor = function(descriptor) {
 
 dereferencePackageDescriptor = function (descriptor, basePath) {
   
-  if (is.json(descriptor))
+  if (is.json(descriptor)){
     
     descriptor = helpers.from.json.to.list(descriptor)
+  }
+  
+  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
+    descriptor = helpers.from.json.to.list(descriptor)
+  } else if (is.character(descriptor) && jsonlite::validate(descriptor)){
+    descriptor = helpers.from.json.to.list(descriptor)
+  }
   
   for (index in (if (is.empty(descriptor$resources))
     
@@ -131,11 +138,15 @@ dereferencePackageDescriptor = function (descriptor, basePath) {
 dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
                                             NULL) {
   #conditions
-  if (is.json(descriptor))
+  if (is.json(descriptor)){
     descriptor = helpers.from.json.to.list(descriptor)
+  }
   
-  if (is.json(baseDescriptor))
+  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
     descriptor = helpers.from.json.to.list(descriptor)
+  } else if (is.character(descriptor) && jsonlite::validate(descriptor)){
+    descriptor = helpers.from.json.to.list(descriptor)
+  }
   
   if ( is.null(baseDescriptor) |
        is.empty(baseDescriptor) |
@@ -573,7 +584,7 @@ descriptor.pointer <- function(value, descriptor) {
 #' @export
 #'
 helpers.from.json.to.list = function(lst) {
-  return(jsonlite::fromJSON(lst, simplifyVector = TRUE))
+  return(jsonlite::fromJSON(lst, simplifyVector = FALSE))
 }
 
 #' helpers from list to json

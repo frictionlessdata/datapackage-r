@@ -26,7 +26,7 @@ foreach(name = 1:length(PROFILES) ) %do% {
 
   test_that(stringr::str_interp('load registry "${PROFILES[[name]]}" profile'), {
 
-    jsonschema = jsonlite::fromJSON(stringr::str_interp('inst/profiles/${PROFILES[[name]]}.json'))
+    jsonschema = helpers.from.json.to.list(stringr::str_interp('inst/profiles/${PROFILES[[name]]}.json'))
 
     profile = Profile.load(PROFILES[[name]])
 
@@ -36,7 +36,7 @@ foreach(name = 1:length(PROFILES) ) %do% {
 
 test_that('load remote profile', {
   url = 'http://example.com/data-package.json'
-  jsonschema = jsonlite::fromJSON('inst/profiles/data-package.json')
+  jsonschema = helpers.from.json.to.list('inst/profiles/data-package.json')
 
   profile = Profile.load(url)
   expect_equal(profile$name, 'data-package')
@@ -84,7 +84,6 @@ foreach(name = 1:length(PROFILES) ) %do% {
     profile = Profile.load(PROFILES[[name]])
     response = httr::GET(stringr::str_interp('https://specs.frictionlessdata.io/schemas/${PROFILES[[name]]}.json'))
     response.data = httr::content(response, as = 'text', encoding = 'UTF-8')
-    identical(profile$jsonschema, helpers.from.json.to.list(response.data))
+    expect_true(identical(profile$jsonschema, helpers.from.json.to.list(response.data)))
   })
 }
-

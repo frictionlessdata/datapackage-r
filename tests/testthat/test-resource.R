@@ -24,7 +24,7 @@ test_that('works with base descriptor', {
   expect_equal(resource$descriptor,
                expandResourceDescriptor(descriptor))
   expect_true(resource$inline)
-  expect_equal(resource$source, "data")
+  expect_equal(resource$source, list("data"))
   expect_null(resource$table)
   
 })
@@ -38,7 +38,7 @@ test_that('works with tabular descriptor', {
                expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
   expect_true(resource$inline)
   
-  expect_equal(resource$source, "data")
+  expect_equal(resource$source, list("data"))
   expect_null(resource$table)
   
 })
@@ -191,7 +191,7 @@ test_that('local', {
 }'
   resource = Resource.load(descriptor, basePath = 'inst/data')
   expect_equal(resource$descriptor, 
-               expandResourceDescriptor(jsonlite::fromJSON('{"name": "name","data": "data","schema": {"fields": [{"name": "name"}]} }')))
+               expandResourceDescriptor(helpers.from.json.to.list('{"name": "name","data": "data","schema": {"fields": [{"name": "name"}]} }')))
   })
 
 test_that('local bad', {
@@ -545,6 +545,3 @@ jsonlite::fromJSON(
 # {"format":"default","name":"population","type":"integer"}],
 # "missingValues":[""]
 # }}'
-
-#
-#

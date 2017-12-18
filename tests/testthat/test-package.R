@@ -16,7 +16,7 @@ testthat::context("Package #load")
 test_that('initializes with Object descriptor', {
   descriptor = 'inst/data/dp1/datapackage.json'
   dataPackage = Package.load(descriptor, basePath= 'inst/data/dp1')
-  expect_true(identical(dataPackage$descriptor,expandPackageDescriptor(jsonlite::fromJSON(descriptor))))
+  expect_true(identical(dataPackage$descriptor,expandPackageDescriptor(descriptor)))
   # expect_true(identical(lapply(dataPackage$descriptor,unlist,use.names=F, recursive = FALSE), lapply(expandPackageDescriptor(jsonlite::fromJSON(descriptor)),unlist,use.names=F, recursive = FALSE)))
 })
 
@@ -98,11 +98,11 @@ test_that('initializes with URL descriptor', {
 # testthat::context("Package #descriptor (retrieve)")
 # ###################################################
 # 
-# test_that('object', {
-#   descriptor = jsonlite::fromJSON('{"resources": [{"name": "name", "data": ["data"]}]}')
-#   dataPackage = Package.load(descriptor)
-#   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
-# })
+test_that('object', {
+  descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
+  dataPackage = Package.load(descriptor)
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
+})
 # 
 # test_that('string remote path', {
 #   target.contents = jsonlite::fromJSON('inst/data/data-package.json',flatten = T,simplifyVector = T)
@@ -130,35 +130,38 @@ test_that('initializes with URL descriptor', {
 # # })
 # # 
 # 
-# test_that('string local path', {
-#   contents =  jsonlite::fromJSON('inst/data/data-package.json')
-#   descriptor = 'inst/data/data-package.json'
-#   dataPackage = Package.load(descriptor)
-#   expect_equal(dataPackage$descriptor, expandPackageDescriptor(contents))
-#  })
+test_that('string local path', {
+  contents =  'inst/data/data-package.json'
+  descriptor = 'inst/data/data-package.json'
+  dataPackage = Package.load(descriptor)
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(contents))
+ })
+
+test_that('string local path bad', {
+  descriptor = 'inst/data/bad-path.json'
+  expect_error(Package.load(descriptor))
+})
+
+######################################################
+testthat::context("Package #descriptor (dereference)")
+######################################################
 # 
-# test_that('string local path bad', {
-#   descriptor = 'inst/data/bad-path.json'
-#   expect_error(Package.load(descriptor))
+# 
+# test_that('mixed', {
+#   descriptor = jsonlite::fromJSON('inst/data/data-package-dereference.json')
+#   
+#     dataPackage = Package.load(descriptor)
+#     
+# target =
+# purrr::map(jsonlite::fromJSON('[
+#       {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
+#                                {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
+#                                ]',simplifyVector=F),expandResourceDescriptor)
+#     
+# 
+# expect_equal( dataPackage$descriptor$resources, target)
+# 
 # })
-# 
-# ######################################################
-# testthat::context("Package #descriptor (dereference)")
-# ######################################################
-# 
-# # 
-# # test_that('mixed', {
-# #   descriptor = jsonlite::fromJSON('inst/data/data-package-dereference.json',flatten = F)
-# #   str(descriptor)
-# #     dataPackage = Package.load(descriptor)
-# #     
-# #     expect_equal( dataPackage.descriptor.resources, 
-# #                   [
-# #       {name: 'name1', data: ['data'], schema: {fields: [{name: 'name'}]}},
-# #       {name: 'name2', data: ['data'], dialect: {delimiter: ','}},
-# #       ].map(expandResourceDescriptor))
-# # 
-# # })
 # # 
 # # test_that('pointer', {
 # #   descriptor = {
