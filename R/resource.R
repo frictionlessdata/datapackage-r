@@ -64,7 +64,7 @@ Resource <- R6Class(
     rawIter = function(stream = FALSE){
       
       # Error for inline
-      if (self$inline) {
+      if (isTRUE(self$inline)) {
         stop(DataPackageError$new('Methods iter/read are not supported for inline data')$message)
       }
       

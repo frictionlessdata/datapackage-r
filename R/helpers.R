@@ -70,7 +70,8 @@ retrieveDescriptor = function(descriptor) {
     
     else {
       tryCatch({
-        descriptor = helpers.from.json.to.list(descriptor)
+        if (endsWith(descriptor,"csv")) descriptor = as.list(utils::read.csv(descriptor,as.is = TRUE))
+        else descriptor = helpers.from.json.to.list(descriptor)
         return(descriptor)
       },
       

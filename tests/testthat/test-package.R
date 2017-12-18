@@ -1,35 +1,35 @@
-# library(datapackage.r)
-# library(testthat)
-# library(foreach)
-# library(stringr)
-# library(crul)
-# library(webmockr)
-# 
-# # Tests
-# 
-# testthat::context("Package")
-# 
-# ###################################
-# testthat::context("Package #load")
-# ###################################
-# 
-# test_that('initializes with Object descriptor', {
-#   descriptor = 'inst/data/dp1/datapackage.json'
-#   dataPackage = Package.load(descriptor, basePath= 'inst/data/dp1')
-#   expect_true(identical(dataPackage$descriptor,expandPackageDescriptor(jsonlite::fromJSON(descriptor))))
-#   # expect_true(identical(lapply(dataPackage$descriptor,unlist,use.names=F, recursive = FALSE), lapply(expandPackageDescriptor(jsonlite::fromJSON(descriptor)),unlist,use.names=F, recursive = FALSE)))
+library(datapackage.r)
+library(testthat)
+library(foreach)
+library(stringr)
+library(crul)
+library(webmockr)
+
+# Tests
+
+testthat::context("Package")
+
+###################################
+testthat::context("Package #load")
+###################################
+
+test_that('initializes with Object descriptor', {
+  descriptor = 'inst/data/dp1/datapackage.json'
+  dataPackage = Package.load(descriptor, basePath= 'inst/data/dp1')
+  expect_true(identical(dataPackage$descriptor,expandPackageDescriptor(jsonlite::fromJSON(descriptor))))
+  # expect_true(identical(lapply(dataPackage$descriptor,unlist,use.names=F, recursive = FALSE), lapply(expandPackageDescriptor(jsonlite::fromJSON(descriptor)),unlist,use.names=F, recursive = FALSE)))
+})
+
+test_that('initializes with URL descriptor', {
+  descriptor = 'inst/data/dp1/datapackage.json'
+  dataPackage = Package.load(
+    'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
+})
+
+# test_that('throws errors for invalid datapackage in strict mode', {
+#   expect_error(Package.load(list(),strict=TRUE))
 # })
-# 
-# test_that('initializes with URL descriptor', {
-#   descriptor = 'inst/data/dp1/datapackage.json'
-#   dataPackage = Package.load(
-#     'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
-#   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
-# })
-# 
-# # test_that('throws errors for invalid datapackage in strict mode', {
-# #   expect_error(Package.load(list(),strict=TRUE))
-# # })
 # 
 # test_that('stores errors for invalid datapackage', {
 #   dataPackage = Package.load()
