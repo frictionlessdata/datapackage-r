@@ -58,7 +58,7 @@ Resource <- R6Class(
     
     checkRelations = function() {
       if (isTRUE(!is.null(self$read(relations = TRUE))))
-      return(TRUE)
+        return(TRUE)
     },
     
     rawIter = function(stream = FALSE){
@@ -203,14 +203,14 @@ Resource <- R6Class(
     multipart = function() {
       return(private$sourceInspection_$multipart)
     },
-
+    
     tabular = function() {
       if (isTRUE(private$currentDescriptor_$profile == 'tabular-data-resource')) return(TRUE)
       if (!isTRUE(private$strict_)) {
         if (isTRUE(private$currentDescriptor_$format %in% config::get("TABULAR_FORMATS", file = "config.yaml"))) return(TRUE)
         if (isTRUE(private$sourceInspection_$tabular)) return(TRUE)
       }
-     return(FALSE)
+      return(FALSE)
     },
     
     source = function() {
@@ -255,11 +255,11 @@ Resource <- R6Class(
       private$sourceInspection_ = inspectSource( private$currentDescriptor_$data,
                                                  as.character(private$currentDescriptor_$path),
                                                  private$basePath_
-                                                 )
+      )
       
       # Instantiate profile
       private$profile_ = Profile.load(private$currentDescriptor_$profile)
-
+      
       
       
       # Validate descriptor
@@ -343,7 +343,7 @@ Resource <- R6Class(
       return(private$relations_)
     }
     
-   
+    
     
     
   ) )
@@ -371,7 +371,7 @@ DIALECT_KEYS = c(
 
 Resource.load = function(descriptor = list(), basePath=NULL, strict = FALSE, dataPackage = list() ) {
   
-
+  
   
   # Get base path
   if (is.null(basePath)) basePath = locateDescriptor(descriptor)
@@ -404,38 +404,38 @@ inspectSource = function(data, path, basePath) {
     inspection$source = NULL
     inspection$blank = TRUE 
     
-  # Inline  
+    # Inline  
   } else if (isTRUE(!is.null(data))) {
-
+    
     inspection$source = data
     inspection$inline = TRUE
     inspection$tabular = purrr::every(data, is.list)
     
-  # Local/Remote
+    # Local/Remote
   } else if (length(path) == 1) {
     
     # Remote
     if (isTRUE(isRemotePath(path[1]))) {
       inspection$source = path[1]
       inspection$remote = TRUE
-  } else if (isTRUE(!is.null(basePath) && isRemotePath(basePath))) {
-    inspection$source = stringr::str_c(basePath, path[1], sep = "/")
-    inspection$remote = TRUE
-    
-    # Local
-  } else {
-    # Path is not safe
-    if ( isTRUE(isSafePath(path[1] == FALSE)) |  isTRUE(isSafePath(as.character(path[1])) == FALSE) ) {
-      stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" is not safe'))$message)
+    } else if (isTRUE(!is.null(basePath) && isRemotePath(basePath))) {
+      inspection$source = stringr::str_c(basePath, path[1], sep = "/")
+      inspection$remote = TRUE
+      
+      # Local
+    } else {
+      # Path is not safe
+      if ( isTRUE(isSafePath(path[1] == FALSE)) |  isTRUE(isSafePath(as.character(path[1])) == FALSE) ) {
+        stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" is not safe'))$message)
+      }
+      # Not base path
+      if (isTRUE(is.null(basePath))) {
+        stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" requires base path'))$message)
+      }
+      
+      inspection$source = stringr::str_c(basePath, path[1], sep = '/')
+      inspection$local = TRUE
     }
-    # Not base path
-    if (isTRUE(is.null(basePath))) {
-      stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" requires base path'))$message)
-    }
-    
-    inspection$source = stringr::str_c(basePath, path[1], sep = '/')
-    inspection$local = TRUE
-  }
     
     # Inspect
     inspection$format = tools::file_ext(path[1])[1]
@@ -452,10 +452,10 @@ inspectSource = function(data, path, basePath) {
     inspection$source = unlist(purrr::map(inspections, function(item) item$source))
     inspection$multipart = TRUE
   }
-
+  
   
   return(inspection)
-
+  
 }
 
 
@@ -467,9 +467,9 @@ createByteStream = function(source, remote) {
   if (isTRUE(remote)) {
     
     connection = url(source) #await axios.get(source)
-  
+    
   } else {
-
+    
     connection = file(source)
   }
   stream = BinaryReadableConnection$new(list(source = connection))

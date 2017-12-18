@@ -122,7 +122,7 @@ dereferencePackageDescriptor = function (descriptor, basePath) {
     
     descriptor$resources[index] = dereferenceResourceDescriptor(descriptor$resources[index], basePath, descriptor)
   }
-
+  
   return(descriptor)
 }
 
@@ -136,7 +136,7 @@ dereferencePackageDescriptor = function (descriptor, basePath) {
 
 
 dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
-                                            NULL) {
+                                           NULL) {
   #conditions
   if (is.json(descriptor)){
     descriptor = helpers.from.json.to.list(descriptor)
@@ -285,7 +285,7 @@ expandPackageDescriptor = function(descriptor) {
 expandResourceDescriptor = function(descriptor) {
   
   if (is.json(descriptor)) 
-    descriptor = jsonlite::fromJSON(descriptor)
+    descriptor = helpers.from.json.to.list(descriptor)
   
   
   if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
@@ -309,7 +309,7 @@ expandResourceDescriptor = function(descriptor) {
   if (isTRUE(descriptor$profile == 'tabular-data-resource')) {
     
     # Schema
-
+    
     if (isTRUE(!is.empty(descriptor$schema)) |
         isTRUE(!is.null(descriptor$schema)) |
         isTRUE(!descriptor$schema == "undefined")) {
@@ -396,14 +396,14 @@ isSafePath = function(path) {
     containsWindowsVar = function(path){
       if (isTRUE(grepl("%.+%", path)))
         TRUE
-    else
-      FALSE
+      else
+        FALSE
     }
     containsPosixVar = function(path){
       if (isTRUE(grepl("\\$.+", path)))
         TRUE
-    else
-      FALSE
+      else
+        FALSE
     }
     
     # un Safety checks

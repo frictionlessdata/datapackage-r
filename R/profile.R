@@ -38,7 +38,7 @@ Profile <- R6::R6Class(
         }
       }
       
-      private$jsonschema_ = helpers.from.json.to.list(private$profile_)
+      private$jsonschema_ = helpers.from.json.to.list(readLines(private$profile_, warn=FALSE))
       
     },
     
@@ -89,7 +89,7 @@ Profile <- R6::R6Class(
     },
     
     jsonschema=function(){
-     #private$jsonschema_ = jsonlite::fromJSON(private$jsonschema_)
+      #private$jsonschema_ = jsonlite::fromJSON(private$jsonschema_)
       # if(is.character(private$jsonschema_) && jsonlite::validate(private$jsonschema_))private$jsonschema_ = helpers.from.json.to.list(private$profile_)
       # private$jsonschema_ = jsonlite::toJSON(jsonlite::fromJSON(private$profile_))
       return(private$jsonschema_)
