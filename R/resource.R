@@ -207,7 +207,7 @@ Resource <- R6Class(
     tabular = function() {
       if (isTRUE(private$currentDescriptor_$profile == 'tabular-data-resource')) return(TRUE)
       if (!isTRUE(private$strict_)) {
-        if (isTRUE(private$currentDescriptor_$format %in% config::get("TABULAR_FORMATS"))) return(TRUE)
+        if (isTRUE(private$currentDescriptor_$format %in% config::get("TABULAR_FORMATS", file = "config.yaml"))) return(TRUE)
         if (isTRUE(private$sourceInspection_$tabular)) return(TRUE)
       }
      return(FALSE)
@@ -247,6 +247,7 @@ Resource <- R6Class(
     table_ = NULL,
     
     build_ = function() {
+      
       private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
       # Inspect source
@@ -257,16 +258,14 @@ Resource <- R6Class(
                                                  )
       
       # Instantiate profile
-      private$profile_ = Profile$new(private$currentDescriptor_$profile)
+      private$profile_ = Profile.load(private$currentDescriptor_$profile)
 
       
       
       # Validate descriptor
       private$errors_ = list()
-
-
       
-      valid_errors = private$profile_$validate(private$currentDescriptor_)
+      valid_errors = private$profile_$validate(helpers.from.list.to.json(private$currentDescriptor_))
       
       if (!isTRUE(valid_errors)) {
         
@@ -371,6 +370,12 @@ DIALECT_KEYS = c(
 #' @export
 
 Resource.load = function(descriptor = list(), basePath=NULL, strict = FALSE, dataPackage = list() ) {
+  
+  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
+    descriptor = helpers.from.json.to.list(descriptor)
+  } else if (is.character(descriptor)&& jsonlite::validate(descriptor)){
+    descriptor = helpers.from.json.to.list(descriptor)
+  }
   
   # Get base path
   if (is.null(basePath)) basePath = locateDescriptor(descriptor)

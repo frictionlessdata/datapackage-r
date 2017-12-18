@@ -167,7 +167,21 @@ Package <- R6::R6Class(
       # Process descriptor
       
       ## think of making lists at this point
-      
+      # if (is.character(private$currentDescriptor_)) {
+      #   if (jsonlite::validate(private$currentDescriptor_)) {
+      #     private$currentDescriptor_ = jsonlite::fromJSON(private$currentDescriptor_, simplifyVector = T)
+      #   }
+      # }
+      # 
+      # if (is.character(private$nextDescriptor_)) {
+      #   if (jsonlite::validate(private$nextDescriptor_)) {
+      #     private$nextDescriptor_ = jsonlite::fromJSON(private$nextDescriptor_, simplifyVector = T)
+      #   }
+      # }
+      # 
+      # if (!is.character(private$currentDescriptor_json) | is.list(private$currentDescriptor_json)) {
+      #     private$currentDescriptor_json = jsonlite::toJSON(private$currentDescriptor_json)
+      #   }
       #if (!is.json(private$currentDescriptor_)) private$currentDescriptor_ = jsonlite::toJSON(private$currentDescriptor_, auto_unbox = TRUE)
       private$currentDescriptor_ = expandPackageDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
@@ -176,7 +190,7 @@ Package <- R6::R6Class(
       
       private$errors_ = list()
       
-      valid_errors = private$profile_$validate(this._currentDescriptor)
+      valid_errors = private$profile_$validate(private$currentDescriptor_)
       
       if (!isTRUE(valid_errors$valid)) {
         private$errors_ = valid_errors$errors
@@ -189,6 +203,8 @@ Package <- R6::R6Class(
         }
       }
       
+
+      
       # Update resources
       private$resources_length = if (isUndefined(private$currentDescriptor_$resources))
         length(list())
@@ -196,23 +212,23 @@ Package <- R6::R6Class(
         length(private$currentDescriptor_$resources)
       descriptor = private$currentDescriptor_$resources
       
-      for (index in private$currentDescriptor_$resources) {
-        resource = private$resources_[index]
-        
-        if (isUndefined(resource) ||
-            !identical(resource$descriptor[index], private$descriptor$resources[index]) ||
-            (!isUndefined(resource$schema) &&
-             length(resource$schema$foreignKeys > 1))) {
-          private$resources_[index] = Resource$new(
-            descriptor,
-            list(
-              strict = private$strict_,
-              basePath = private$basePath_,
-              dataPackage = self
-            )
-          )
-        }
-      }
+      # for (index in length(private$currentDescriptor_$resources)) {
+      #   resource = private$resources_[index]
+      #   
+      #   if (isUndefined(resource) ||
+      #       !identical(resource$descriptor[index], private$descriptor$resources[index]) ||
+      #       (!isUndefined(resource$schema) &&
+      #        length(resource$schema$foreignKeys > 1))) {
+      #     private$resources_[index] = Resource$new(
+      #       descriptor,
+      #       list(
+      #         strict = private$strict_,
+      #         basePath = private$basePath_,
+      #         dataPackage = self
+      #       )
+      #     )
+      #   }
+      # }
       
     }
     
@@ -228,6 +244,13 @@ Package <- R6::R6Class(
 Package.load = function(descriptor = list(),
                         basePath = NULL,
                         strict = FALSE) {
+  
+  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
+    descriptor = helpers.from.json.to.list(descriptor)
+  } else if (is.character(descriptor)&& jsonlite::validate(descriptor)){
+      descriptor = helpers.from.json.to.list(descriptor)
+  }
+  
   # Get base path
   
   if (isUndefined(basePath)) {
@@ -241,18 +264,6 @@ Package.load = function(descriptor = list(),
   
   # Get profile
   
-  profile = NULL
-  
-  # fromjson = jsonlite::fromJSON(stringr::str_replace_all(descriptor, "[\r\n  ]" , "") )
-  #
-  # map_profile = purrr::compact(purrr::map(fromjson,"profile"))
-  #
-  # if ( (is.list(map_profile) & !purrr::is_empty(map_profile)) | (is.character(map_profile) & isTRUE(map_profile != "")) ) {
-  #
-  #   descriptor.profile = unlist(map_profile)
-  # profile = Profile.load(descriptor.profile)
-  
-  # } else
   profile = if (is.null(descriptor$profile))
     config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = "config.yaml")
   else
@@ -260,7 +271,7 @@ Package.load = function(descriptor = list(),
   
   profile.validation = Profile.load(profile)$validate(descriptor)
   
-  if (!isTRUE(profile.validation$valid)) {
+  if (isTRUE(!profile.validation$valid)) {
     message = message = DataPackageError$new(profile.validation$errors)$message
     
     if (isTRUE(strict)) {
@@ -268,8 +279,9 @@ Package.load = function(descriptor = list(),
       stop(message)
     }
   }
+  
   Profile.load(profile)
-  # descriptor = jsonlite::fromJSON(descriptor)
+
   return(Package$new(descriptor, basePath, strict, profile))
   
 }

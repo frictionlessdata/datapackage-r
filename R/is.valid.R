@@ -31,10 +31,3 @@ is.valid = function(descriptor,schema=NULL)  {
   validation=list(valid=validate, errors=attr(validate,"errors"))
   return(validation)
 }
-
-
-# .print.validator = function (x, ...){
-#   cat("This is a valid input descriptor:\n")
-#   x
-# }
-

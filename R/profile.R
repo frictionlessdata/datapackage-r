@@ -21,32 +21,35 @@ Profile <- R6::R6Class(
   public = list(
     
     initialize = function(profile) {
-      if (is.character(profile)) {
-        profile = tryCatch({
-          
-          profile =  system.file(stringr::str_interp("profiles/${profile}.json"), package = "datapackage.r")
-         
-          
-        }, 
-        error = function(){
-          stop(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))
-        }, 
-        warning = function() {
-          stop(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))
-        })
-      }
-
-      private$jsonschema_ = profile
-
       
-
-      },
-
+      private$profile_ = profile
+      
+      if (is.character(private$profile_)) {
+        
+        private$profile_ = system.file(stringr::str_interp("profiles/${private$profile_}.json"), package = "datapackage.r")
+        
+        if(private$profile_ =="" | is.null(private$profile_)) {
+          
+          private$message.error_ = DataPackageError$new(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))$message
+          private$profile_ = private$message.error_
+          
+          stop(DataPackageError$new(private$profile_)$message)
+        }
+      }
+      
+      private$jsonschema_ = helpers.from.json.to.list(private$profile_)
+      
+    },
+    
     validate = function(descriptor){
       
-      if (!is.json(descriptor)|is.character(descriptor)) descriptor2=jsonlite::toJSON(descriptor)
+      if (is.character(descriptor) && isTRUE(jsonlite::validate(descriptor))){
+        descriptor2 = descriptor
+      } else {
+        descriptor2 = helpers.from.list.to.json(descriptor)
+      }
       
-      vld = is.valid(descriptor2,jsonlite::toJSON(private$jsonschema_))
+      vld = is.valid(descriptor2, helpers.from.list.to.json(private$jsonschema_))
       
       private$validation_$valid = vld$valid
       
@@ -70,7 +73,7 @@ Profile <- R6::R6Class(
     
     name=function(){
       
-      profile_title = jsonlite::fromJSON(private$profile_)$title
+      profile_title = helpers.from.json.to.list(private$profile_)$title
       
       private$jsonschema_title = stringr::str_replace_all(profile_title," ","-")
       
@@ -85,7 +88,8 @@ Profile <- R6::R6Class(
     },
     
     jsonschema=function(){
-      private$jsonschema_ = jsonlite::fromJSON(private$profile_)
+     #private$jsonschema_ = jsonlite::fromJSON(private$jsonschema_)
+      # if(is.character(private$jsonschema_) && jsonlite::validate(private$jsonschema_))private$jsonschema_ = helpers.from.json.to.list(private$profile_)
       # private$jsonschema_ = jsonlite::toJSON(jsonlite::fromJSON(private$profile_))
       return(private$jsonschema_)
     }
@@ -98,19 +102,8 @@ Profile <- R6::R6Class(
     jsonschema_=NULL,
     jsonschema_title = NULL,
     validation_=list(valid=TRUE,errors=list()),
-    message.error_ = "None",
+    message.error_ = NULL
     
-    build_ = function() {
-      
-      private$profile_ = file.path(stringr::str_interp("inst/profiles/${private$profile_}.json"))
-      
-      if(private$profile_ =="" | is.null(private$profile_)) {
-        private$message.error_ = DataPackageError$new(stringr::str_interp("Profiles registry hasn't profile '${private$profile}'"))$message
-        private$profile_ = private$message.error_
-        
-        stop(DataPackageError$new(private$profile_)$message)
-      }
-    }
   ))
 
 #' Profile.load

@@ -35,6 +35,7 @@ locateDescriptor = function(descriptor) {
 #' @export
 #'
 retrieveDescriptor = function(descriptor) {
+  
   if (is.list(descriptor)) {
     return(descriptor)
   }
@@ -98,18 +99,22 @@ retrieveDescriptor = function(descriptor) {
 #'
 
 dereferencePackageDescriptor = function (descriptor, basePath) {
+  
   if (is.json(descriptor))
-    descriptor = jsonlite::fromJSON(descriptor)
+    
+    descriptor = helpers.from.json.to.list(descriptor)
   
   for (index in (if (is.empty(descriptor$resources))
+    
     length(list())
+    
     else
+      
       names(descriptor$resources))) {
+    
     descriptor$resources[index] = dereferenceResourceDescriptor(descriptor$resources[index], basePath, descriptor)
   }
-  #names(descriptor$resources)
-  #descriptor = jsonlite::toJSON(descriptor)
-  
+
   return(descriptor)
 }
 
@@ -127,12 +132,13 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
   #conditions
   if (is.json(descriptor))
     descriptor = helpers.from.json.to.list(descriptor)
+  
   if (is.json(baseDescriptor))
     descriptor = helpers.from.json.to.list(descriptor)
   
-  if (is.null(baseDescriptor) |
-      is.empty(baseDescriptor) |
-      !exists("baseDescriptor"))
+  if ( is.null(baseDescriptor) |
+       is.empty(baseDescriptor) |
+       !exists("baseDescriptor"))
     baseDescriptor = descriptor
   
   #set list properties
@@ -155,8 +161,9 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
           stringr::str_interp(
             'Not resolved Pointer URI "${value}" for resource[[${property}]]'
           )
-        )
-        stop(message$message)
+        )$message
+        
+        stop(message)
       }
       
       # URI -> Remote
@@ -164,28 +171,31 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
     } else if (isRemotePath(unlist(value))) {
       tryCatch({
         # response = httr::GET(value)
-        descriptor[[property]] = helpers.from.json.to.list(value)#httr::content(response, as = 'text')
+        descriptor[[property]] = helpers.from.json.to.list(value)
       },
       error = function(e) {
+        
         browser()
         
         message = DataPackageError$new(
           stringr::str_interp(
             'Not resolved Remote URI "${value}" for resource[[${property}]]'
           )
-        )
-        stop(message$message)
+        )$message
+        
+        stop(message)
       })
       
       # URI -> Local
     } else {
-      if (!isTRUE(isSafePath(unlist(value)))) {
+      if (isTRUE(!isSafePath(unlist(value)))) {
         message = DataPackageError$new(
           stringr::str_interp(
             'Not safe path in Local URI "${value}" for resource[[${property}]]'
           )
-        )
-        stop(message$message)
+        )$message
+        
+        stop(message)
       }
       
       if (isTRUE(is.null(basePath) | basePath == "")) {
@@ -193,8 +203,9 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
           stringr::str_interp(
             'Local URI "${value}" requires base path for resource[[${property}]]'
           )
-        )
-        stop(message$message)
+        )$message
+        
+        stop(message)
       }
       
       tryCatch({
@@ -210,8 +221,8 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
           stringr::str_interp(
             'Not resolved Local URI "${value}" for resource[[${property}]]'
           )
-        )
-        stop(message$message)
+        )$message
+        stop(message)
       })
       
     }
@@ -228,23 +239,29 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
 #' @export
 #'
 expandPackageDescriptor = function(descriptor) {
-  if (isTRUE(descriptor == "{}" |
-             descriptor == "[]"))
+  
+  if (isTRUE( descriptor == "{}" |
+              descriptor == "[]" ))
     descriptor = list()
-  if (is.json(descriptor))
-    descriptor = jsonlite::fromJSON(descriptor)
+  
+  if (is.json(descriptor)) {
+    descriptor = helpers.from.json.to.list(descriptor)
+  }
+  
+  
+  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
+    descriptor = helpers.from.json.to.list(descriptor)
+  } else if (is.character(descriptor) && jsonlite::validate(descriptor)){
+    descriptor = helpers.from.json.to.list(descriptor)
+  }
+  
   descriptor$profile = if (is.empty(descriptor$profile))
     config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = "config.yaml")
   else
     descriptor$profile
   
-  # descriptor[["resources"]] = purrr::map(descriptor[["resources"]], expandResourceDescriptor)
-  #for (index in ( if (is.empty(descriptor$resources)) length(list()) else length(descriptor$resources)) ) {
   descriptor["resources"] = purrr::map(descriptor["resources"], expandResourceDescriptor)
-  #descriptor$resources[[index]] = expandResourceDescriptor(descriptor$resources[index])
-  #}
-  #names(descriptor$resources)
-  #descriptor = jsonlite::toJSON(descriptor)
+  
   return(descriptor)
 }
 
@@ -254,30 +271,44 @@ expandPackageDescriptor = function(descriptor) {
 #' @export
 #'
 expandResourceDescriptor = function(descriptor) {
+  
+  if (is.json(descriptor)) 
+    descriptor = jsonlite::fromJSON(descriptor)
+  
+  
+  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
+    descriptor = helpers.from.json.to.list(descriptor)
+  } else if (is.character(descriptor) && jsonlite::validate(descriptor)){
+    descriptor = helpers.from.json.to.list(descriptor)
+  }
   # set default for profile and encoding
+  
   descriptor$profile = if (isTRUE(is.null(descriptor$profile)))
-    config::get("DEFAULT_RESOURCE_PROFILE")
+    config::get("DEFAULT_RESOURCE_PROFILE", file = "config.yaml")
   else
     descriptor$profile
   
   descriptor$encoding = if (isTRUE(is.null(descriptor$encoding)))
-    config::get("DEFAULT_RESOURCE_ENCODING")
+    config::get("DEFAULT_RESOURCE_ENCODING", file = "config.yaml")
   else
     descriptor$encoding
   
   # tabular-data-resource
   if (isTRUE(descriptor$profile == 'tabular-data-resource')) {
+    
     # Schema
-    #schema = descriptor$schema
+
     if (isTRUE(!is.empty(descriptor$schema)) |
         isTRUE(!is.null(descriptor$schema)) |
         isTRUE(!descriptor$schema == "undefined")) {
+      
       fields = list()
       #for (field in ( if (is.empty(descriptor$schema$fields)) list() else descriptor$schema$fields) ) {
       fields$type = if (is.empty(descriptor$schema$fields$type))
         config::get("DEFAULT_FIELD_TYPE", file = "config.yaml")
       else
         descriptor$schema$fields$type
+      
       fields$format = if (is.empty(descriptor$schema$fields$format))
         config::get("DEFAULT_FIELD_FORMAT", file = "config.yaml")
       else
@@ -294,7 +325,6 @@ expandResourceDescriptor = function(descriptor) {
     }
     
     # Dialect
-    #dialect = descriptor$dialect
     
     if (isTRUE(!is.null(descriptor$dialect)) |
         isTRUE(!descriptor$dialect == "undefined")) {
@@ -308,8 +338,7 @@ expandResourceDescriptor = function(descriptor) {
         
         descriptor$dialect[[paste(names(config::get("DEFAULT_DIALECT", file = "config.yaml"))[key])]] = config::get("DEFAULT_DIALECT", file = "config.yaml")[key]
       }
-      descriptor$dialect = lapply(descriptor$dialect, unlist, use.names =
-                                    FALSE)
+      descriptor$dialect = lapply(descriptor$dialect, unlist, use.names = FALSE)
       #}
     }
   }
@@ -348,19 +377,22 @@ isRemotePath = function(path) {
 #'
 
 isSafePath = function(path) {
+  
   if (!isTRUE(is.character(path)))
     FALSE
   else {
-    containsWindowsVar = function(path)
+    containsWindowsVar = function(path){
       if (isTRUE(grepl("%.+%", path)))
         TRUE
     else
       FALSE
-    containsPosixVar = function(path)
+    }
+    containsPosixVar = function(path){
       if (isTRUE(grepl("\\$.+", path)))
         TRUE
     else
       FALSE
+    }
     
     # un Safety checks
     unsafenessConditions = list(
@@ -390,13 +422,13 @@ isSafePath = function(path) {
 #' @export
 #'
 isUndefined = function(x) {
+  
   if (any(isTRUE(!exists(deparse(substitute(
     x
   ))) || is.null(x))))
     TRUE
   else
     FALSE
-  
 }
 
 #' Push elements in a list or vector
@@ -446,6 +478,7 @@ is.compressed <- function(x) {
 #' @export
 #'
 is.json = function(object) {
+  
   if (class(object) == "json")
     return(TRUE)
   else
@@ -460,15 +493,15 @@ is.json = function(object) {
 #'
 
 findFiles = function(pattern, path = getwd()) {
+  
   files = list.files(recursive = TRUE)
   #files=filepath(path)#, recursive = TRUE)
   matched_files = files[grep(path, files, fixed = FALSE, ignore.case = FALSE)]
+  
   matched_files = matched_files[grep(pattern,
                                      matched_files,
                                      fixed = FALSE,
                                      ignore.case = FALSE)]
-  
-  
   return(matched_files)
 }
 
@@ -526,17 +559,27 @@ is.local.descriptor.path = function(descriptor, directory = ".") {
 descriptor.pointer <- function(value, descriptor) {
   if (startsWith(as.character(value), "#")) {
     pointer = paste(deparse(substitute(descriptor)), paste(unlist(
-      stringr::str_split(as.character(value), "/")
-    )[-1], collapse = "$"), sep = "$")
+      stringr::str_split(as.character(value), "/"))[-1],
+      collapse = "$"), sep = "$")
     value =  eval(parse(text = pointer))
   }
   return(value)
 }
 
+#' helpers from json to list
+#' @param lst list
+#' @rdname helpers.from.json.to.list
+#' @export
+#'
 helpers.from.json.to.list = function(lst) {
-  return(jsonlite::fromJSON(lst, simplifyVector = FALSE))
+  return(jsonlite::fromJSON(lst, simplifyVector = TRUE))
 }
 
+#' helpers from list to json
+#' @param json json
+#' @rdname helpers.from.list.to.json
+#' @export
+#'
 helpers.from.list.to.json = function(json) {
   return(jsonlite::toJSON(json, auto_unbox = TRUE))
 }
