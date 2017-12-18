@@ -183,58 +183,34 @@ test_that('pointer bad', {
 #   assert.include(error.message, 'Not resolved Remote URI')
 # })
 #
-# test_that('local', {
-#   descriptor = {
-#     name: 'name',
-#     data: 'data',
-#     schema: 'table-schema.json',
-#   }
-#   if (process.env.USER_ENV !== 'browser') {
-#     resource = Resource.load(descriptor, {basePath: 'data'})
-#     expect_equal(resource.descriptor, expand({
-#       name: 'name',
-#       data: 'data',
-#       schema: {fields: [{name: 'name'}]},
-#     }))
-#   } else {
-#     error = catchError(Resource.load, descriptor, {basePath: 'data'})
-#     assert.instanceOf(error, Error)
-#     assert.include(error.message, 'in browser is not supported')
-#   }
-# })
-#
-# test_that('local bad', {
-#   descriptor = {
-#     name: 'name',
-#     data: 'data',
-#     schema: 'bad-path.json',
-#   }
-#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
-#   assert.instanceOf(error, Error)
-#   if (process.env.USER_ENV !== 'browser') {
-#     assert.include(error.message, 'Not resolved Local URI')
-#   } else {
-#     assert.include(error.message, 'in browser is not supported')
-#   }
-# })
-#
-# test_that('local bad not safe', {
-#   descriptor = {
-#     name: 'name',
-#     data: 'data',
-#     schema: '../data/table_schema.json',
-#   }
-#   error = catchError(Resource.load, descriptor, {basePath: 'data'})
-#   assert.instanceOf(error, Error)
-#   if (process.env.USER_ENV !== 'browser') {
-#     assert.include(error.message, 'Not safe path')
-#   } else {
-#     assert.include(error.message, 'in browser is not supported')
-#   }
-# })
-#
-#
-#
+test_that('local', {
+  descriptor ='{
+                                  "name": "name",
+                                  "data": "data",
+                                  "schema": "table-schema.json"
+}'
+  resource = Resource.load(descriptor, basePath = 'inst/data')
+  expect_equal(resource$descriptor, 
+               expandResourceDescriptor(jsonlite::fromJSON('{"name": "name","data": "data","schema": {"fields": [{"name": "name"}]} }')))
+  })
+
+test_that('local bad', {
+  descriptor = '{"name": "name",
+                                  "data": "data",
+                                  "schema": "bad-path.json"}'
+  expect_error(Resource.load(descriptor, basePath = 'inst/data'))
+  
+  })
+
+test_that('local bad not safe', {
+  descriptor = '{"name": "name",
+                                  "data": "data",
+                                  "schema": "../data/table_schema.json"}'
+  expect_error(Resource.load(descriptor, basePath = 'inst/data'))
+  })
+
+
+
 # #######################################################
 # testthat::context('Resource #descriptor (expand)')
 # ########################################################
