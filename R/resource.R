@@ -224,6 +224,7 @@ Resource <- R6Class(
     schema = function() {
       if (!isTRUE(self$tabular)) return(NULL) else return(private$getTable_()$schema)
     },
+    # Deprecated
     
     table = function() {
       return(private$getTable_())
@@ -243,9 +244,8 @@ Resource <- R6Class(
     dataPackage_ = NULL,
     basePath_ = NULL,
     relations_ = NULL,
-    # Deprecated
     table_ = NULL,
-    
+
     build_ = function() {
       
       private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
@@ -285,25 +285,25 @@ Resource <- R6Class(
     
     getTable_ = function () {
       #if (isTRUE(is.character(private$currentDescriptor_))) private$currentDescriptor_ = jsonlite::fromJSON(private$currentDescriptor_)
-      if(!isTRUE(!is.null(private$table_))) {
+      if(isTRUE(is.null(private$table_))) {
         
         # Resource -> Regular
-        if (!isTRUE(self$tabular)) {
+        if (!isTRUE(private$sourceInspection_$tabular)) {
           return (NULL)
         }
         
         # Resource -> Multipart
-        if (isTRUE(self$multipart_)) {
+        if (isTRUE(private$sourceInspection_$multipart_)) {
           stop(DataPackageError$new('Resource$table does not support multipart resources')$message)
         }
         
         # Resource -> Tabular
         options = list()
-        schemaDescriptor = private$currentDescriptor_$schema
-        schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::schema.load(jsonlite::toJSON(schemaDescriptor)) else NULL
-        schema = schema$value()
-        table_ = tableschema.r::table.load( self$source, schema = schema, options)
-        private$table_ = table_$value()
+        schemaDescriptor = jsonlite::toJSON(private$currentDescriptor_$schema)
+        schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema$new(jsonlite::toJSON(schemaDescriptor)) else NULL
+        #schema = schema$value()
+        private$table_  = tableschema.r::Table$new(private$sourceInspection_$source, schema, options)
+        #private$table_ = table_$value()
       }
       return(private$table_)
       
@@ -342,9 +342,6 @@ Resource <- R6Class(
       }
       return(private$relations_)
     }
-    
-    
-    
     
   ) )
 
@@ -477,25 +474,78 @@ createByteStream = function(source, remote) {
   return(stream)
 }
 
-# #' Resource.load
-# #' @param descriptor descriptor
-# #' @param basePath basePath
-# #' @param strict strict
-# #' @rdname Resource.load
+# #' MultipartSource class
+# #' 
+# #' @docType class
+# #' @importFrom R6 R6Class
 # #' @export
+# #' @include helpers.R
+# #' @return Object of \code{\link{R6Class}} .
+# #' @format \code{\link{R6Class}} object.
 # 
-# Resource.load = function(descriptor, basePath=NULL, strict = FALSE) {
+# MultipartSource <- R6Class(
+#   "MultipartSource",
+#   public = list(
+#     
+#     source_ = NULL,
+#     remote = NULL,
 # 
-#   # Get base path
-#   if (isUndefined(basePath)) {
-#     basePath = locateDescriptor(descriptor)
-#   }
-# 
-#   # Process descriptor
-#   descriptor = retrieveDescriptor(descriptor)
-# 
-# 
-#   descriptor = dereferenceResourceDescriptor(descriptor, basePath)
-# 
-#   return(Resource$new(descriptor, basePath, strict))
-# }
+#     
+#     initialize = function(source,remote) {
+#       self$source_ = source
+#       self$remote_ = remote
+#       private$rows_ = private$iter_rows()
+#     },
+#     iter = function(){
+#       return(private$rows_)
+#     },
+#     read1 = function(size){
+#       return(self$read(size))
+#     },
+#     seek = function(offset){
+#       if (offset == 0) 
+#         private$rows_ = private$iter_rows() else stop("offset")
+#       return(private$rows_)
+#     },
+#     
+#     read = function(){
+#       
+#       res = b''
+#       
+#       while TRUE:
+#         try:
+#         res += iterators::nextElem (private$rows_)
+#         except StopIteration:
+#           break
+#         if (len(res) > size)
+#           break
+#         
+#       return(res)
+#     }
+#   ),
+#   active = list(
+#     
+#     closed = function(){
+#       return(FALSE)
+#     },
+#     readable = function(){
+#       return(TRUE)
+#     },
+#     seekable = function(){
+#       return(TRUE)
+#     },
+#     writable = function(){
+#       return(FALSE)
+#     },
+#     close = function(){
+#     },
+#     flush = function(){
+#     }
+#     
+#   ),
+#   private = list(
+#     rows_ = NULL,
+#     iter_rows = function(){}
+#   )
+# )
+#   

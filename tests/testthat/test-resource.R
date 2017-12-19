@@ -4,6 +4,7 @@ library(foreach)
 library(stringr)
 library(crul)
 library(webmockr)
+library(httptest)
 
 # Tests
 testthat::context("Resource")
@@ -229,12 +230,12 @@ test_that('general resource', {
 
 test_that('tabular resource schema', {
   descriptor = '{
-                                         "name": "name",
-                                         "data": "data",
-                                         "profile": "tabular-data-resource",
-                                         "schema": {
-                                         "fields": [{"name": "name"}]
-                                         }
+  "name": "name",
+  "data": "data",
+  "profile": "tabular-data-resource",
+  "schema": {
+  "fields": [{"name": "name"}]
+  }
 }'
   target_outcome = jsonlite::fromJSON('{
                                       "name": "name",
@@ -257,35 +258,35 @@ test_that('tabular resource schema', {
 test_that('tabular resource dialect', {
   
   descriptor =  '{
-                                  "name": "name",
-                                  "data": "data",
-                                  "profile": "tabular-data-resource",
-                                  "dialect": {
-                                  "delimiter": "custom"
-                                  }
+  "name": "name",
+  "data": "data",
+  "profile": "tabular-data-resource",
+  "dialect": {
+  "delimiter": "custom"
+  }
 }'
 
   resource = Resource.load(descriptor)
   
   target = helpers.from.json.to.list('{
-                              "name": "name",
-                              "data": "data",
-                              "profile": "tabular-data-resource",
-                              "encoding": "utf-8",
-                              "dialect": {
-                              "delimiter": "custom",
-                              "doubleQuote": true,
-                              "lineTerminator": "\\r\\n",
-                              "quoteChar": "\\"",
-                              "escapeChar": "\\\\",
-                              "skipInitialSpace": true,
-                              "header": true,
-                              "caseSensitiveHeader": false
-                              }
-                              }')
+                                     "name": "name",
+                                     "data": "data",
+                                     "profile": "tabular-data-resource",
+                                     "encoding": "utf-8",
+                                     "dialect": {
+                                     "delimiter": "custom",
+                                     "doubleQuote": true,
+                                     "lineTerminator": "\\r\\n",
+                                     "quoteChar": "\\"",
+                                     "escapeChar": "\\\\",
+                                     "skipInitialSpace": true,
+                                     "header": true,
+                                     "caseSensitiveHeader": false
+                                     }
+}')
   
   expect_equal(resource$descriptor[sort(names(resource$descriptor))], target[sort(names(target))]) # extra sorting to match lists
-})
+  })
 
 
 
@@ -303,7 +304,7 @@ test_that('inline', {
   resource = Resource.load(descriptor)
   expect_equal(resource$source, 'data')
   expect_true(resource$inline)
-})
+  })
 
 
 test_that('local', {
@@ -314,7 +315,7 @@ test_that('local', {
   resource = Resource.load(descriptor, basePath= 'data')
   expect_equal(resource$source, 'data/table.csv')
   expect_true(resource$local)
-})
+  })
 
 # test_that('local base no base path', {
 #   descriptor = {
@@ -448,22 +449,23 @@ test_that('multipart remote path remote and base path remote', {
   expect_true(resource$multipart)
   })
 
-#######################################################
-testthat::context('Resource #rawRead')
-########################################################
+# #######################################################
+# testthat::context('Resource #rawRead')
+# ########################################################
 
 # test_that('it raw reads local file source', {
-#   path= 'inst/data/data.csv'
-#   resource = Resource.load(path, basePath= getwd())
+#   descriptor = '{"path": "inst/data/data.csv"}'
+#   resource = Resource.load(descriptor, basePath= "")
 #   bytes = resource$rawRead()
 #   assert.include(toString(bytes), 'name,size')
 # })
 
 
 
-# #######################################################
-# testthat::context('Resource #table')
-# ########################################################
+#######################################################
+testthat::context('Resource #table')
+########################################################
+
 test_that('general resource', {
   descriptor = '{
   "name": "name",
@@ -474,88 +476,86 @@ test_that('general resource', {
   })
 
 # test_that('tabular resource inline', {
-#   descriptor = jsonlite::fromJSON('{
-#                                   "name": "example",
-#                                   "profile": "tabular-data-resource",
-#                                   "data": [
-#                                   ["height", "age", "name"],
-#                                   ["180", "18", "Tony"],
-#                                   ["192", "32", "Jacob"]
-#                                   ],
-#                                   "schema": {
-#                                   "fields": [
-#                                   {"name": "height", "type": "integer"},
-#                                   {"name": "age", "type": "integer"},
-#                                   {"name": "name", "type": "string"}
-#                                   ]
-#                                   }
-# }')
+#   descriptor = '{
+#   "name": "example",
+#   "profile": "tabular-data-resource",
+#   "data": [
+#   ["height", "age", "name"],
+#   [180, 18, "Tony"],
+#   [192, 32, "Jacob"]
+#   ],
+#   "schema": {
+#   "fields": [
+#   {"name": "height", "type": "integer"},
+#   {"name": "age", "type": "integer"},
+#   {"name": "name", "type": "string"}
+#   ]
+#   }
+# }'
 # 
 #   resource = Resource.load(descriptor)
-#   
-#   #assert.instanceOf(resource$table, Table)
-#   
-#   expect_equal(resource$table$read(),
-#                jsonlite::fromJSON('[[180, 18, "Tony"], [192, 32, "Jacob"]]'))
-#   })
-
-#
-# test_that('tabular resource local', {
-#   #/ Skip test for browser
-#   if (process.env.USER_ENV === 'browser') {
-#     this.skip()
-#   }
-#   # Prepare
-#   descriptor = {
-#     name: 'example',
-#     profile: 'tabular-data-resource',
-#     path: ['dp1/data.csv'],
-#     schema: {
-#       fields: [
-#         {name: 'name', type: 'string'},
-#         {name: 'size', type: 'integer'},
-#         ],
-#     },
-#   }
-#   resource = Resource.load(descriptor, {basePath: 'data'})
-#   # Assert
-#   assert.instanceOf(resource.table, Table)
-#   expect_equal(resource.table.read(), [
-#     ['gb', 100],
-#     ['us', 200],
-#     ['cn', 300],
-#     ])
+#   # expect_equal(class(resource$table), c("Table","R6"))
+#   expect_equal(resource$table$read(cast = FALSE),
+#                helpers.from.json.to.list('[[180, 18, "Tony"], [192, 32, "Jacob"]]'))
 # })
 
 
-
-#######################################################
-testthat::context('Resource #infer')
-########################################################
-
-test_that('preserve resource format from descriptor ', {
-  descriptor= '{"path": "inst/data/data.csvformat", "format": "csv"}'
-  resource = Resource.load(descriptor)
-  expect_equal(resource$infer(),
-               jsonlite::fromJSON(
-                 '{
-                 "path":"inst/data/data.csvformat",
-                 "format":"csv",
-                 "profile":"data-resource",
-                 "encoding":"utf-8"
-}')
+# test_that('tabular resource local', {
+#   
+#   # Prepare
+#   descriptor = '{
+#   "name": "example",
+#   "profile": "tabular-data-resource",
+#   "path": ["inst//data/dp1/data.csv"],
+#   "schema": {
+#   "fields": [
+#   {"name": "name", "type": "string"},
+#   {"name": "size", "type": "integer"}
+#   ]
+#   }
+#   }'
+#   
+#   resource = Resource.load(descriptor, basePath ='inst/data')
+# 
+#   expect_equal(as.vector(class(resource$table)), c("Table","R6"))
+#   
+#   ### fix tableschema.r read from csv
+#   # expect_equal(resource$table$read(cast = FALSE), helpers.from.json.to.list('[
+#   #                                                                           ["gb", 100],
+#   #                                                                           ["us", 200],
+#   #                                                                           ["cn", 300]
+#   #                                                                           ]'))
+#   })
+  
+  
+  
+  #######################################################
+  testthat::context('Resource #infer')
+  ########################################################
+  
+  test_that('preserve resource format from descriptor ', {
+    descriptor= '{"path": "inst/data/data.csvformat", "format": "csv"}'
+    resource = Resource.load(descriptor)
+    expect_equal(resource$infer(),
+                 jsonlite::fromJSON(
+                   '{
+                   "path":"inst/data/data.csvformat",
+                   "format":"csv",
+                   "profile":"data-resource",
+                   "encoding":"utf-8"
+  }')
 )
-})
-
-# '{
-# "encoding":"utf-8",
-# "format":"csv",
-# "mediatype":"text/csv",
-# "name":"data",
-# "path":"data/data.csvformat",
-# "profile":"tabular-data-resource",
-# "schema":{"fields":[
-# {"format":"default","name":"city","type":"string"},
-# {"format":"default","name":"population","type":"integer"}],
-# "missingValues":[""]
-# }}'
+  })
+  
+  # '{
+  # "encoding":"utf-8",
+  # "format":"csv",
+  # "mediatype":"text/csv",
+  # "name":"data",
+  # "path":"data/data.csvformat",
+  # "profile":"tabular-data-resource",
+  # "schema":{"fields":[
+  # {"format":"default","name":"city","type":"string"},
+  # {"format":"default","name":"population","type":"integer"}],
+  # "missingValues":[""]
+  # }}'
