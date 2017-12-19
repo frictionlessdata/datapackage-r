@@ -448,7 +448,7 @@ inspectSource = function(data, path, basePath) {
     # Multipart Local/Remote
   } else if (length(path) > 1) {
     inspections = purrr::map(path, function(item) inspectSource(NULL, item, basePath))
-    assign("inspection", inspections[1])
+    inspection = purrr::flatten(inspections[1])
     inspection$source = unlist(purrr::map(inspections, function(item) item$source))
     inspection$multipart = TRUE
   }

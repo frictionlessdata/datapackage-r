@@ -380,7 +380,7 @@ test_that('multipart local', {
 }'
   resource = Resource.load(descriptor, basePath = 'data')
   expect_equal(resource$source, unlist(helpers.from.json.to.list('["data/chunk1.csv", "data/chunk2.csv"]')))
-  # expect_equal(resource$local, TRUE)
+  expect_equal(resource$local, TRUE)
   expect_true(resource$multipart)
 })
 
@@ -419,7 +419,7 @@ test_that('multipart remote', {
   resource = Resource.load(descriptor)
   expect_equal(resource$source,
                jsonlite::fromJSON('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]'))
-  #expect_true(resource$remote)
+  expect_true(resource$remote)
   expect_true(resource$multipart)
 })
 
@@ -431,11 +431,11 @@ test_that('multipart remote path relative and base path remote', {
   resource = Resource.load(descriptor, basePath = 'http://example.com')
   expect_equal(resource$source,
                jsonlite::fromJSON('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]'))
-  #expect_true(resource$remote)
+  expect_true(resource$remote)
   expect_true(resource$multipart)
 })
 
-#
+
 test_that('multipart remote path remote and base path remote', {
   descriptor = '{
   "name": "name",
@@ -444,7 +444,7 @@ test_that('multipart remote path remote and base path remote', {
   resource = Resource.load(descriptor, basePath = 'http://example1.com')
   expect_equal(resource$source,
                jsonlite::fromJSON('["http://example1.com/chunk1.csv", "http://example2.com/chunk2.csv"]'))
-  #expect_true(resource$remote)
+  expect_true(resource$remote)
   expect_true(resource$multipart)
   })
 
