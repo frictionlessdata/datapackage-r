@@ -112,18 +112,14 @@ dereferencePackageDescriptor = function (descriptor, basePath) {
   } else if (is.character(descriptor) && jsonlite::validate(descriptor)){
     descriptor = helpers.from.json.to.list(descriptor)
   }
-  
-  for (index in (if (is.empty(descriptor$resources))
-    
-    length(list())
-    
-    else
-      
-      names(descriptor$resources))) {
-    
+  # descriptor$resources = purrr::map(descriptor$resources,
+  #                                     dereferenceResourceDescriptor, basePath, descriptor) ##maybe no flatten
+  # 
+  for (index in length(descriptor$resources)) {
+
     descriptor$resources[index] = dereferenceResourceDescriptor(descriptor$resources[index], basePath, descriptor)
   }
-  
+
   return(descriptor)
 }
 
@@ -167,7 +163,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
       
       # URI -> Pointer
     } else if (startsWith(unlist(value), '#')) {
-      descriptor[[property]] = descriptor.pointer(value, descriptor)
+      descriptor[[property]] = descriptor.pointer(unlist(value), descriptor)
       
       if (is.null(descriptor[[property]])) {
         message = DataPackageError$new(
@@ -273,7 +269,7 @@ expandPackageDescriptor = function(descriptor) {
   else
     descriptor$profile
   
-  descriptor["resources"] = purrr::map(descriptor["resources"], expandResourceDescriptor)
+  descriptor$resources = purrr::map(descriptor$resources, expandResourceDescriptor) ##maybe no flatten
   
   return(descriptor)
 }
@@ -318,25 +314,31 @@ expandResourceDescriptor = function(descriptor) {
         isTRUE(!is.null(descriptor$schema)) |
         isTRUE(!descriptor$schema == "undefined")) {
       
-      fields = list()
+      # fields = list()
       #for (field in ( if (is.empty(descriptor$schema$fields)) list() else descriptor$schema$fields) ) {
-      fields$type = if (is.empty(descriptor$schema$fields$type))
+      descriptor$schema$fields[[1]]$type = if (is.empty(descriptor$schema$fields$type) || is.empty(descriptor$schema$fields[[1]]$type)){
         config::get("DEFAULT_FIELD_TYPE", file = "config.yaml")
-      else
-        descriptor$schema$fields$type
+      } else {
+        purrr::`%||%`(descriptor$schema$fields$type, descriptor$schema$fields[[1]]$type)
+      }
       
-      fields$format = if (is.empty(descriptor$schema$fields$format))
+      descriptor$schema$fields[[1]]$format = if (is.empty(descriptor$schema$fields[[1]]$format) || is.empty(descriptor$schema$fields[[1]]$format)){
         config::get("DEFAULT_FIELD_FORMAT", file = "config.yaml")
-      else
-        descriptor$schema$fields$format
+      } else {
+        purrr::`%||%`(descriptor$schema$fields$format,descriptor$schema$fields$format)
+      }
+      
       #}
       
-      descriptor$schema$fields = as.data.frame(append(descriptor$schema$fields, fields),
-                                               stringsAsFactors = FALSE)
-      descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues))
+      # descriptor$schema$fields = append(descriptor$schema$fields, fields)
+      descriptor$schema$missingValues = as.list(
+        if (is.empty(descriptor$schema$missingValues)){
         config::get("DEFAULT_MISSING_VALUES", file = "config.yaml")
-      else
-        descriptor$schema$missingValues
+        } else {
+          descriptor$schema$missingValues
+        }
+        
+        )
       
     }
     

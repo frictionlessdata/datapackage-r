@@ -246,7 +246,7 @@ test_that('tabular resource schema', {
                                       "fields": [{"name": "name", "type": "string", "format": "default"}],
                                       "missingValues": [""]
                                       }
-  }')
+  }',simplifyVector=F )
   
   resource = Resource.load(descriptor)
   

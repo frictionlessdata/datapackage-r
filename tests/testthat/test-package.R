@@ -39,20 +39,20 @@ test_that('initializes with URL descriptor', {
 #   expect_false(dataPackage$valid)
 # })
 # 
-# # test_that('loads relative resource', {
-# #   # TODO: For now tableschema doesn't support in-browser table.read
-# #   # if (process.env.USER_ENV === 'browser') {
-# #   #   this.skip()
-# #   # }
-# #   descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
-# #   dataPackage = Package.load(descriptor)
-# #   
-# #   dataPackage.resources[0].descriptor.profile = 'tabular-data-resource'
-# #   data = dataPackage.resources[0].table.read()
-# #   expect_equal(data, [['gb', 100], ['us', 200], ['cn', 300]])
-# # })
+
+#####################################################
+# test_that('loads relative resource', {
 # 
-# # 
+#   descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
+#   dataPackage = Package.load(descriptor)
+# 
+#   dataPackage$resources[[1]]$descriptor$profile = 'tabular-data-resource'
+#   data = dataPackage$resources[[1]]$table$read()
+#   
+#   expect_equal(data, '[["gb", 100], ["us", 200], ["cn", 300]]')
+# })
+
+
 # # test_that('loads resource from absolute URL', async function() {
 # #   # TODO: For now tableschema doesn't support in-browser table.read
 # #   if (process.env.USER_ENV === 'browser') {
@@ -94,10 +94,10 @@ test_that('initializes with URL descriptor', {
 # # 
 # # })
 # 
-# ###################################################
-# testthat::context("Package #descriptor (retrieve)")
-# ###################################################
-# 
+###################################################
+testthat::context("Package #descriptor (retrieve)")
+###################################################
+
 test_that('object', {
   descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
   dataPackage = Package.load(descriptor)
@@ -121,14 +121,14 @@ test_that('object', {
 #   expect_equal(dataPackage$descriptor, expandPackageDescriptor(target.contents))
 # })
 #  
-# # test_that('string remote path bad', {
-# #   descriptor = 'http://example.com/bad-path.json'
-# #   http.onGet(descriptor).reply(500)
-# #   error = catchError(Package.load, descriptor)
-# #   assert.instanceOf(error, Error)
-# #   assert.include(error.message, 'Can not retrieve remote')
-# # })
-# # 
+# test_that('string remote path bad', {
+#   descriptor = 'http://example.com/bad-path.json'
+#   http.onGet(descriptor).reply(500)
+#   error = catchError(Package.load, descriptor)
+#   assert.instanceOf(error, Error)
+#   assert.include(error.message, 'Can not retrieve remote')
+# })
+#
 # 
 test_that('string local path', {
   contents =  'inst/data/data-package.json'
@@ -145,22 +145,22 @@ test_that('string local path bad', {
 ######################################################
 testthat::context("Package #descriptor (dereference)")
 ######################################################
-# 
-# 
+
+
 # test_that('mixed', {
-#   descriptor = jsonlite::fromJSON('inst/data/data-package-dereference.json')
-#   
+#   descriptor ='inst/data/data-package-dereference.json'
+# 
 #     dataPackage = Package.load(descriptor)
-#     
+# 
 # target =
-# purrr::map(jsonlite::fromJSON('[
+#   expandPackageDescriptor('[
 #       {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
 #                                {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-#                                ]',simplifyVector=F),expandResourceDescriptor)
-#     
+#                                ]' )
+# 
 # 
 # expect_equal( dataPackage$descriptor$resources, target)
-# 
+
 # })
 # # 
 # # test_that('pointer', {

@@ -157,7 +157,7 @@ Package <- R6::R6Class(
     profile_ = NULL,
     basePath_ = NULL,
     strict_ = NULL,
-    resources_ = NULL,
+    resources_ = list(),
     errors_ = NULL,
     descriptor_ = NULL,
     pattern_ = NULL,
@@ -197,7 +197,7 @@ Package <- R6::R6Class(
         
         if (isTRUE(private$strict_)) {
           message = stringr::str_interp(
-            "There are ${length(valid_errors$errors)} validation errors (see 'valid_errors$errors')"
+            "There are length(valid_errors$errors) validation errors (see 'valid_errors.errors')"
           )
           stop(DataPackageError$new(message))
         }
@@ -206,29 +206,32 @@ Package <- R6::R6Class(
 
       
       # Update resources
-      private$resources_length = if (isUndefined(private$currentDescriptor_$resources))
+      private$resources_length = if (isUndefined(private$currentDescriptor_$resources)) {
         length(list())
-      else
+      } else {
         length(private$currentDescriptor_$resources)
+      }
+      
       descriptor = private$currentDescriptor_$resources
       
-      # for (index in length(private$currentDescriptor_$resources)) {
-      #   resource = private$resources_[index]
-      #   
-      #   if (isUndefined(resource) ||
-      #       !identical(resource$descriptor[index], private$descriptor$resources[index]) ||
-      #       (!isUndefined(resource$schema) &&
-      #        length(resource$schema$foreignKeys > 1))) {
-      #     private$resources_[index] = Resource$new(
-      #       descriptor,
-      #       list(
-      #         strict = private$strict_,
-      #         basePath = private$basePath_,
-      #         dataPackage = self
-      #       )
-      #     )
-      #   }
-      # }
+      for (index in length(descriptor)) {
+        resource = private$resources_[index]
+
+        if (isUndefined(resource) ||
+            !identical(resource$descriptor[index], descriptor[index]) ||
+            (!isUndefined(resource$schema) &&
+             length(resource$schema$foreignKeys >= 1))) {
+          
+          private$resources_[[index]] = Resource$new(
+            descriptor,
+            list(
+              strict = private$strict_,
+              basePath = private$basePath_,
+              dataPackage = self
+            )
+          )
+        }
+      }
       
     }
     
@@ -280,8 +283,7 @@ Package.load = function(descriptor = list(),
     }
   }
   
-  Profile.load(profile)
 
-  return(Package$new(descriptor, basePath, strict, profile))
+  return(Package$new(descriptor, basePath, strict = strict, profile = profile))
   
 }
