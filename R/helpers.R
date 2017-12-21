@@ -90,7 +90,7 @@ retrieveDescriptor = function(descriptor) {
     
   } else
     stop(message)
-  
+  # descriptor$resources = purrr::flatten(descriptor$resources)
 }
 
 #' Dereference descriptor
@@ -115,11 +115,13 @@ dereferencePackageDescriptor = function (descriptor, basePath) {
   # descriptor$resources = purrr::map(descriptor$resources,
   #                                     dereferenceResourceDescriptor, basePath, descriptor) ##maybe no flatten
   # 
-  for (index in length(descriptor$resources)) {
-
-    descriptor$resources[index] = dereferenceResourceDescriptor(descriptor$resources[index], basePath, descriptor)
-  }
-
+  
+  # for (index in length(descriptor$resources)) {
+  # 
+  #   #descriptor$resources[[index]] =
+  #   descriptor$resources[[index]] = dereferenceResourceDescriptor(descriptor$resources[[index]], basePath, descriptor)
+  # }
+  descriptor$resources = lapply(descriptor$resources,dereferenceResourceDescriptor,basePath=basePath,baseDescriptor=descriptor)
   return(descriptor)
 }
 
@@ -132,8 +134,7 @@ dereferencePackageDescriptor = function (descriptor, basePath) {
 #'
 
 
-dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
-                                           NULL) {
+dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = NULL) {
   #conditions
   if (is.json(descriptor)){
     descriptor = helpers.from.json.to.list(descriptor)
@@ -145,17 +146,16 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
     descriptor = helpers.from.json.to.list(descriptor)
   }
   
-  if ( is.null(baseDescriptor) |
-       is.empty(baseDescriptor) |
-       !exists("baseDescriptor"))
+  if (isTRUE(is.null(baseDescriptor))){
     baseDescriptor = descriptor
+    }
   
   #set list properties
-  PROPERTIES = list('dialect', 'schema')
+  PROPERTIES = list('dialect','schema')
   
   
   for (property in PROPERTIES) {
-    value = descriptor[[property]]
+    value = unlist(descriptor[[property]])
     
     # URI -> No
     if (!is.character(value)) {
@@ -163,12 +163,28 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
       
       # URI -> Pointer
     } else if (startsWith(unlist(value), '#')) {
-      descriptor[[property]] = descriptor.pointer(unlist(value), descriptor)
       
-      if (is.null(descriptor[[property]])) {
+      point = as.list(unlist(stringr::str_split(as.character(value), "/"))[-1])
+      if (!is.empty(point)) {
+        if (isTRUE(!is.empty(point[!is.na(suppressWarnings(as.numeric(point)))]))) {
+          is.num=grep(point[!is.na(suppressWarnings(as.numeric(point)))], point)
+        point[is.num] = as.numeric(unlist(point[is.num]))
+        
+        descriptor[[property]] = purrr::flatten(if (!is.list(baseDescriptor[[paste(point[[1]])]][[paste(point[[2]])]])) {
+          list(baseDescriptor[[point[[1]]]][[point[[2]]]])
+        } else baseDescriptor[[point[[1]]]][[point[[2]]]])
+        
+        }else {
+          descriptor[[property]] = if (!is.list(baseDescriptor[[paste(point[[1]])]][[paste(point[[2]])]])) {
+            list(baseDescriptor[[point[[1]]]][[point[[2]]]])
+          } else baseDescriptor[[point[[1]]]][[point[[2]]]]
+        }} 
+      # descriptor[property] = list(descriptor.pointer(unlist(value), baseDescriptor))
+      
+      if (is.null(descriptor[[property]]) | is.empty(descriptor[[property]])) {
         message = DataPackageError$new(
           stringr::str_interp(
-            'Not resolved Pointer URI "${value}" for resource[[${property}]]'
+            'Not resolved Pointer URI "${value}" for ${descriptor[[property]]}'
           )
         )$message
         
@@ -177,7 +193,8 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
       
       # URI -> Remote
       # TODO: remote base path also will lead to remote case!
-    } else if (isRemotePath(unlist(value))) {
+    } 
+    if (isRemotePath(unlist(value))) {
       tryCatch({
         # response = httr::GET(value)
         descriptor[[property]] = helpers.from.json.to.list(value)
@@ -188,7 +205,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
         
         message = DataPackageError$new(
           stringr::str_interp(
-            'Not resolved Remote URI "${value}" for resource[[${property}]]'
+            'Not resolved Remote URI "${value}" for ${descriptor[[property]]}'
           )
         )$message
         
@@ -196,11 +213,15 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
       })
       
       # URI -> Local
-    } else {
-      if (isTRUE(!isSafePath(unlist(value)))) {
+    } 
+    if (isTRUE(lengths(value) == 1) && !startsWith(unlist(value), '#')) {
+      
+      
+      
+      if ( isTRUE(!isSafePath(unlist(value)))) {
         message = DataPackageError$new(
           stringr::str_interp(
-            'Not safe path in Local URI "${value}" for resource[[${property}]]'
+            'Not safe path in Local URI "${value}" for ${descriptor[[property]]}'
           )
         )$message
         
@@ -210,32 +231,48 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor =
       if (isTRUE(is.null(basePath) | basePath == "")) {
         message = DataPackageError$new(
           stringr::str_interp(
-            'Local URI "${value}" requires base path for resource[[${property}]]'
+            'Local URI "${value}" requires base path for ${descriptor[[property]]}'
           )
         )$message
         
         stop(message)
       }
       
+      if ( isTRUE(!is.local.descriptor.path(unlist(value)))) {
+        message = DataPackageError$new(
+          stringr::str_interp(
+            'Not resolved Local URI "${value}" for ${descriptor[[property]]}'
+          )
+        )$message
+        stop(message)
+      }
+      
+      if ( isTRUE(is.local.descriptor.path(unlist(value))) ) {
       tryCatch({
         # TODO: support other that Unix OS
-        fullPath = stringr::str_c(basePath, value, sep = '/')
-        # TODO: rebase on promisified fs.readFile (async)
-        descriptor[[property]] = helpers.from.json.to.list(fullPath)
+        # fullPath = stringr::str_c(basePath, value, sep = '/')
+        # # TODO: rebase on promisified fs.readFile (async)
+        # descriptor[[property]] = helpers.from.json.to.list(fullPath)
         # contents = readLines(fullPath, 'utf-8')
         # descriptor[[property]] = jsonlite::fromJSON(contents)
+        fullPath = findFiles(as.vector(value))
+        # descriptor[[1]][[property]] = NULL
+        descriptor[[property]] = helpers.from.json.to.list(fullPath)
       },
       error = function(e) {
         message = DataPackageError$new(
           stringr::str_interp(
-            'Not resolved Local URI "${value}" for resource[[${property}]]'
+            'Not resolved Local URI "${value}" for ${descriptor[[property]]}'
           )
         )$message
         stop(message)
       })
-      
+    
+      }
     }
+    
   }
+  
   
   return(descriptor)
 }
@@ -264,10 +301,11 @@ expandPackageDescriptor = function(descriptor) {
     descriptor = helpers.from.json.to.list(descriptor)
   }
   
-  descriptor$profile = if (is.empty(descriptor$profile))
+  descriptor$profile = if (is.empty(descriptor$profile)) {
     config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = "config.yaml")
-  else
+  } else {
     descriptor$profile
+    }
   
   descriptor$resources = purrr::map(descriptor$resources, expandResourceDescriptor) ##maybe no flatten
   
@@ -316,6 +354,8 @@ expandResourceDescriptor = function(descriptor) {
       
       # fields = list()
       #for (field in ( if (is.empty(descriptor$schema$fields)) list() else descriptor$schema$fields) ) {
+      #}
+      
       descriptor$schema$fields[[1]]$type = if (is.empty(descriptor$schema$fields$type) || is.empty(descriptor$schema$fields[[1]]$type)){
         config::get("DEFAULT_FIELD_TYPE", file = "config.yaml")
       } else {
@@ -328,7 +368,7 @@ expandResourceDescriptor = function(descriptor) {
         purrr::`%||%`(descriptor$schema$fields$format,descriptor$schema$fields$format)
       }
       
-      #}
+      
       
       # descriptor$schema$fields = append(descriptor$schema$fields, fields)
       descriptor$schema$missingValues = as.list(
@@ -378,13 +418,16 @@ expandResourceDescriptor = function(descriptor) {
 #'
 
 isRemotePath = function(path) {
-  if (!is.character(path))
+  if (!is.character(path)) {
+    FALSE
+    } else {
     path = as.character(path)
   #if (!is.character(path)) FALSE else
   isTRUE(startsWith("http", unlist(strsplit(path, ":")))[1] |
            startsWith("https", unlist(strsplit(path, ":")))[1])
+  
+    }
 }
-
 #' Is safe path
 #'
 #' @param path path
@@ -514,12 +557,13 @@ findFiles = function(pattern, path = getwd()) {
   
   files = list.files(recursive = TRUE)
   #files=filepath(path)#, recursive = TRUE)
-  matched_files = files[grep(path, files, fixed = FALSE, ignore.case = FALSE)]
+  # matched_files = files[grep(path, files, fixed = FALSE, ignore.case = FALSE)]
   
-  matched_files = matched_files[grep(pattern,
-                                     matched_files,
-                                     fixed = FALSE,
-                                     ignore.case = FALSE)]
+  matched_files = files[grepl(pattern,
+                              files,
+                              fixed = FALSE,
+                              ignore.case = FALSE)]
+  matched_files = matched_files[1]
   return(matched_files)
 }
 
@@ -551,10 +595,16 @@ is.empty = function(list) {
 
 is.local.descriptor.path = function(descriptor, directory = ".") {
   #descriptor.path=path.expand(paste0(basePath,"/datapackage.json"))
-  
+  if (!is.character(descriptor)) {
+    return(FALSE)
+  } else {
+    if (isTRUE(startsWith(unlist(descriptor), "#"))) return(FALSE)  else 
+      {
+      
+    
   isTRUE(any(
     descriptor %in% list.files(path = directory, recursive = TRUE) |
-      grep(descriptor , list.files(path = directory, recursive = TRUE)) |
+      grepl(descriptor , list.files(path = directory, recursive = TRUE)) |
       file.exists(
         normalizePath(
           stringr::str_c('inst/data', basename(descriptor), sep = '/'),
@@ -563,7 +613,7 @@ is.local.descriptor.path = function(descriptor, directory = ".") {
         )
       )
   ))
-  
+  }}
   ## Future to test in other folders and include
   # if grep(basename(descriptor) , list.files(path = directory, recursive = TRUE))
 }
@@ -579,7 +629,7 @@ descriptor.pointer <- function(value, descriptor) {
     pointer = paste(deparse(substitute(descriptor)), paste(unlist(
       stringr::str_split(as.character(value), "/"))[-1],
       collapse = "$"), sep = "$")
-    value =  eval(parse(text = pointer))
+    value =  as.list(eval(parse(text = pointer)))
   }
   return(value)
 }

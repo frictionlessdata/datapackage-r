@@ -81,7 +81,7 @@ testthat::context('Profile #up-to-date')
 
 
 ## method 1 readLines
-foreach(name = 1:length(PROFILES) ) %do% {
+foreach(name = 5:length(PROFILES) ) %do% {
   test_that(stringr::str_interp('profile ${PROFILES[[name]]} should be up-to-date'), {
     profile = Profile.load(PROFILES[[name]])
     response = readLines(stringr::str_interp('https://specs.frictionlessdata.io/schemas/${PROFILES[[name]]}.json'),warn = FALSE)

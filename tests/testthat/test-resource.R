@@ -119,7 +119,8 @@ test_that('general', {
                  helpers.from.json.to.list(
                    '{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'
                  )
-               ))
+               )
+  )
   
 })
 
@@ -143,7 +144,7 @@ test_that('pointer', {
 
 test_that('pointer bad', {
   descriptor = '{"name": "name", "data": "data", "schema": "#/schemas/main"}'
-  expect_error(Resource.load(descriptor), 'Not resolved Pointer URI')
+  expect_error(Resource.load(descriptor))
   
 })
 
@@ -317,15 +318,14 @@ test_that('local', {
   expect_true(resource$local)
   })
 
-# test_that('local base no base path', {
-#   descriptor = {
-#     name: 'name',
-#     path: ['table.csv'],
-#   }
-#   error = catchError(Resource.load, descriptor, {basePath: null})
-#   assert.instanceOf(error, Error)
-#   assert.include(error.message, 'requires base path')
-# })
+test_that('local base no base path', {
+  descriptor = '{
+  name: "name",
+  path: ["table.csv"]
+}'
+
+  expect_error(Resource.load (descriptor,basePath= NULL))
+  })
 
 test_that('local bad not safe absolute', {
   descriptor = '{
@@ -372,7 +372,7 @@ test_that('remote path remote and base path remote', {
   resource = Resource.load(descriptor, basePath= 'http://example2.com/')
   expect_equal(resource$source, 'http://example1.com/table.csv')
   expect_true(resource$remote)
-  })
+})
 
 test_that('multipart local', {
   descriptor = '{
@@ -385,15 +385,14 @@ test_that('multipart local', {
   expect_true(resource$multipart)
 })
 
-# test_that('multipart local bad no base path', {
-#   descriptor = {
-#     name: 'name',
-#     path: ['chunk1.csv', 'chunk2.csv'],
-#   }
-#   error = catchError(Resource.load, descriptor, {basePath: null})
-#   assert.instanceOf(error, Error)
-#   assert.include(error.message, 'requires base path')
-# })
+test_that('multipart local bad no base path', {
+  descriptor = '{
+  name: "name",
+  path: ["chunk1.csv", "chunk2.csv"],
+}'
+
+  expect_error(Resource.load(descriptor,basePath = NULL))
+  })
 
 test_that('multipart local bad not safe absolute', {
   descriptor = '{
@@ -434,7 +433,7 @@ test_that('multipart remote path relative and base path remote', {
                jsonlite::fromJSON('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]'))
   expect_true(resource$remote)
   expect_true(resource$multipart)
-})
+  })
 
 
 test_that('multipart remote path remote and base path remote', {
@@ -526,36 +525,36 @@ test_that('general resource', {
 #   #                                                                           ["cn", 300]
 #   #                                                                           ]'))
 #   })
-  
-  
-  
-  #######################################################
-  testthat::context('Resource #infer')
-  ########################################################
-  
-  test_that('preserve resource format from descriptor ', {
-    descriptor= '{"path": "inst/data/data.csvformat", "format": "csv"}'
-    resource = Resource.load(descriptor)
-    expect_equal(resource$infer(),
-                 jsonlite::fromJSON(
-                   '{
-                   "path":"inst/data/data.csvformat",
-                   "format":"csv",
-                   "profile":"data-resource",
-                   "encoding":"utf-8"
-  }')
+
+
+
+#######################################################
+testthat::context('Resource #infer')
+########################################################
+
+test_that('preserve resource format from descriptor ', {
+  descriptor= '{"path": "inst/data/data.csvformat", "format": "csv"}'
+  resource = Resource.load(descriptor)
+  expect_equal(resource$infer(),
+               jsonlite::fromJSON(
+                 '{
+                 "path":"inst/data/data.csvformat",
+                 "format":"csv",
+                 "profile":"data-resource",
+                 "encoding":"utf-8"
+}')
 )
-  })
-  
-  # '{
-  # "encoding":"utf-8",
-  # "format":"csv",
-  # "mediatype":"text/csv",
-  # "name":"data",
-  # "path":"data/data.csvformat",
-  # "profile":"tabular-data-resource",
-  # "schema":{"fields":[
-  # {"format":"default","name":"city","type":"string"},
-  # {"format":"default","name":"population","type":"integer"}],
-  # "missingValues":[""]
-  # }}'
+})
+
+# '{
+# "encoding":"utf-8",
+# "format":"csv",
+# "mediatype":"text/csv",
+# "name":"data",
+# "path":"data/data.csvformat",
+# "profile":"tabular-data-resource",
+# "schema":{"fields":[
+# {"format":"default","name":"city","type":"string"},
+# {"format":"default","name":"population","type":"integer"}],
+# "missingValues":[""]
+# }}'

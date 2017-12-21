@@ -245,7 +245,7 @@ Resource <- R6Class(
     basePath_ = NULL,
     relations_ = NULL,
     table_ = NULL,
-
+    
     build_ = function() {
       
       private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
