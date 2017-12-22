@@ -121,7 +121,6 @@ test_that('general', {
                  )
                )
   )
-  
 })
 
 
@@ -239,14 +238,14 @@ test_that('tabular resource schema', {
   }
 }'
   target_outcome = helpers.from.json.to.list('{
-                                      "name": "name",
-                                      "data": "data",
-                                      "profile": "tabular-data-resource",
-                                      "encoding": "utf-8",
-                                      "schema": {
-                                      "fields": [{"name": "name", "type": "string", "format": "default"}],
-                                      "missingValues": [""]
-                                      }
+                                             "name": "name",
+                                             "data": "data",
+                                             "profile": "tabular-data-resource",
+                                             "encoding": "utf-8",
+                                             "schema": {
+                                             "fields": [{"name": "name", "type": "string", "format": "default"}],
+                                             "missingValues": [""]
+                                             }
   }')
   
   resource = Resource.load(descriptor)
@@ -542,7 +541,7 @@ test_that('preserve resource format from descriptor ', {
                  "format":"csv",
                  "profile":"data-resource",
                  "encoding":"utf-8"
-}')
+                 }')
 )
 })
 
