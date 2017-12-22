@@ -150,7 +150,7 @@ Package <- R6::R6Class(
   ),
   
   private = list(
-   
+    
     
     currentDescriptor_ = NULL,
     nextDescriptor_ = NULL,
@@ -203,7 +203,7 @@ Package <- R6::R6Class(
         }
       }
       
-
+      
       
       # Update resources
       private$resources_length = if (isUndefined(private$currentDescriptor_$resources)) {
@@ -216,7 +216,7 @@ Package <- R6::R6Class(
       
       for (index in length(descriptor)) {
         resource = private$resources_[index]
-
+        
         if (isUndefined(resource) ||
             !identical(resource$descriptor[index], descriptor[index]) ||
             (!isUndefined(resource$schema) &&
@@ -248,7 +248,7 @@ Package.load = function(descriptor = list(),
                         basePath = NULL,
                         strict = FALSE) {
   
-
+  
   # Get base path
   
   if (isUndefined(basePath)) {
@@ -285,7 +285,7 @@ Package.load = function(descriptor = list(),
     }
   }
   
-
+  
   return(Package$new(descriptor, basePath, strict = strict, profile = profile))
   
 }

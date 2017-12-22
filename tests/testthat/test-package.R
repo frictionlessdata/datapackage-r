@@ -17,7 +17,7 @@ test_that('initializes with Object descriptor', {
   descriptor = 'inst/data/dp1/datapackage.json'
   dataPackage = Package.load(descriptor, basePath= 'inst/data/dp1')
   expect_true(identical(dataPackage$descriptor,expandPackageDescriptor(descriptor)))
-  # expect_true(identical(lapply(dataPackage$descriptor,unlist,use.names=F, recursive = FALSE), lapply(expandPackageDescriptor(jsonlite::fromJSON(descriptor)),unlist,use.names=F, recursive = FALSE)))
+  # expect_true(identical(lapply(dataPackage$descriptor,unlist,use.names=F, recursive = FALSE), lapply(expandPackageDescriptor(helpers.from.json.to.list(descriptor)),unlist,use.names=F, recursive = FALSE)))
 })
 
 test_that('initializes with URL descriptor', {
@@ -105,7 +105,7 @@ test_that('object', {
 })
 # 
 # test_that('string remote path', {
-#   target.contents = jsonlite::fromJSON('inst/data/data-package.json',flatten = T,simplifyVector = T)
+#   target.contents = helpers.from.json.to.list('inst/data/data-package.json')
 #   descriptor = 'https://httpbin.org/data-resource.json'
 #   # Mocks
 #   (x = HttpClient$new(url = descriptor))
@@ -114,8 +114,8 @@ test_that('object', {
 #                  body = target.contents
 #   ))
 #   ##
-#   target.contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
-#   descriptor.response=jsonlite::fromJSON(res$parse("UTF-8"))$json
+#   target.contents=helpers.from.json.to.list(res$parse("UTF-8"))$json
+#   descriptor.response=helpers.from.json.to.list(res$parse("UTF-8"))$json
 #   dataPackage = Package.load(descriptor.response)
 #   
 #   expect_equal(dataPackage$descriptor, expandPackageDescriptor(target.contents))
@@ -153,10 +153,10 @@ test_that('mixed', {
   dataPackage = Package.load(descriptor)
   
   target =
-    purrr::map(jsonlite::fromJSON('[
+    purrr::map(helpers.from.json.to.list('[
                                   {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
                                   {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-                                  ]',simplifyVector=F),expandResourceDescriptor)
+                                  ]'),expandResourceDescriptor)
   
   
   expect_equal( dataPackage$descriptor$resources, target)
@@ -175,10 +175,10 @@ test_that('pointer', {
   dataPackage = Package.load(descriptor)
   
   target =
-    purrr::map(jsonlite::fromJSON('[
+    purrr::map(helpers.from.json.to.list('[
                                   {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
                                   {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-                                  ]',simplifyVector=F),expandResourceDescriptor)
+                                  ]'),expandResourceDescriptor)
   
   
   expect_equal(dataPackage$descriptor$resources, target)
@@ -392,11 +392,11 @@ test_that('tabular resource dialect', {
 #   descriptor = 'inst/data/data-package-multiple-resources.json'
 #   dataPackage = Package.load(descriptor, basePath = 'inst/data')
 #   expect_length(dataPackage$resources, 2)
-#   expect_equal(dataPackage$resourceNames, jsonlite::fromJSON('["name1", "name2"]'))
+#   expect_equal(dataPackage$resourceNames, helpers.from.json.to.list('["name1", "name2"]'))
 # })
 # #
 # # test_that('add', {
-# #   descriptor = jsonlite::fromJSON('inst/data/dp1/datapackage.json')
+# #   descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
 # #   dataPackage = Package.load(descriptor, basePath='inst/data/dp1')
 # #   resource = dataPackage.addResource({name: 'name', data: ['test']})
 # #   assert.isOk(resource)

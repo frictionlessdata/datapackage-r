@@ -238,7 +238,7 @@ test_that('tabular resource schema', {
   "fields": [{"name": "name"}]
   }
 }'
-  target_outcome = jsonlite::fromJSON('{
+  target_outcome = helpers.from.json.to.list('{
                                       "name": "name",
                                       "data": "data",
                                       "profile": "tabular-data-resource",
@@ -247,7 +247,7 @@ test_that('tabular resource schema', {
                                       "fields": [{"name": "name", "type": "string", "format": "default"}],
                                       "missingValues": [""]
                                       }
-  }',simplifyVector=F )
+  }')
   
   resource = Resource.load(descriptor)
   
@@ -418,7 +418,7 @@ test_that('multipart remote', {
 }'
   resource = Resource.load(descriptor)
   expect_equal(resource$source,
-               jsonlite::fromJSON('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]'))
+               unlist(helpers.from.json.to.list('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]')))
   expect_true(resource$remote)
   expect_true(resource$multipart)
 })
@@ -430,7 +430,7 @@ test_that('multipart remote path relative and base path remote', {
 }'
   resource = Resource.load(descriptor, basePath = 'http://example.com')
   expect_equal(resource$source,
-               jsonlite::fromJSON('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]'))
+               unlist(helpers.from.json.to.list('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]')))
   expect_true(resource$remote)
   expect_true(resource$multipart)
   })
@@ -443,7 +443,7 @@ test_that('multipart remote path remote and base path remote', {
 }'
   resource = Resource.load(descriptor, basePath = 'http://example1.com')
   expect_equal(resource$source,
-               jsonlite::fromJSON('["http://example1.com/chunk1.csv", "http://example2.com/chunk2.csv"]'))
+               unlist(helpers.from.json.to.list('["http://example1.com/chunk1.csv", "http://example2.com/chunk2.csv"]')))
   expect_true(resource$remote)
   expect_true(resource$multipart)
   })
@@ -536,7 +536,7 @@ test_that('preserve resource format from descriptor ', {
   descriptor= '{"path": "inst/data/data.csvformat", "format": "csv"}'
   resource = Resource.load(descriptor)
   expect_equal(resource$infer(),
-               jsonlite::fromJSON(
+               helpers.from.json.to.list(
                  '{
                  "path":"inst/data/data.csvformat",
                  "format":"csv",
