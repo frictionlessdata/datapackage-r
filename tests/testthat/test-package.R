@@ -340,7 +340,6 @@ test_that('tabular resource schema', {
                                      }')
 
   dataPackage = Package.load(descriptor)
-  #target$resources = target$resources[names(dataPackage$descriptor$resources)] #sort target resources to match
   target$resources[[1]] = target$resources[[1]][names(dataPackage$descriptor$resources[[1]])] #sort target to match
   target = target[sort(names(target))] #sort target to match
   expect_equal(dataPackage$descriptor[sort(names(dataPackage$descriptor))], target)

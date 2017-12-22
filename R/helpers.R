@@ -112,16 +112,14 @@ dereferencePackageDescriptor = function (descriptor, basePath) {
   } else if (is.character(descriptor) && jsonlite::validate(descriptor)){
     descriptor = helpers.from.json.to.list(descriptor)
   }
-  # descriptor$resources = purrr::map(descriptor$resources,
-  #                                     dereferenceResourceDescriptor, basePath, descriptor) ##maybe no flatten
-  # 
+  descriptor$resources = purrr::map(descriptor$resources,
+                                      dereferenceResourceDescriptor, basePath, descriptor) ##maybe no flatten
+
   
   # for (index in length(descriptor$resources)) {
-  # 
-  #   #descriptor$resources[[index]] =
   #   descriptor$resources[[index]] = dereferenceResourceDescriptor(descriptor$resources[[index]], basePath, descriptor)
   # }
-  descriptor$resources = lapply(descriptor$resources,dereferenceResourceDescriptor,basePath=basePath,baseDescriptor=descriptor)
+  # descriptor$resources = lapply(descriptor$resources,dereferenceResourceDescriptor,basePath=basePath,baseDescriptor=descriptor)
   return(descriptor)
 }
 
