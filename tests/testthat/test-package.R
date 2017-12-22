@@ -27,18 +27,10 @@ test_that('initializes with URL descriptor', {
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
 })
 
-# test_that('throws errors for invalid datapackage in strict mode', {
-#   expect_error(Package.load(list(),strict=TRUE))
-# })
-# 
-# test_that('stores errors for invalid datapackage', {
-#   dataPackage = Package.load()
-#   # assert.instanceOf(dataPackage.errors, Array)
-#   # assert.instanceOf(dataPackage.errors[0], Error)
-#   # assert.include(dataPackage.errors[0].message, 'required property')
-#   expect_false(dataPackage$valid)
-# })
-# 
+test_that('throws errors for invalid datapackage in strict mode', {
+  expect_error(Package.load('{}',strict=TRUE))
+})
+
 
 #####################################################
 # test_that('loads relative resource', {
@@ -231,61 +223,62 @@ test_that('pointer bad', {
 # #   assert.include(error.message, 'Not resolved Remote URI')
 # # })
 # # 
-# # test_that('local', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: 'table-schema.json'},
-# #       {name: 'name2', data: ['data'], dialect: 'csv-dialect.json'},
-# #       ],
-# #   }
-# #   if (process.env.USER_ENV !== 'browser') {
-# #     dataPackage = Package.load(descriptor, {basePath: 'data'})
-# #     expect_equal(dataPackage.descriptor.resources, [
-# #       {name: 'name1', data: ['data'], schema: {fields: [{name: 'name'}]}},
-# #       {name: 'name2', data: ['data'], dialect: {delimiter: ','}},
-# #       ].map(expandResource))
-# #   } else {
-# #     error = catchError(Package.load, descriptor, {basePath: 'data'})
-# #     assert.instanceOf(error, Error)
-# #     assert.include(error.message, 'in browser')
-# #   }
-# # })
-# # 
-# # test_that('local bad', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: 'bad-path.json'},
-# #       ],
-# #   }
-# #   error = catchError(Package.load, descriptor, {basePath: 'data'})
-# #   assert.instanceOf(error, Error)
-# #   if (process.env.USER_ENV !== 'browser') {
-# #     assert.include(error.message, 'Not resolved Local URI')
-# #   } else {
-# #     assert.include(error.message, 'in browser')
-# #   }
-# # })
-# # 
-# # test_that('local bad not safe', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: '../data/table-schema.json'},
-# #       ],
-# #   }
-# #   error = catchError(Package.load, descriptor, {basePath: 'data'})
-# #   assert.instanceOf(error, Error)
-# #   if (process.env.USER_ENV !== 'browser') {
-# #     assert.include(error.message, 'Not safe path')
-# #   } else {
-# #     assert.include(error.message, 'in browser')
-# #   }
-# # })
-# # 
-# # 
-# #################################################
-# testthat::context("Package #descriptor (expand)")
-# #################################################
-# 
+# test_that('local', {
+#   descriptor = '{
+#     "resources": [
+#       {"name": "name1", "data": ["data"], "schema": "table-schema.json"},
+#       {"name": "name2", "data": ["data"], "dialect": "csv-dialect.json"}
+#       ]
+#   }'
+# target = expandResourceDescriptor('{"resources":[
+#   {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
+#   {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
+#   ]}')
+#       dataPackage = Package.load(descriptor, basePath = "inst/data")
+#     expect_equal(dataPackage$descriptor$resources, target)
+#     
+#     
+#     str(dataPackage$descriptor$resources)
+#     str(target)
+#     
+#     
+# })
+#
+# test_that('local bad', {
+#   descriptor = {
+#     resources: [
+#       {name: 'name1', data: ['data'], schema: 'bad-path.json'},
+#       ],
+#   }
+#   error = catchError(Package.load, descriptor, {basePath: 'data'})
+#   assert.instanceOf(error, Error)
+#   if (process.env.USER_ENV !== 'browser') {
+#     assert.include(error.message, 'Not resolved Local URI')
+#   } else {
+#     assert.include(error.message, 'in browser')
+#   }
+# })
+#
+# test_that('local bad not safe', {
+#   descriptor = {
+#     resources: [
+#       {name: 'name1', data: ['data'], schema: '../data/table-schema.json'},
+#       ],
+#   }
+#   error = catchError(Package.load, descriptor, {basePath: 'data'})
+#   assert.instanceOf(error, Error)
+#   if (process.env.USER_ENV !== 'browser') {
+#     assert.include(error.message, 'Not safe path')
+#   } else {
+#     assert.include(error.message, 'in browser')
+#   }
+# })
+#
+
+#################################################
+testthat::context("Package #descriptor (expand)")
+#################################################
+
 test_that('resource', {
   descriptor = '{
   "resources": [

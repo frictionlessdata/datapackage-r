@@ -1,7 +1,7 @@
 <img src="okgr.png" align="right" width=130px /><img src="oklabs.png" align="right" width=130px /><br><br/><img src="frictionlessdata.png" align="left" width=60 />rictionless Data - <br/> Data Package
 ================
 
-[![Build Status](https://travis-ci.org/okgreece/datapackage-r.svg?branch=master)](https://travis-ci.org/okgreece/datapackage-r) [![Coverage Status](https://coveralls.io/repos/github/okgreece/datapackage-r/badge.svg?branch=master)](https://coveralls.io/github/okgreece/datapackage-r?branch=master) <!-- [![Coverage Status](https://img.shields.io/codecov/c/github/okgreece/datapackage-r/master.svg)](https://codecov.io/github/okgreece/datapackage-r?branch=master) --> [![Github Issues](http://githubbadges.herokuapp.com/okgreece/datapackage-r/issues.svg)](https://github.com/okgreece/datapackage-r/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/okgreece/datapackage-r/pulls.svg)](https://github.com/okgreece/datapackage-r/pulls) [![Project Status: Active – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#inactive) [![packageversion](https://img.shields.io/badge/Package%20version-0.0.0.9000-orange.svg?style=flat-square)](commits/master) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.1-6666ff.svg)](https://cran.r-project.org/) [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/okgreece/datapackage-r.svg?branch=master)](https://travis-ci.org/okgreece/datapackage-r) [![Coverage Status](https://coveralls.io/repos/github/okgreece/datapackage-r/badge.svg?branch=master)](https://coveralls.io/github/okgreece/datapackage-r?branch=master) <!-- [![Coverage Status](https://img.shields.io/codecov/c/github/okgreece/datapackage-r/master.svg)](https://codecov.io/github/okgreece/datapackage-r?branch=master) --> [![Github Issues](http://githubbadges.herokuapp.com/okgreece/datapackage-r/issues.svg)](https://github.com/okgreece/datapackage-r/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/okgreece/datapackage-r/pulls.svg)](https://github.com/okgreece/datapackage-r/pulls) [![Project Status: Active – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![packageversion](https://img.shields.io/badge/Package%20version-0.0.0.9000-orange.svg?style=flat-square)](commits/master) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.1-6666ff.svg)](https://cran.r-project.org/) [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Description
 ===========
@@ -64,8 +64,6 @@ Examples
 Code examples in this readme requires R 3.3 or higher, You could see even more [examples](https://github.com/okgreece/datapackage-r/tree/master/inst/examples) in examples directory (and vignettes will be soon available).
 
 ``` r
-datapackage = Package.load2()
-
 descriptor = '{
   "resources": [
     {
@@ -87,8 +85,8 @@ descriptor = '{
   ]
 }'
 
-dataPackage = Package.load2(descriptor)
-dataPackage$profile()
+dataPackage = Package.load(descriptor)
+dataPackage$profile$name
 #resource = dataPackage$getResource('example')
 #resource$read() # [[180, 18, 'Tony'], [192, 32, 'Jacob']]
 ```
@@ -126,7 +124,7 @@ rome,2017,2860000
 First we create a blank data package::
 
 ``` r
-dataPackage = Package$new()
+dataPackage = Package.load()
 ```
 
 Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `*.csv`:
@@ -248,7 +246,7 @@ dataPackage = Package$new()$load("{
 }")
 
 dataPackage$name # package
-dataPackage$descriptor.name = 'renamed-package'
+dataPackage$descriptor$name = 'renamed-package'
 dataPackage$name # package
 dataPackage$commit()
 dataPackage$name # renamed-package
@@ -281,8 +279,8 @@ Let's create and read a resource. We use static `Resource$load` method instantia
 
 ``` r
 resource = Resource.load('{"path": "data.csv"}')
-resource$tabular()# $tabular # TRUE
-resource$headers() # ['city', 'location']
+resource$tabular# $tabular # TRUE
+resource$headers # ['city', 'location']
 resource$read(keyed = TRUE)
 # [
 #   {city: 'london', location: '51.50,-0.11'},
@@ -381,7 +379,7 @@ Let's check newly-crated `dataresource.json`. It contains path to our data file,
 If we decide to improve it even more we could update the `dataresource.json` file and then open it again using local file name:
 
 ``` r
-resource = Resource$new()$load('dataresource.json')
+resource = Resource.load('dataresource.json')
 # Continue the work
 ```
 
@@ -541,14 +539,11 @@ A component to represent JSON Schema profile from [Profiles Registry](https://sp
 ``` r
 profile = Profile.load('data-package')
 
-profile$name() # data-package
-profile$jsonschema() # JSON Schema contents
+profile$name # data-package
+profile$jsonschema # JSON Schema contents
 
 valid_errors = profile$validate(descriptor)
 valid = valid_errors$valid # TRUE if valid descriptor
-for (error in valid_errors$errors) {
-  # inspect Error objects
-}
 ```
 
 #### `Profile.load(profile)`
@@ -579,10 +574,7 @@ Validate a data package `descriptor` against the Profile$
 A standalone function to validate a data package descriptor:
 
 ``` r
-valid_errors = validate("{name: 'Invalid Datapackage'}")
-for (error in valid_errors$errors) {
-  # inspect Error objects
-}
+valid_errors = validate('{"name": "Invalid Datapackage"}')
 ```
 
 #### `validate(descriptor)`
@@ -668,7 +660,7 @@ DESCRIPTOR = "{
 Let's check relations for a `teams` resource:
 
 ``` r
-package = Package$new()$load(DESCRIPTOR)
+package = Package.load(DESCRIPTOR)
 teams = package$getResource('teams')
 teams$checkRelations()
 # tableschema.exceptions.RelationError: Foreign key "['city']" violation in row "4"
@@ -739,7 +731,7 @@ To make test:
 To run tests:
 
 ``` r
-#devtools::test()
+devtools::test()
 ```
 
 more detailed information about how to create and run tests you can find in [testthat package](https://github.com/hadley/testthat)

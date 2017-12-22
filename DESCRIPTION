@@ -3,9 +3,8 @@ Type: Package
 Title: 'R Data Package'
 Version: 0.0.0.9000
 Date: 2017-07-01
-Author: c( person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role =
-    "cre"), person("Kleanthis", "Koupidis", email = "koupidis.okfgr@gmail.com", role
-    = "cre"))
+Author: c(person("Kleanthis", "Koupidis", email = "koupidis.okfgr@gmail.com", role = "cre"), 
+            person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role = "cre"))
 Maintainer: Open Knowledge Greece <info@okfn.gr>
 Description: A library for working with Data Package (<http://frictionlessdata.io/specs/data-package/>).
 License: MIT + file LICENSE
