@@ -1,0 +1,50 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: r
+pandoc_version: 1.19
+sudo: false
+cache: packages
+
+r:
+  - oldrel
+  - release
+before_install:
+  - tlmgr install index
+env:
+  global:
+  - _R_CHECK_FORCE_SUGGESTS_=false
+-brew_packages:		
+ - jsonvalidate		
+ - V8		
+-r_packages:		
+ - config
+ - crul
+ - curl
+ - covr		
+ - future		
+ - httr		
+ - iterators		
+ - jsonlite		
+ - purrr		
+ - R6		
+ - R.utils		
+ - Rcpp		
+ - RCurl		
+ - readr		
+ - roxygen2		
+ - stringr		
+ - tools
+ - urltools		
+ - utils
+ - webmockr
+r_github_packages: 
+ - okgreece/tableschema.r
+ - hadley/devtools
+addons:
+  apt:
+    packages:
+      - libxml2-dev
+      - libv8-dev
+warnings_are_errors: false
+after_success:
+ - Rscript -e 'covr::coveralls()'

@@ -1,0 +1,13 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^config\.yaml$
+^\.travis\.yml$
+^\.coveralls\.yml$
+^NEWS\.Rmd$
+^README\.Rmd$
+^config\.yml$
+^frictionlessdata\.png$
+^okgr\.png$
+^oklabs\.png$
+^inst
+^codecov\.yml$

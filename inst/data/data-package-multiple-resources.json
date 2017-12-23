@@ -1,0 +1,12 @@
+{
+    "resources": [
+        {
+          "name": "name1",
+          "data": ["data1"]
+        },
+        {
+          "name": "name2",
+          "data": ["data2"]
+        }
+    ]
+}
