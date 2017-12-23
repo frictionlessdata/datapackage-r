@@ -98,7 +98,8 @@ Package <- R6::R6Class(
   ),
   
   active = list(
-    descriptor = function() {
+    descriptor = function(x) {
+      if (!missing(x)) private$nextDescriptor_ = x
       return(private$nextDescriptor_)
     },
     

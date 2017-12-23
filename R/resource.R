@@ -221,8 +221,11 @@ Resource <- R6Class(
       if (!isTRUE(self$tabular)) return(NULL) else return(private$getTable_()$headers)
     },
     
-    schema = function() {
-      if (!isTRUE(self$tabular)) return(NULL) else return(private$getTable_()$schema)
+    schema = function(x) {
+      if (!isTRUE(self$tabular)) return(NULL) else{
+        if (!missing(x)) private$getTable_()$schema = x
+      }
+        return(private$getTable_()$schema)
     },
     # Deprecated
     

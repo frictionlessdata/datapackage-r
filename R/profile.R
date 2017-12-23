@@ -72,7 +72,7 @@ Profile <- R6::R6Class(
   
   active = list(
     
-    name=function(){
+    name=function(x){
       
       profile_title = helpers.from.json.to.list(private$profile_)$title
       
@@ -80,7 +80,9 @@ Profile <- R6::R6Class(
       
       if (is.null(private$jsonschema_title)) return (NULL)
       
-      return (tolower(private$jsonschema_title))
+      private$jsonschema_title = tolower(private$jsonschema_title)
+      if (!missing(x)) private$jsonschema_title = x
+      return (private$jsonschema_title)
       
       # profile_title = jsonlite::fromJSON(private$profile_)$title
       # private$jsonschema_title = stringr::str_replace_all(profile_title," ","-")
@@ -88,10 +90,11 @@ Profile <- R6::R6Class(
       # return (tolower(private$jsonschema_title))
     },
     
-    jsonschema=function(){
+    jsonschema=function(x){
       #private$jsonschema_ = jsonlite::fromJSON(private$jsonschema_)
       # if(is.character(private$jsonschema_) && jsonlite::validate(private$jsonschema_))private$jsonschema_ = helpers.from.json.to.list(private$profile_)
       # private$jsonschema_ = jsonlite::toJSON(jsonlite::fromJSON(private$profile_))
+      if (!missing(x)) private$jsonschema_ = x
       return(private$jsonschema_)
     }
     

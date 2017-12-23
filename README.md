@@ -1,12 +1,21 @@
 <img src="okgr.png" align="right" width=130px /><img src="oklabs.png" align="right" width=130px /><br><br/><img src="frictionlessdata.png" align="left" width=60 />rictionless Data - <br/> Data Package
 ================
 
-[![Build Status](https://travis-ci.org/okgreece/datapackage-r.svg?branch=master)](https://travis-ci.org/okgreece/datapackage-r) [![Coverage Status](https://coveralls.io/repos/github/okgreece/datapackage-r/badge.svg?branch=master)](https://coveralls.io/github/okgreece/datapackage-r?branch=master) <!-- [![Coverage Status](https://img.shields.io/codecov/c/github/okgreece/datapackage-r/master.svg)](https://codecov.io/github/okgreece/datapackage-r?branch=master) --> [![Github Issues](http://githubbadges.herokuapp.com/okgreece/datapackage-r/issues.svg)](https://github.com/okgreece/datapackage-r/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/okgreece/datapackage-r/pulls.svg)](https://github.com/okgreece/datapackage-r/pulls) [![Project Status: Active – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![packageversion](https://img.shields.io/badge/Package%20version-0.0.0.9000-orange.svg?style=flat-square)](commits/master) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.1-6666ff.svg)](https://cran.r-project.org/) [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/okgreece/datapackage-r.svg?branch=master)](https://travis-ci.org/okgreece/datapackage-r) [![Coverage Status](https://coveralls.io/repos/github/okgreece/datapackage-r/badge.svg?branch=master)](https://coveralls.io/github/okgreece/datapackage-r?branch=master) <!-- [![Coverage Status](https://img.shields.io/codecov/c/github/okgreece/datapackage-r/master.svg)](https://codecov.io/github/okgreece/datapackage-r?branch=master) --> [![Github Issues](http://githubbadges.herokuapp.com/okgreece/datapackage-r/issues.svg)](https://github.com/okgreece/datapackage-r/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/okgreece/datapackage-r/pulls.svg)](https://github.com/okgreece/datapackage-r/pulls) [![Project Status: Active – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.1-6666ff.svg)](https://cran.r-project.org/) [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/frictionlessdata/chat)
 
 Description
 ===========
 
 R library for working with [Data Package](http://frictionlessdata.io/specs/data-package).
+
+Features
+--------
+
+-   `Package` class for working with data packages
+-   `Resource` class for working with data resources
+-   `Profile` class for working with profiles
+-   `validate` function for validating data package descriptors
+-   `infer` function for inferring data package descriptors
 
 Getting started
 ===============
@@ -86,7 +95,37 @@ descriptor = '{
 }'
 
 dataPackage = Package.load(descriptor)
-dataPackage$profile$name
+dataPackage
+```
+
+    ## <Package>
+    ##   Public:
+    ##     clone: function (deep = FALSE) 
+    ##     commit: function (strict = NULL) 
+    ##     descriptor: active binding
+    ##     errors: active binding
+    ##     infer: function (pattern) 
+    ##     initialize: function (descriptor = list(), basePath = NULL, pattern = NULL, 
+    ##     profile: active binding
+    ##     resourceNames: active binding
+    ##     resources: active binding
+    ##     save: function (target, type = "json") 
+    ##     valid: active binding
+    ##   Private:
+    ##     basePath_: NULL
+    ##     build_: function () 
+    ##     currentDescriptor_: list
+    ##     currentDescriptor_json: NULL
+    ##     descriptor_: NULL
+    ##     errors_: list
+    ##     nextDescriptor_: list
+    ##     pattern_: NULL
+    ##     profile_: profile, R6
+    ##     resources_: list
+    ##     resources_length: 0
+    ##     strict_: FALSE
+
+``` r
 #resource = dataPackage$getResource('example')
 #resource$read() # [[180, 18, 'Tony'], [192, 32, 'Jacob']]
 ```
@@ -96,6 +135,8 @@ Documentation
 
 The package is still under development and some properties may not be working properly.
 
+Json objects are not included in R base data types. [Jsonlite package](https://CRAN.R-project.org/package=jsonlite) is internally used to convert json data to list objects. The input parameters of functions could be json strings, files or lists and the outputs are in list format to easily further process your data in R environment and exported as desired. The examples below show how to use jsonlite package to convert the output back to json adding indentation whitespace. More details about handling json you can see jsonlite documentation or vignettes [here](https://CRAN.R-project.org/package=jsonlite).
+
 Package
 -------
 
@@ -103,7 +144,7 @@ A class for working with data packages. It provides various capabilities like lo
 
 Consider we have some local `csv` files in a `data` directory. Let's create a data package based on this data using a `Package` class:
 
-> data/cities.csv
+> inst/data/cities.csv
 
 ``` csv
 city,location
@@ -112,7 +153,7 @@ paris,"48.85,2.30"
 rome,"41.89,12.51"
 ```
 
-> data/population.csv
+> inst/data/population.csv
 
 ``` csv
 city,year,population
@@ -130,7 +171,7 @@ dataPackage = Package.load()
 Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `*.csv`:
 
 ``` r
-dataPackage$infer('*.csv')
+dataPackage$infer('**.csv')
 dataPackage$descriptor
 ```
 
@@ -195,11 +236,11 @@ Constructor to instantiate `Package` class.
 
 #### `package$resources`
 
--   `(Resource[])` - returns an array of `Resource` instances (see below).
+-   `(Resource[])` - returns an list of `Resource` instances (see below).
 
 #### `package$resourceNames`
 
--   `(String[])` - returns an array of resource names.
+-   `(String[])` - returns an list of resource names.
 
 #### `package$getResource(name)`
 
@@ -240,17 +281,28 @@ Update data package instance if there are in-place changes in the descriptor.
 -   `(Boolean)` - returns true on success and false if not modified
 
 ``` r
-dataPackage = Package$new()$load("{
-    name: 'package',
-    resources: [{name: 'resource', data: ['data']}]
-}")
+dataPackage = Package.load('{
+    "name": "package",
+    "resources": [{"name": "resource", "data": ["data"]}]
+}')
 
-dataPackage$name # package
-dataPackage$descriptor$name = 'renamed-package'
-dataPackage$name # package
-dataPackage$commit()
-dataPackage$name # renamed-package
+dataPackage$descriptor$name # package
 ```
+
+    ## [1] "package"
+
+``` r
+dataPackage$descriptor$name = 'renamed-package'
+dataPackage$commit()
+```
+
+    ## [1] TRUE
+
+``` r
+dataPackage$descriptor$name # renamed-package
+```
+
+    ## [1] "renamed-package"
 
 #### `package.save(target)`
 
@@ -279,9 +331,15 @@ Let's create and read a resource. We use static `Resource$load` method instantia
 
 ``` r
 resource = Resource.load('{"path": "data.csv"}')
-resource$tabular# $tabular # TRUE
-resource$headers # ['city', 'location']
-resource$read(keyed = TRUE)
+resource$tabular# TRUE
+```
+
+    ## [1] TRUE
+
+``` r
+#resource$headers # ['city', 'location']
+#resource$read(keyed = TRUE)
+
 # [
 #   {city: 'london', location: '51.50,-0.11'},
 #   {city: 'paris', location: '48.85,2.30'},
@@ -321,7 +379,7 @@ resource$errors
 As a good citiziens we've decided to check out recource descriptor validity. And it's not valid! We should use an array for `missingValues` property. Also don't forget to have an empty string as a missing value:
 
 ``` r
-resource$descriptor$schema['missingValues'] = list('', 'N/A')
+resource$descriptor$schema[['missingValues']] = list('', 'N/A')
 resource$commit()
 resource$valid # TRUE
 ```
@@ -385,13 +443,13 @@ resource = Resource.load('dataresource.json')
 
 It was onle basic introduction to the `Resource` class. To learn more let's take a look on `Resource` class API reference.
 
-#### `Resource$load(descriptor, {basePath, strict=false})`
+#### `Resource$load(descriptor, basePath, strict=FALSE)`
 
-Factory method to instantiate `Resource` class. This method is async and it should be used with await keyword or as a `Promise`.
+Constructor to instantiate `Resource` class.
 
 -   `descriptor (String/Object)` - data resource descriptor as local path, url or object
 -   `basePath (String)` - base path for all relative paths
--   `strict (Boolean)` - strict flag to alter validation behavior. Setting it to `true` leads to throwing errors on any operation with invalid descriptor
+-   `strict (Boolean)` - strict flag to alter validation behavior. Setting it to `TRUE` leads to throwing errors on any operation with invalid descriptor
 -   `(errors.DataPackageError)` - raises error if something goes wrong
 -   `(Resource)` - returns resource class instance
 
@@ -437,7 +495,7 @@ Factory method to instantiate `Resource` class. This method is async and it shou
 
 #### `resource$source`
 
--   `(Array/String)` - returns `data` or `path` property
+-   `(List/String)` - returns `data` or `path` property
 
 Combination of `resource$source` and `resource$inline/local/remote/multipart` provides predictable interface to work with resource data.
 
@@ -455,11 +513,11 @@ It returns `Schema` instance to interact with data schema. Read API documentatio
 
 -   `(tableschema$Schema)` - returns schema class instance
 
-#### `resource$iter({keyed, extended, cast=true, relations=false, stream=false})`
+#### `resource$iter(keyed, extended, cast=TRUE, relations=FALSE, stream=FALSE)`
 
 > Only for tabular resources
 
-Iter through the table data and emits rows cast based on table schema (async for loop). With a `stream` flag instead of async iterator a Node stream will be returned. Data casting could be disabled.
+Iter through the table data and emits rows cast based on table schema (async for loop). Data casting could be disabled.
 
 -   `keyed (Boolean)` - iter keyed rows
 -   `extended (Boolean)` - iter extended rows
@@ -467,12 +525,12 @@ Iter through the table data and emits rows cast based on table schema (async for
 -   `relations (Boolean)` - if true foreign key fields will be checked and resolved to its references
 -   `stream (Boolean)` - return Node Readable Stream of table rows
 -   `(errors.DataPackageError)` - raises any error occured in this process
--   `(AsyncIterator/Stream)` - async iterator/stream of rows:
+-   `(Iterator/Stream)` - iterator/stream of rows:
 -   `[value1, value2]` - base
 -   `{header1: value1, header2: value2}` - keyed
 -   `[rowNumber, [header1, header2], [value1, value2]]` - extended
 
-#### `resource$read({keyed, extended, cast=true, relations=false, limit})`
+#### `resource$read(keyed, extended, cast=TRUE, relations=FALSE, limit)`
 
 > Only for tabular resources
 
@@ -514,7 +572,7 @@ Infer resource metadata like name, format, mediatype, encoding, schema and profi
 
 -   `(Object)` - returns resource descriptor
 
-#### `resource$commit({strict})`
+#### `resource$commit(strict)`
 
 Update resource instance if there are in-place changes in the descriptor.
 
@@ -540,15 +598,25 @@ A component to represent JSON Schema profile from [Profiles Registry](https://sp
 profile = Profile.load('data-package')
 
 profile$name # data-package
-profile$jsonschema # JSON Schema contents
+```
 
+    ## [1] "data-package"
+
+``` r
+profile$jsonschema # List of JSON Schema contents
+```
+
+``` r
 valid_errors = profile$validate(descriptor)
 valid = valid_errors$valid # TRUE if valid descriptor
+valid
 ```
+
+    ## [1] TRUE
 
 #### `Profile.load(profile)`
 
-Factory method to instantiate `Profile` class. This method is async and it should be used with await keyword or as a `Promise`.
+Constuctor to instantiate `Profile` class.
 
 -   `profile (String)` - profile name in registry or URL to JSON Schema
 -   `(errors$DataPackageError)` - raises error if something goes wrong
@@ -622,54 +690,54 @@ The library supports foreign keys described in the [Table Schema](http://specs.f
 Consider we have a data package:
 
 ``` r
-DESCRIPTOR = "{
-  'resources': [
+DESCRIPTOR = '{
+  "resources": [
     {
-      'name': 'teams',
-      'data': [
-        ['id', 'name', 'city'],
-        ['1', 'Arsenal', 'London'],
-        ['2', 'Real', 'Madrid'],
-        ['3', 'Bayern', 'Munich'],
+      "name": "teams",
+      "data": [
+        ["id", "name", "city"],
+        ["1", "Arsenal", "London"],
+        ["2", "Real", "Madrid"],
+        ["3", "Bayern", "Munich"]
       ],
-      'schema': {
-        'fields': [
-          {'name': 'id', 'type': 'integer'},
-          {'name': 'name', 'type': 'string'},
-          {'name': 'city', 'type': 'string'},
+      "schema": {
+        "fields": [
+          {"name": "id", "type": "integer"},
+          {"name": "name", "type": "string"},
+          {"name": "city", "type": "string"}
         ],
-        'foreignKeys': [
+        "foreignKeys": [
           {
-            'fields': 'city',
-            'reference': {'resource': 'cities', 'fields': 'name'},
-          },
-        ],
-      },
+            "fields": "city",
+            "reference": {"resource": "cities", "fields": "name"}
+          }
+        ]
+      }
     }, {
-      'name': 'cities',
-      'data': [
-        ['name', 'country'],
-        ['London', 'England'],
-        ['Madrid', 'Spain'],
-      ],
-    },
-  ],
-}"
+      "name": "cities",
+      "data": [
+        ["name", "country"],
+        ["London", "England"],
+        ["Madrid", "Spain"]
+      ]
+    }
+  ]
+}'
 ```
 
 Let's check relations for a `teams` resource:
 
 ``` r
 package = Package.load(DESCRIPTOR)
-teams = package$getResource('teams')
-teams$checkRelations()
+# teams = package$getResource('teams')
+# teams$checkRelations()
 # tableschema.exceptions.RelationError: Foreign key "['city']" violation in row "4"
 ```
 
 As we could see there is a foreign key violation. That's because our lookup table `cities` doesn't have a city of `Munich` but we have a team from there. We need to fix it in `cities` resource:
 
 ``` r
-package$descriptor['resources'][1]['data']$push(['Munich', 'Germany'])
+package$descriptor[['resources']][1]['data']$push(['Munich', 'Germany'])
 package$commit()
 teams = package$getResource('teams')
 await teams$checkRelations()
@@ -679,7 +747,7 @@ await teams$checkRelations()
 Fixed! But not only a check operation is available. We could use `relations` argument for `resource$iter/read` methods to dereference a resource relations:
 
 ``` r
-teams$read('{keyed: true, relations: true}')
+teams$read('{"keyed": true, "relations": true}')
 #[{'id': 1, 'name': 'Arsenal', 'city': {'name': 'London', 'country': 'England}},
 # {'id': 2, 'name': 'Real', 'city': {'name': 'Madrid', 'country': 'Spain}},
 # {'id': 3, 'name': 'Bayern', 'city': {'name': 'Munich', 'country': 'Germany}}]

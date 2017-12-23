@@ -160,7 +160,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
       # continue
       
       # URI -> Pointer
-    } else if (startsWith(unlist(value), '#')) {
+    } else if (suppressWarnings(isTRUE(startsWith(unlist(value), '#')))) {
       
       point = as.list(unlist(stringr::str_split(as.character(value), "/"))[-1])
       if (!is.empty(point)) {

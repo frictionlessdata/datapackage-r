@@ -1,7 +1,7 @@
 Package: datapackage.r
 Type: Package
 Title: 'R Data Package'
-Version: 0.0.0.9000
+Version: 0.1.0
 Date: 2017-07-01
 Author: c(person("Kleanthis", "Koupidis", email = "koupidis.okfgr@gmail.com", role = c("aut", "cre"), 
             person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role = "cre"))
