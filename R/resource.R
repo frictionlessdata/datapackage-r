@@ -141,10 +141,10 @@ Resource <- R6Class(
       }
       
       # Save descriptor
-      private$currentDescriptor_ = jsonlite::toJSON(descriptor,auto_unbox = TRUE)
+      private$currentDescriptor_ = helpers.from.list.to.json(descriptor)
       private$build_()
       
-      return(jsonlite::toJSON(descriptor,auto_unbox = TRUE))
+      return(helpers.from.list.to.json(descriptor))
     },
     
     commit = function(strict=NULL) {
@@ -159,9 +159,9 @@ Resource <- R6Class(
     save = function(target) {
       
       write(private$currentDescriptor_, file = stringr::str_c(target,"package.txt", sep = "/"))
-      save=stringr::str_interp('Package saved at: "${target}"')
+      save = stringr::str_interp('Package saved at: "${target}"')
       
-      return (save)
+      return(save)
     }
     
   ),
@@ -169,7 +169,7 @@ Resource <- R6Class(
   active = list(
     
     valid = function() {
-      return(isTRUE(length(private$errors_)== 0))
+      return(isTRUE(length(private$errors_) == 0))
     },
     
     errors = function() {
@@ -225,7 +225,7 @@ Resource <- R6Class(
       if (!isTRUE(self$tabular)) return(NULL) else{
         if (!missing(x)) private$getTable_()$schema = x
       }
-        return(private$getTable_()$schema)
+      return(private$getTable_()$schema)
     },
     # Deprecated
     
@@ -288,25 +288,25 @@ Resource <- R6Class(
     
     getTable_ = function () {
       #if (isTRUE(is.character(private$currentDescriptor_))) private$currentDescriptor_ = jsonlite::fromJSON(private$currentDescriptor_)
-      if(isTRUE(is.null(private$table_))) {
-        
+      if (!isTRUE(!is.null(private$table_))) {        
         # Resource -> Regular
-        if (!isTRUE(private$sourceInspection_$tabular)) {
+        if (!isTRUE(self$tabular)) {
           return (NULL)
         }
         
         # Resource -> Multipart
-        if (isTRUE(private$sourceInspection_$multipart_)) {
+        if (isTRUE(self$multipart_)) {
           stop(DataPackageError$new('Resource$table does not support multipart resources')$message)
         }
         
         # Resource -> Tabular
         options = list()
-        schemaDescriptor = jsonlite::toJSON(private$currentDescriptor_$schema)
-        schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema$new(jsonlite::toJSON(schemaDescriptor)) else NULL
-        #schema = schema$value()
-        private$table_  = tableschema.r::Table$new(private$sourceInspection_$source, schema, options)
-        #private$table_ = table_$value()
+        schemaDescriptor = private$currentDescriptor_$schema
+        
+        schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema.load(helpers.from.list.to.json(schemaDescriptor)) else NULL
+        schema = schema$value()
+        table_ = tableschema.r::Table.load( self$source, schema = schema, options)
+        private$table_ = table_$value()
       }
       return(private$table_)
       
@@ -369,12 +369,12 @@ DIALECT_KEYS = c(
 #' @rdname Resource.load
 #' @export
 
-Resource.load = function(descriptor = list(), basePath=NULL, strict = FALSE, dataPackage = list() ) {
+Resource.load = function(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list() ) {
   
   
   
   # Get base path
-  if (is.null(basePath)) basePath = locateDescriptor(descriptor)
+  if (anyNA(basePath)) basePath = locateDescriptor(descriptor)
   
   # if (is.character(descriptor) && 
   #     (isSafePath(descriptor) | isRemotePath(descriptor)) ){
@@ -425,7 +425,7 @@ inspectSource = function(data, path, basePath) {
       # Local
     } else {
       # Path is not safe
-      if ( isTRUE(isSafePath(path[1] == FALSE)) |  isTRUE(isSafePath(as.character(path[1])) == FALSE) ) {
+      if ( isTRUE(isSafePath(path[1] == FALSE)) ||  isTRUE(isSafePath(as.character(path[1])) == FALSE) ) {
         stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" is not safe'))$message)
       }
       # Not base path
@@ -448,7 +448,12 @@ inspectSource = function(data, path, basePath) {
     # Multipart Local/Remote
   } else if (length(path) > 1) {
     inspections = purrr::map(path, function(item) inspectSource(NULL, item, basePath))
-    inspection = purrr::flatten(inspections[1])
+    if (length(names(inspection)) > 0) {
+      inspection = rlist::list.merge(inspection, inspections[[1]])
+    }
+    else {
+      inspection = inspections[[1]]
+    }
     inspection$source = unlist(purrr::map(inspections, function(item) item$source))
     inspection$multipart = TRUE
   }

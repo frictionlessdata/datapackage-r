@@ -17,7 +17,7 @@ test_that('initializes with Object descriptor', {
   descriptor = 'inst/data/dp1/datapackage.json'
   dataPackage = Package.load(descriptor, basePath= 'inst/data/dp1')
   expect_true(identical(dataPackage$descriptor,expandPackageDescriptor(descriptor)))
-  # expect_true(identical(lapply(dataPackage$descriptor,unlist,use.names=F, recursive = FALSE), lapply(expandPackageDescriptor(helpers.from.json.to.list(descriptor)),unlist,use.names=F, recursive = FALSE)))
+  # expect_true(identical(lapply(dataPackage$descriptor,unlist,use.names=F, recursive = FALSE), lapply(expandPackageDescriptor(jsonlite::fromJSON(descriptor)),unlist,use.names=F, recursive = FALSE)))
 })
 
 test_that('initializes with URL descriptor', {
@@ -27,24 +27,32 @@ test_that('initializes with URL descriptor', {
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
 })
 
-test_that('throws errors for invalid datapackage in strict mode', {
-  expect_error(Package.load('{}',strict=TRUE))
-})
-
-
-#####################################################
-# test_that('loads relative resource', {
-# 
-#   descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
-#   dataPackage = Package.load(descriptor)
-# 
-#   dataPackage$resources[[1]]$descriptor$profile = 'tabular-data-resource'
-#   data = dataPackage$resources[[1]]$table$read()
-#   
-#   expect_equal(data, '[["gb", 100], ["us", 200], ["cn", 300]]')
+# test_that('throws errors for invalid datapackage in strict mode', {
+#   expect_error(Package.load(list(),strict=TRUE))
 # })
-
-
+# 
+# test_that('stores errors for invalid datapackage', {
+#   dataPackage = Package.load()
+#   # assert.instanceOf(dataPackage.errors, Array)
+#   # assert.instanceOf(dataPackage.errors[0], Error)
+#   # assert.include(dataPackage.errors[0].message, 'required property')
+#   expect_false(dataPackage$valid)
+# })
+# 
+# # test_that('loads relative resource', {
+# #   # TODO: For now tableschema doesn't support in-browser table.read
+# #   # if (process.env.USER_ENV === 'browser') {
+# #   #   this.skip()
+# #   # }
+# #   descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
+# #   dataPackage = Package.load(descriptor)
+# #   
+# #   dataPackage.resources[0].descriptor.profile = 'tabular-data-resource'
+# #   data = dataPackage.resources[0].table.read()
+# #   expect_equal(data, [['gb', 100], ['us', 200], ['cn', 300]])
+# # })
+# 
+# # 
 # # test_that('loads resource from absolute URL', async function() {
 # #   # TODO: For now tableschema doesn't support in-browser table.read
 # #   if (process.env.USER_ENV === 'browser') {
@@ -86,10 +94,10 @@ test_that('throws errors for invalid datapackage in strict mode', {
 # # 
 # # })
 # 
-###################################################
-testthat::context("Package #descriptor (retrieve)")
-###################################################
-
+# ###################################################
+# testthat::context("Package #descriptor (retrieve)")
+# ###################################################
+# 
 test_that('object', {
   descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
   dataPackage = Package.load(descriptor)
@@ -97,7 +105,7 @@ test_that('object', {
 })
 # 
 # test_that('string remote path', {
-#   target.contents = helpers.from.json.to.list('inst/data/data-package.json')
+#   target.contents = jsonlite::fromJSON('inst/data/data-package.json',flatten = T,simplifyVector = T)
 #   descriptor = 'https://httpbin.org/data-resource.json'
 #   # Mocks
 #   (x = HttpClient$new(url = descriptor))
@@ -106,28 +114,28 @@ test_that('object', {
 #                  body = target.contents
 #   ))
 #   ##
-#   target.contents=helpers.from.json.to.list(res$parse("UTF-8"))$json
-#   descriptor.response=helpers.from.json.to.list(res$parse("UTF-8"))$json
+#   target.contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
+#   descriptor.response=jsonlite::fromJSON(res$parse("UTF-8"))$json
 #   dataPackage = Package.load(descriptor.response)
 #   
 #   expect_equal(dataPackage$descriptor, expandPackageDescriptor(target.contents))
 # })
 #  
-# test_that('string remote path bad', {
-#   descriptor = 'http://example.com/bad-path.json'
-#   http.onGet(descriptor).reply(500)
-#   error = catchError(Package.load, descriptor)
-#   assert.instanceOf(error, Error)
-#   assert.include(error.message, 'Can not retrieve remote')
-# })
-#
+# # test_that('string remote path bad', {
+# #   descriptor = 'http://example.com/bad-path.json'
+# #   http.onGet(descriptor).reply(500)
+# #   error = catchError(Package.load, descriptor)
+# #   assert.instanceOf(error, Error)
+# #   assert.include(error.message, 'Can not retrieve remote')
+# # })
+# # 
 # 
 test_that('string local path', {
   contents =  'inst/data/data-package.json'
   descriptor = 'inst/data/data-package.json'
   dataPackage = Package.load(descriptor)
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(contents))
-})
+ })
 
 test_that('string local path bad', {
   descriptor = 'inst/data/bad-path.json'
@@ -137,79 +145,66 @@ test_that('string local path bad', {
 ######################################################
 testthat::context("Package #descriptor (dereference)")
 ######################################################
-
-
-test_that('mixed', {
-  descriptor ='inst/data/data-package-dereference.json'
-  
-  dataPackage = Package.load(descriptor)
-  
-  target =
-    purrr::map(helpers.from.json.to.list('[
-                                  {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
-                                  {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-                                  ]'),expandResourceDescriptor)
-  
-  
-  expect_equal( dataPackage$descriptor$resources, target)
-  
-})
-
-test_that('pointer', {
-  descriptor = '{
-  "resources": [
-  {"name": "name1", "data": ["data"], "schema": "#/schemas/main"},
-  {"name": "name2", "data": ["data"], "dialect": "#/dialects/1"}
-  ],
-  "schemas": {"main": {"fields": [{"name": "name"}]}},
-  "dialects": [{"delimiter": ","}]
-}'
-  dataPackage = Package.load(descriptor)
-  
-  target =
-    purrr::map(helpers.from.json.to.list('[
-                                  {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
-                                  {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-                                  ]'),expandResourceDescriptor)
-  
-  
-  expect_equal(dataPackage$descriptor$resources, target)
-  })
-
-test_that('pointer bad', {
-  descriptor = '{
-  "resources": [
-  {"name": "name1", "data": ["data"], "schema": "#/schemas/main"}
-  ]
-}'
-
-  expect_error(Package.load(descriptor))
-  })
-
-# test_that('remote', {
-#   descriptor = '{
-#     "resources": [
-#       {"name": "name1", "data": ["data"], "schema": "http://example.com/schema"},
-#       {"name": "name2", "data": ["data"], "dialect": "http://example.com/dialect"}
-#       ]
-#   }'
+# 
+# 
+# test_that('mixed', {
+#   descriptor = jsonlite::fromJSON('inst/data/data-package-dereference.json')
 #   
-#   http.onGet("http://example.com/schema").reply(200, {fields: [{name: "name"}]})
-#   http.onGet("http://example.com/dialect").reply(200, {delimiter: ","})
-#   
-#   dataPackage = Package.load(descriptor)
-#   
-#   target = expandResourceDescriptor('[
-#     {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
-#     {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-#     ]')
-#   
-#   expect_equal(dataPackage.descriptor.resources, target)
+#     dataPackage = Package.load(descriptor)
+#     
+# target =
+# purrr::map(jsonlite::fromJSON('[
+#       {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
+#                                {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
+#                                ]',simplifyVector=F),expandResourceDescriptor)
+#     
+# 
+# expect_equal( dataPackage$descriptor$resources, target)
+# 
 # })
-
-
-
-
+# # 
+# # test_that('pointer', {
+# #   descriptor = {
+# #     resources: [
+# #       {name: 'name1', data: ['data'], schema: '#/schemas/main'},
+# #       {name: 'name2', data: ['data'], dialect: '#/dialects/0'},
+# #       ],
+# #     schemas: {main: {fields: [{name: 'name'}]}},
+# #     dialects: [{delimiter: ','}],
+# #   }
+# #   dataPackage = Package.load(descriptor)
+# #   expect_equal(dataPackage.descriptor.resources, [
+# #     {name: 'name1', data: ['data'], schema: {fields: [{name: 'name'}]}},
+# #     {name: 'name2', data: ['data'], dialect: {delimiter: ','}},
+# #     ].map(expandResource))
+# # })
+# # 
+# # test_that('pointer bad', {
+# #   descriptor = {
+# #     resources: [
+# #       {name: 'name1', data: ['data'], schema: '#/schemas/main'},
+# #       ],
+# #   }
+# #   error = catchError(Package.load, descriptor)
+# #   assert.instanceOf(error, Error)
+# #   assert.include(error.message, 'Not resolved Pointer URI')
+# # })
+# # 
+# # test_that('remote', {
+# #   descriptor = {
+# #     resources: [
+# #       {name: 'name1', data: ['data'], schema: 'http://example.com/schema'},
+# #       {name: 'name2', data: ['data'], dialect: 'http://example.com/dialect'},
+# #       ],
+# #   }
+# #   http.onGet('http://example.com/schema').reply(200, {fields: [{name: 'name'}]})
+# #   http.onGet('http://example.com/dialect').reply(200, {delimiter: ','})
+# #   dataPackage = Package.load(descriptor)
+# #   expect_equal(dataPackage.descriptor.resources, [
+# #     {name: 'name1', data: ['data'], schema: {fields: [{name: 'name'}]}},
+# #     {name: 'name2', data: ['data'], dialect: {delimiter: ','}},
+# #     ].map(expandResource))
+# # })
 # # 
 # # test_that('remote bad', {
 # #   descriptor = {
@@ -223,172 +218,172 @@ test_that('pointer bad', {
 # #   assert.include(error.message, 'Not resolved Remote URI')
 # # })
 # # 
-# test_that('local', {
-#   descriptor = '{
-#     "resources": [
-#       {"name": "name1", "data": ["data"], "schema": "table-schema.json"},
-#       {"name": "name2", "data": ["data"], "dialect": "csv-dialect.json"}
-#       ]
-#   }'
-# target = expandResourceDescriptor('{"resources":[
-#   {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
-#   {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-#   ]}')
-#       dataPackage = Package.load(descriptor, basePath = "inst/data")
-#     expect_equal(dataPackage$descriptor$resources, target)
-#     
-#     
-#     str(dataPackage$descriptor$resources)
-#     str(target)
-#     
-#     
-# })
-#
-# test_that('local bad', {
-#   descriptor = {
-#     resources: [
-#       {name: 'name1', data: ['data'], schema: 'bad-path.json'},
-#       ],
-#   }
-#   error = catchError(Package.load, descriptor, {basePath: 'data'})
-#   assert.instanceOf(error, Error)
-#   if (process.env.USER_ENV !== 'browser') {
-#     assert.include(error.message, 'Not resolved Local URI')
-#   } else {
-#     assert.include(error.message, 'in browser')
-#   }
-# })
-#
-# test_that('local bad not safe', {
-#   descriptor = {
-#     resources: [
-#       {name: 'name1', data: ['data'], schema: '../data/table-schema.json'},
-#       ],
-#   }
-#   error = catchError(Package.load, descriptor, {basePath: 'data'})
-#   assert.instanceOf(error, Error)
-#   if (process.env.USER_ENV !== 'browser') {
-#     assert.include(error.message, 'Not safe path')
-#   } else {
-#     assert.include(error.message, 'in browser')
-#   }
-# })
-#
-
-#################################################
-testthat::context("Package #descriptor (expand)")
-#################################################
-
-test_that('resource', {
-  descriptor = '{
-  "resources": [
-  {
-  "name": "name",
-  "data": ["data"]
-  }
-  ]
-}'
-
-  target = helpers.from.json.to.list('{
-                                     "profile": "data-package",
-                                     "resources": [
-                                     {
-                                     "name": "name",
-                                     "data": ["data"],
-                                     "profile": "data-resource",
-                                     "encoding": "utf-8"
-                                     }
-                                     ]
-                                     }')
-
-  dataPackage = Package.load(descriptor)
-  expect_equal(dataPackage$descriptor[sort(names(dataPackage$descriptor))],target[sort(names(target))]) # sort names by target to match
-  })
-
-test_that('tabular resource schema', {
-  
-  descriptor =  '{
-  "resources": [{
-  "name": "name",
-  "data": ["data"],
-  "profile": "tabular-data-resource",
-  "schema": {
-  "fields": [{"name": "name"}]
-  }
-  }]
-}'
-
-  target = helpers.from.json.to.list('{
-                                     "profile": "data-package",
-                                     "resources": [{
-                                     "name": "name",
-                                     "data": ["data"],
-                                     "profile": "tabular-data-resource",
-                                     "encoding": "utf-8",
-                                     "schema": {
-                                     "fields": [{"name": "name", "type": "string", "format": "default"}],
-                                     "missingValues": [""]
-                                     }
-                                     }]
-                                     }')
-
-  dataPackage = Package.load(descriptor)
-  target$resources[[1]] = target$resources[[1]][names(dataPackage$descriptor$resources[[1]])] #sort target to match
-  target = target[sort(names(target))] #sort target to match
-  expect_equal(dataPackage$descriptor[sort(names(dataPackage$descriptor))], target)
-  })
-
-test_that('tabular resource dialect', {
-  
-  descriptor ='{
-  "resources": [
-  {
-  "name": "name",
-  "data": ["data"],
-  "profile": "tabular-data-resource",
-  "dialect": {"delimiter": "custom"}
-  }
-  ]
-}'
-
-  target = helpers.from.json.to.list('{
-                                     "profile": "data-package",
-                                     "resources": [{
-                                     "name": "name",
-                                     "data": ["data"],
-                                     "profile": "tabular-data-resource",
-                                     "encoding": "utf-8",
-                                     "dialect": {
-                                     "delimiter": "custom",
-                                     "doubleQuote": true,
-                                     "lineTerminator": "\\r\\n",
-                                     "quoteChar": "\\"",
-                                     "escapeChar": "\\\\",
-                                     "skipInitialSpace": true,
-                                     "header": true,
-                                     "caseSensitiveHeader": false
-                                     }
-                                     }]
-                                     }')
-  
-  dataPackage = Package.load(descriptor)
-  target$resources[[1]] = target$resources[[1]][names(dataPackage$descriptor$resources[[1]])] #sort target to match
-  expect_equal(dataPackage$descriptor[sort(names(dataPackage$descriptor))], target[sort(names(target))]) # extra sorting
-  })
-
-# ##################################################
-# testthat::context("Package #resources")
-# ##################################################
+# # test_that('local', {
+# #   descriptor = {
+# #     resources: [
+# #       {name: 'name1', data: ['data'], schema: 'table-schema.json'},
+# #       {name: 'name2', data: ['data'], dialect: 'csv-dialect.json'},
+# #       ],
+# #   }
+# #   if (process.env.USER_ENV !== 'browser') {
+# #     dataPackage = Package.load(descriptor, {basePath: 'data'})
+# #     expect_equal(dataPackage.descriptor.resources, [
+# #       {name: 'name1', data: ['data'], schema: {fields: [{name: 'name'}]}},
+# #       {name: 'name2', data: ['data'], dialect: {delimiter: ','}},
+# #       ].map(expandResource))
+# #   } else {
+# #     error = catchError(Package.load, descriptor, {basePath: 'data'})
+# #     assert.instanceOf(error, Error)
+# #     assert.include(error.message, 'in browser')
+# #   }
+# # })
+# # 
+# # test_that('local bad', {
+# #   descriptor = {
+# #     resources: [
+# #       {name: 'name1', data: ['data'], schema: 'bad-path.json'},
+# #       ],
+# #   }
+# #   error = catchError(Package.load, descriptor, {basePath: 'data'})
+# #   assert.instanceOf(error, Error)
+# #   if (process.env.USER_ENV !== 'browser') {
+# #     assert.include(error.message, 'Not resolved Local URI')
+# #   } else {
+# #     assert.include(error.message, 'in browser')
+# #   }
+# # })
+# # 
+# # test_that('local bad not safe', {
+# #   descriptor = {
+# #     resources: [
+# #       {name: 'name1', data: ['data'], schema: '../data/table-schema.json'},
+# #       ],
+# #   }
+# #   error = catchError(Package.load, descriptor, {basePath: 'data'})
+# #   assert.instanceOf(error, Error)
+# #   if (process.env.USER_ENV !== 'browser') {
+# #     assert.include(error.message, 'Not safe path')
+# #   } else {
+# #     assert.include(error.message, 'in browser')
+# #   }
+# # })
+# # 
+# # 
+# #################################################
+# testthat::context("Package #descriptor (expand)")
+# #################################################
 # 
-# test_that('names', {
-#   descriptor = 'inst/data/data-package-multiple-resources.json'
-#   dataPackage = Package.load(descriptor, basePath = 'inst/data')
-#   expect_length(dataPackage$resources, 2)
-#   expect_equal(dataPackage$resourceNames, helpers.from.json.to.list('["name1", "name2"]'))
+# test_that('resource', {
+#   descriptor = jsonlite::fromJSON('{
+#     "resources": [
+#       {
+#         "name": "name",
+#         "data": ["data"]
+#       }
+#       ]
+#   }')
+#   
+#   target = jsonlite::fromJSON('{
+#     "profile": "data-package",
+#     "resources": [
+#       {
+#         "name": "name",
+#         "data": ["data"],
+#         "profile": "data-resource",
+#         "encoding": "utf-8"
+#       }
+#       ]
+#   }')
+#   
+#   dataPackage = Package.load(descriptor)
+#   expect_equal(dataPackage$descriptor[sort(names(target))],target) # sort names by target to match
 # })
+# 
+# test_that('tabular resource schema', {
+# 
+#   descriptor = jsonlite::fromJSON( '{
+#   	"resources": [{
+#   		"name": "name",
+#   		"data": ["data"],
+#   		"profile": "tabular-data-resource",
+#   		"schema": {
+#   			"fields": [{"name": "name"}]
+#   		}
+#   	}]
+#   }')
+# 
+#   target = jsonlite::fromJSON('{
+#       "profile": "data-package",
+#       "resources": [{
+#         "name": "name",
+#         "data": ["data"],
+#         "profile": "tabular-data-resource",
+#         "encoding": "utf-8",
+#         "schema": {
+#           "fields": {"name": "name", "type": "string", "format": "default"},
+#           "missingValues": ""
+#         }
+#       }]
+#     }')
+# 
+#   dataPackage = Package.load(descriptor)
+#   #target$resources = target$resources[names(dataPackage$descriptor$resources)] #sort target resources to match
+#   target = target[names(dataPackage$descriptor)] #sort target to match
+#   target$resources = target$resources[names(dataPackage$descriptor$resources)] #sort target to match
+#   expect_equal(dataPackage$descriptor, target)
+# })
+# 
+# # test_that('tabular resource dialect', {
+# # 
+# #   descriptor = jsonlite::fromJSON('{
+# #     "resources": [
+# #       {
+# #         "name": "name",
+# #         "data": ["data"],
+# #         "profile": "tabular-data-resource",
+# #         "dialect": {"delimiter": "custom"}
+# #       }
+# #       ]
+# #   }')
+# # 
+# #   target = jsonlite::fromJSON('{
+# #     "profile": "data-package",
+# #     "resources": [{
+# #     "name": "name",
+# #     "data": ["data"],
+# #     "profile": "tabular-data-resource",
+# #     "encoding": "utf-8",
+# #     "dialect": {
+# #         "delimiter": "custom",
+# #         "doubleQuote": "TRUE",
+# #         "lineTerminator": "\\r\\n",
+# #         "quoteChar": "\\"",
+# #         "escapeChar": "\\\\",
+# #         "skipInitialSpace": "TRUE",
+# #         "header": "TRUE",
+# #         "caseSensitiveHeader": "FALSE"
+# #     }
+# #   }]
+# #  }')
+# # 
+# #   dataPackage = Package.load(descriptor)
+# # 
+# #   expect_equal(dataPackage$descriptor, target)
+# # })
+# 
+# ###################################################
+# # testthat::context("Package #resources")
+# ###################################################
+# 
+# # test_that('names', {
+# #   descriptor = jsonlite::fromJSON('inst/data/data-package-multiple-resources.json')
+# #   dataPackage = Package.load(descriptor, basePath = 'inst/data')
+# #   expect_length(dataPackage$resources, 2)
+# #   expect_equal(dataPackage$resourceNames, jsonlite::fromJSON('["name1", "name2"]'))
+# # })
 # #
 # # test_that('add', {
-# #   descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+# #   descriptor = jsonlite::fromJSON('inst/data/dp1/datapackage.json')
 # #   dataPackage = Package.load(descriptor, basePath='inst/data/dp1')
 # #   resource = dataPackage.addResource({name: 'name', data: ['test']})
 # #   assert.isOk(resource)
