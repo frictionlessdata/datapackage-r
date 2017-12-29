@@ -62,7 +62,6 @@ Resource <- R6Class(
     },
     
     rawIter = function(stream = FALSE){
-      
       # Error for inline
       if (isTRUE(self$inline)) {
         stop(DataPackageError$new('Methods iter/read are not supported for inline data')$message)
@@ -73,14 +72,32 @@ Resource <- R6Class(
     },
     
     rawRead = function() {
-      iterator = self$rawIter(stream = TRUE)
-      count = 0
+      readable = self$rawIter(stream = TRUE)
+      stream.on = list()
       repeat {
-        count = count + 1
-        stream.on =  iterators::nextElem(iterator)
-        if (count == length(iterator) ) {
+        
+        value = tryCatch({
+          readable$read()
+          
+        }, error = function(e){
+          if (e$message == "StopIteration") {
+            return(NA)
+          }
+          else {
+            stop(e$message)
+          }
+        })
+        
+        if (!isTRUE(is.na(value))) {
+          stream.on = append(stream.on, value) 
+          
+        }
+        else{
           break
         }
+        
+        
+        
       }
       return(stream.on)
     },
@@ -474,7 +491,6 @@ createByteStream = function(source, remote) {
     connection = url(source) #await axios.get(source)
     
   } else {
-    
     connection = file(source)
   }
   stream = BinaryReadableConnection$new(list(source = connection))

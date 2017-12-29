@@ -7,6 +7,8 @@ library(webmockr)
 
 # Tests
 testthat::context("Resource")
+#######################################################
+
 
 
 #######################################################
@@ -466,17 +468,16 @@ test_that('multipart remote path remote and base path remote', {
   expect_true(resource$multipart)
   })
 
-#######################################################
+########################################################
 testthat::context('Resource #rawRead')
 ########################################################
 
-# test_that('it raw reads local file source', {
-#   path= 'inst/data/data.csv'
-#   resource = Resource.load(path, basePath= getwd())
-#   bytes = resource$rawRead()
-#   assert.include(toString(bytes), 'name,size')
-# })
-
+test_that('it raw reads local file source', {
+  
+  resource = Resource.load('{"path": "inst/data/data.csv"}', basePath = getwd())
+  bytes = resource$rawRead()
+  expect_true(grepl('name,size', intToUtf8(bytes), fixed = TRUE))
+})
 
 
 # #######################################################
@@ -499,7 +500,7 @@ testthat::context('Resource #infer')
 ########################################################
 
 test_that('preserve resource format from descriptor ', {
-  descriptor= '{"path": "inst/data/data.csvformat", "format": "csv"}'
+  descriptor = '{"path": "inst/data/data.csvformat", "format": "csv"}'
   resource = Resource.load(descriptor)
   expect_equal(resource$infer(),
                helpers.from.json.to.list(
