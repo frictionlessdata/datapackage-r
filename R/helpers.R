@@ -101,14 +101,8 @@ retrieveDescriptor = function(descriptor) {
 #'
 
 dereferencePackageDescriptor = function(descriptor, basePath) {
-  
-  if (is.json(descriptor)) {
-    
-    descriptor = helpers.from.json.to.list(descriptor)
-  }
-  
   for (i in 1:length(descriptor$resources)) {
-    descriptor$resources[[i]] = dereferenceResourceDescriptor(descriptor$resources[i], basePath = basePath, descriptor = descriptor)
+    descriptor$resources[[i]] = dereferenceResourceDescriptor(descriptor = descriptor$resources[[i]], basePath = basePath, baseDescriptor = descriptor)
   }
 
 
@@ -126,16 +120,7 @@ dereferencePackageDescriptor = function(descriptor, basePath) {
 
 dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = NULL) {
   #conditions
-  if (is.json(descriptor)){
-    descriptor = helpers.from.json.to.list(descriptor)
-  }
-  
-  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
-    descriptor = helpers.from.json.to.list(descriptor)
-  } else if (is.character(descriptor) && jsonlite::validate(descriptor)){
-    descriptor = helpers.from.json.to.list(descriptor)
-  }
-  
+ 
   if (isTRUE(is.null(baseDescriptor))){
     baseDescriptor = descriptor
   }
@@ -243,7 +228,6 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
     }
   }
   
-  
   return(descriptor)
 }
 
@@ -255,30 +239,18 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
 #' @export
 #'
 expandPackageDescriptor = function(descriptor) {
-  
-  if (isTRUE( descriptor == "{}" |
-              descriptor == "[]" ))
-    descriptor = list()
-  
-  if (is.json(descriptor)) {
-    descriptor = helpers.from.json.to.list(descriptor)
-  }
-  
-  
-  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
-    descriptor = helpers.from.json.to.list(descriptor)
-  } else if (is.character(descriptor) && jsonlite::validate(descriptor)){
-    descriptor = helpers.from.json.to.list(descriptor)
-  }
-  
+ 
   descriptor$profile = if (is.empty(descriptor$profile)) {
     config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = "config.yml")
   } else {
     descriptor$profile
   }
-  
-  descriptor$resources = purrr::map(descriptor$resources, expandResourceDescriptor) ##maybe no flatten
-  
+  if (length(descriptor$resources) > 0) {
+      for (i in 1:length(descriptor$resources)) {
+    descriptor$resources[[i]] = expandResourceDescriptor(descriptor$resources[[i]])
+  }
+  }
+
   return(descriptor)
 }
 
@@ -289,17 +261,9 @@ expandPackageDescriptor = function(descriptor) {
 #'
 expandResourceDescriptor = function(descriptor) {
   
-  if (is.json(descriptor)) {
-    descriptor = helpers.from.json.to.list(descriptor)
-  }
-  
-  if (is.character(descriptor) && (isSafePath(descriptor) | isRemotePath(descriptor)) ){
-    descriptor = helpers.from.json.to.list(descriptor)
-  } else if (is.character(descriptor) && jsonlite::validate(descriptor)){
-    descriptor = helpers.from.json.to.list(descriptor)
-  }
+
   # set default for profile and encoding
-  
+
   descriptor$profile = if (isTRUE(is.null(descriptor$profile))){
     config::get("DEFAULT_RESOURCE_PROFILE", file = "config.yml")
   } else {

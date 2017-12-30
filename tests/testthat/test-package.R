@@ -7,38 +7,41 @@ library(webmockr)
 
 # Tests
 
-testthat::context("Package")
 
 ###################################
 testthat::context("Package #load")
 ###################################
 
+
+
 test_that('initializes with Object descriptor', {
-  descriptor = 'inst/data/dp1/datapackage.json'
-  dataPackage = Package.load(descriptor, basePath= 'inst/data/dp1')
-  expect_true(identical(dataPackage$descriptor,expandPackageDescriptor(descriptor)))
-  # expect_true(identical(lapply(dataPackage$descriptor,unlist,use.names=F, recursive = FALSE), lapply(expandPackageDescriptor(jsonlite::fromJSON(descriptor)),unlist,use.names=F, recursive = FALSE)))
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  expect_identical(dataPackage$descriptor,expandPackageDescriptor(descriptor))
+
 })
 
 test_that('initializes with URL descriptor', {
-  descriptor = 'inst/data/dp1/datapackage.json'
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
   dataPackage = Package.load(
     'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
 })
+test_that('throws errors for invalid datapackage in strict mode', {
+  
+  expect_error(Package.load("{}",strict = TRUE), "is required")
+})
 
-# test_that('throws errors for invalid datapackage in strict mode', {
-#   expect_error(Package.load(list(),strict=TRUE))
-# })
-# 
-# test_that('stores errors for invalid datapackage', {
-#   dataPackage = Package.load()
-#   # assert.instanceOf(dataPackage.errors, Array)
-#   # assert.instanceOf(dataPackage.errors[0], Error)
-#   # assert.include(dataPackage.errors[0].message, 'required property')
-#   expect_false(dataPackage$valid)
-# })
-# 
+
+test_that('stores errors for invalid datapackage', {
+  dataPackage = Package.load()
+  expect_is(dataPackage$errors, "list")
+  expect_is(dataPackage$errors[[1]], "character")
+  expect_match(dataPackage$errors[[1]], "is required")
+
+  expect_false(dataPackage$valid)
+})
+
 # # test_that('loads relative resource', {
 # #   # TODO: For now tableschema doesn't support in-browser table.read
 # #   # if (process.env.USER_ENV === 'browser') {
@@ -101,7 +104,7 @@ test_that('initializes with URL descriptor', {
 test_that('object', {
   descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
   dataPackage = Package.load(descriptor)
-  expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(helpers.from.json.to.list(descriptor)))
 })
 # 
 # test_that('string remote path', {
@@ -134,7 +137,7 @@ test_that('string local path', {
   contents =  'inst/data/data-package.json'
   descriptor = 'inst/data/data-package.json'
   dataPackage = Package.load(descriptor)
-  expect_equal(dataPackage$descriptor, expandPackageDescriptor(contents))
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(helpers.from.json.to.list(contents)))
  })
 
 test_that('string local path bad', {
