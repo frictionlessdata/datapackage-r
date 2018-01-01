@@ -11,7 +11,7 @@ Resource <- R6Class(
   "Resource",
   
   public = list(
-    initialize = function (descriptor, basePath, strict = FALSE, dataPackage = list()) {
+    initialize = function(descriptor, basePath, strict = FALSE, dataPackage = list()) {
       # Set attributes
       private$strict_ = strict
       private$errors_ = NULL
@@ -193,12 +193,24 @@ Resource <- R6Class(
       return(private$errors_)
     },
     
-    profile = function() {
-      return(private$profile_)
+    profile = function(value) {
+      if (missing(value)) {
+        return(private$profile_)
+      }
+      else {
+        private$profile <- value
+      }
     },
     
-    descriptor = function() {
-      return(private$nextDescriptor_)
+    descriptor = function(value) {
+      if (missing(value)) {
+        return(private$nextDescriptor_)
+      }
+      else {
+        private$currentDescriptor_ = value
+        private$nextDescriptor_ = value
+      }
+
     }, # Never use self.descriptor inside self class (!!!)
     
     name = function() {
@@ -267,11 +279,11 @@ Resource <- R6Class(
     table_ = NULL,
     
     build_ = function() {
-      
+
       private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
       # Inspect source
-      
+
       private$sourceInspection_ = inspectSource( private$currentDescriptor_$data,
                                                  as.character(private$currentDescriptor_$path),
                                                  private$basePath_
@@ -303,19 +315,17 @@ Resource <- R6Class(
       
     },
     
-    getTable_ = function () {
-      #if (isTRUE(is.character(private$currentDescriptor_))) private$currentDescriptor_ = jsonlite::fromJSON(private$currentDescriptor_)
+    getTable_ = function() {
       if (!isTRUE(!is.null(private$table_))) {        
         # Resource -> Regular
         if (!isTRUE(self$tabular)) {
-          return (NULL)
+          return(NULL)
         }
         
         # Resource -> Multipart
         if (isTRUE(self$multipart_)) {
           stop(DataPackageError$new('Resource$table does not support multipart resources')$message)
         }
-        
         # Resource -> Tabular
         options = list()
         schemaDescriptor = private$currentDescriptor_$schema
@@ -325,6 +335,7 @@ Resource <- R6Class(
         table_ = tableschema.r::Table.load( self$source, schema = schema, options)
         private$table_ = table_$value()
       }
+      
       return(private$table_)
       
     },
@@ -389,8 +400,7 @@ DIALECT_KEYS = c(
 Resource.load = function(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list() ) {
   
   
-  
-  # Get base path
+    # Get base path
   if (anyNA(basePath)) basePath = locateDescriptor(descriptor)
   
   # if (is.character(descriptor) && 
@@ -414,10 +424,13 @@ Resource.load = function(descriptor = list(), basePath = NA, strict = FALSE, dat
 inspectSource = function(data, path, basePath) {
   inspection = list()
   # Normalize path
-  if (isTRUE(!is.null(path)) && !is.list(path) ) path = as.character(path) #normalizePath(basePath)
-  
+
+  if (isTRUE(!is.null(path)) && !is.list(path) && isTRUE(stringr::str_length(path) > 0)) {
+      path = list(path)
+  }
+
   # Blank
-  if (isTRUE(is.null(data)) && isTRUE(is.null(path))) {
+  if (isTRUE(is.null(data)) && isTRUE(is.null(path) || isTRUE(stringr::str_length(path) < 1))) {
     inspection$source = NULL
     inspection$blank = TRUE 
     
@@ -426,39 +439,39 @@ inspectSource = function(data, path, basePath) {
     
     inspection$source = data
     inspection$inline = TRUE
-    inspection$tabular = purrr::every(data, is.list)
+    inspection$tabular = is.list(data) && purrr::every(data, is.list)
     
     # Local/Remote
   } else if (length(path) == 1) {
     
     # Remote
-    if (isTRUE(isRemotePath(path[1]))) {
-      inspection$source = path[1]
+    if (isTRUE(isRemotePath(path[[1]]))) {
+      inspection$source = path[[1]]
       inspection$remote = TRUE
-    } else if (isTRUE(!is.null(basePath) && isRemotePath(basePath))) {
-      inspection$source = stringr::str_c(basePath, path[1], sep = "/")
+    } else if (isTRUE(!is.null(basePath) && isTRUE(stringr::str_length(basePath) > 0) && isRemotePath(basePath))) {
+      inspection$source = stringr::str_c(basePath, path[[1]], sep = "/")
       inspection$remote = TRUE
       
       # Local
     } else {
       # Path is not safe
-      if ( isTRUE(isSafePath(path[1] == FALSE)) ||  isTRUE(isSafePath(as.character(path[1])) == FALSE) ) {
-        stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" is not safe'))$message)
+      if ( !isTRUE(isSafePath(path[[1]]) ) ) {
+        stop(DataPackageError$new(stringr::str_interp('Local path "${path[[1]]}" is not safe'))$message)
       }
       # Not base path
-      if (isTRUE(is.null(basePath))) {
-        stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" requires base path'))$message)
+      if (isTRUE(is.null(basePath)) || isTRUE(stringr::str_length(basePath) < 1)) {
+        stop(DataPackageError$new(stringr::str_interp('Local path "${path[[1]]}" requires base path'))$message)
       }
       
-      inspection$source = stringr::str_c(basePath, path[1], sep = '/')
+      inspection$source = stringr::str_c(basePath, path[[1]], sep = '/')
       inspection$local = TRUE
     }
     
     # Inspect
-    inspection$format = tools::file_ext(path[1])[1]
-    inspection$name = basename(tools::list_files_with_exts(dir = path, exts = stringr::str_interp('.${inspection$format}') ))
+    inspection$format = tools::file_ext(path[[1]])[[1]]
+    inspection$name = basename(tools::list_files_with_exts(dir = path[[1]], exts = stringr::str_interp('.${inspection$format}') ))
     inspection$mediatype = stringr::str_interp('text/${inspection$format}')
-    inspection$tabular = inspection$format %in% config::get("TABULAR_FORMATS",file = "config.yaml")
+    inspection$tabular = inspection$format %in% config::get("TABULAR_FORMATS",file = "config.yml")
     
     
     

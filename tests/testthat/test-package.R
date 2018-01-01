@@ -13,7 +13,6 @@ testthat::context("Package #load")
 ###################################
 
 
-
 test_that('initializes with Object descriptor', {
   descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
   dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
@@ -42,61 +41,56 @@ test_that('stores errors for invalid datapackage', {
   expect_false(dataPackage$valid)
 })
 
-# # test_that('loads relative resource', {
-# #   # TODO: For now tableschema doesn't support in-browser table.read
-# #   # if (process.env.USER_ENV === 'browser') {
-# #   #   this.skip()
-# #   # }
-# #   descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
-# #   dataPackage = Package.load(descriptor)
-# #   
-# #   dataPackage.resources[0].descriptor.profile = 'tabular-data-resource'
-# #   data = dataPackage.resources[0].table.read()
-# #   expect_equal(data, [['gb', 100], ['us', 200], ['cn', 300]])
-# # })
+test_that('loads relative resource', {
+  # TODO: For now tableschema doesn't support in-browser table.read
+  # if (process.env.USER_ENV === 'browser') {
+  #   this.skip()
+  # }
+  descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
+  dataPackage = Package.load(descriptor)
+
+  dataPackage$resources[[1]]$descriptor$profile = 'tabular-data-resource'
+
+  data = dataPackage$resources[[1]]$table$read()
+  expect_equal(data, list(list('gb', 100), list('us', 200), list('cn', 300)))
+})
 # 
-# # 
-# # test_that('loads resource from absolute URL', async function() {
-# #   # TODO: For now tableschema doesn't support in-browser table.read
-# #   if (process.env.USER_ENV === 'browser') {
-# #     this.skip()
-# #   }
-# #   descriptor = 'https://dev.keitaro.info/dpkjs/datapackage.json'
-# #   dataPackage = Package.load(descriptor)
-# #   dataPackage.resources[0].descriptor.profile = 'tabular-data-resource'
-# #   table = dataPackage.resources[0].table
-# #   data = table.read()
-# #   expect_equal(data, [['gb', 100], ['us', 200], ['cn', 300]])
-# # })
-# # 
-# # test_that('loads resource from absolute URL disregarding basePath', async function() {
-# #   # TODO: For now tableschema doesn't support in-browser table.read
-# #   if (process.env.USER_ENV === 'browser') {
-# #     this.skip()
-# #   }
-# #   descriptor = 'https://dev.keitaro.info/dpkjs/datapackage.json'
-# #   dataPackage = Package.load(descriptor, {basePath: 'local/basePath'})
-# #   dataPackage.resources[0].descriptor.profile = 'tabular-data-resource'
-# #   table = dataPackage.resources[0].table
-# #   data = table.read()
-# #   expect_equal(data, [['gb', 100], ['us', 200], ['cn', 300]])
-# # })
-# # 
-# # test_that('loads remote resource with basePath', async function() {
-# #   # TODO: For now tableschema doesn't support in-browser table.read
-# #   if (process.env.USER_ENV === 'browser') {
-# #     this.skip()
-# #   }
-# #   descriptor = 'https://dev.keitaro.info/dpkjs/datapackage.json'
-# #   dataPackage = Package.load(descriptor, {basePath: 'data'})
-# #   dataPackage.resources[1].descriptor.profile = 'tabular-data-resource'
-# #   table = dataPackage.resources[1].table
-# #   data = table.read()
-# #   expect_equal(data, [['gb', 105], ['us', 205], ['cn', 305]])
-# # })
-# # 
-# # })
-# 
+
+test_that('loads resource from absolute URL',  {
+
+  descriptor = 'https://dev.keitaro.info/dpkjs/datapackage.json'
+  dataPackage = Package.load(descriptor)
+  dataPackage$resources[[1]]$descriptor$profile = 'tabular-data-resource'
+  table = dataPackage$resources[[1]]$table
+  data = table$read()
+  expect_equal(data, list(list('gb', 100), list('us', 200), list('cn', 300)))
+})
+
+test_that('loads resource from absolute URL disregarding basePath', {
+
+  descriptor = 'https://dev.keitaro.info/dpkjs/datapackage.json'
+  dataPackage = Package.load(descriptor, basePath = 'local/basePath')
+  dataPackage$resources[[1]]$descriptor$profile = 'tabular-data-resource'
+  table = dataPackage$resources[[1]]$table
+  data = table$read()
+  expect_equal(data, list(list('gb', 100), list('us', 200), list('cn', 300)))
+})
+
+
+test_that('loads remote resource with basePath',  {
+  
+  descriptor = 'https://dev.keitaro.info/dpkjs/datapackage.json'
+  dataPackage = Package.load(descriptor, basePath = 'inst/data')
+  dataPackage$resources[[2]]$descriptor$profile = 'tabular-data-resource'
+  table = dataPackage$resources[[2]]$table
+  
+  data = table$read()
+  
+  expect_equal(data, list(list('gb', 105), list('us', 205), list('cn', 305)))
+})
+
+
+
 # ###################################################
 # testthat::context("Package #descriptor (retrieve)")
 # ###################################################

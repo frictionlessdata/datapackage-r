@@ -9,7 +9,6 @@
 
 Package <- R6::R6Class(
   "Package",
-  lock_objects = FALSE,
   class = TRUE,
   public = list(
     initialize = function(descriptor = list(),
@@ -159,8 +158,14 @@ Package <- R6::R6Class(
       return(errors)
     },
     
-    resources = function() {
-      return(private$resources_)
+    resources = function(value) {
+      if (missing(value)) {
+              return(private$resources_)
+      }
+      else {
+        private$resources_ = value
+      }
+
     }
     
   ),
@@ -204,30 +209,28 @@ Package <- R6::R6Class(
  
       
       # Update resources
-      private$resources_length = if (isUndefined(private$currentDescriptor_$resources)) {
+      private$resources_length = if (is.null(private$currentDescriptor_$resources)) {
         length(list())
       } else {
         length(private$currentDescriptor_$resources)
       }
       
-      descriptor = private$currentDescriptor_$resources
-      
+
       if (private$resources_length > 0) {
-        for (index in private$resources_length) {
-          resource = private$resources_[[index]]
-          
-          if (isUndefined(resource) ||
-              !identical(resource$descriptor[index], descriptor[index]) ||
-              (!isUndefined(resource$schema) &&
+        for (index in 1:private$resources_length) {
+          descriptor = private$currentDescriptor_$resources[[index]]
+       
+          if (index > length(private$resources_) ||
+              !identical(resource$descriptor, descriptor) ||
+              (!is.null(resource$schema) &&
                length(resource$schema$foreignKeys >= 1))) {
             
             private$resources_[[index]] = Resource$new(
               descriptor,
-              list(
                 strict = private$strict_,
                 basePath = private$basePath_,
                 dataPackage = self
-              )
+              
             )
           }
         }
@@ -246,21 +249,20 @@ Package <- R6::R6Class(
 #' @rdname Package.load
 #' @export
 Package.load = function(descriptor = list(),
-                        basePath = NULL,
+                        basePath = NA,
                         strict = FALSE) {
   
   
   # Get base path
-  
-  if (isUndefined(basePath)) {
+  if (is.na(basePath)) {
     basePath = locateDescriptor(descriptor)
   }
   
   
- 
-  
+
   # Process descriptor
   descriptor = retrieveDescriptor(descriptor)
+
   descriptor = dereferencePackageDescriptor(descriptor, basePath)
   # Get profile
 

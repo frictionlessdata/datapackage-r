@@ -10,7 +10,6 @@ testthat::context("Resource")
 #######################################################
 
 
-
 #######################################################
 testthat::context("Resource #load")
 ########################################################
@@ -23,7 +22,7 @@ test_that('works with base descriptor', {
   expect_equal(resource$name, 'name')
   expect_false(resource$tabular)
   expect_equal(resource$descriptor, 
-               expandResourceDescriptor(descriptor))
+               expandResourceDescriptor(helpers.from.json.to.list( descriptor)))
   expect_true(resource$inline)
   expect_equal(resource$source, list("data"))
   expect_null(resource$table)

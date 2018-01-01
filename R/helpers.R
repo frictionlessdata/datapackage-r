@@ -101,6 +101,7 @@ retrieveDescriptor = function(descriptor) {
 #'
 
 dereferencePackageDescriptor = function(descriptor, basePath) {
+
   for (i in 1:length(descriptor$resources)) {
     descriptor$resources[[i]] = dereferenceResourceDescriptor(descriptor = descriptor$resources[[i]], basePath = basePath, baseDescriptor = descriptor)
   }
