@@ -298,8 +298,8 @@ Resource <- R6Class(
       private$errors_ = list()
       
       valid_errors = private$profile_$validate(helpers.from.list.to.json(private$currentDescriptor_))
-      
-      if (!isTRUE(valid_errors)) {
+
+      if (!isTRUE(valid_errors$valid)) {
         
         private$errors_ = valid_errors$errors
         
@@ -312,7 +312,7 @@ Resource <- R6Class(
           stop(error$message)
         }
       }
-      
+
     },
     
     getTable_ = function() {

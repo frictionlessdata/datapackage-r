@@ -383,114 +383,113 @@ test_that('tabular resource dialect', {
 
 # 
 # ###################################################
-# # testthat::context("Package #resources")
+ testthat::context("Package #resources")
 # ###################################################
 # 
-# # test_that('names', {
-# #   descriptor = jsonlite::fromJSON('inst/data/data-package-multiple-resources.json')
-# #   dataPackage = Package.load(descriptor, basePath = 'inst/data')
-# #   expect_length(dataPackage$resources, 2)
-# #   expect_equal(dataPackage$resourceNames, jsonlite::fromJSON('["name1", "name2"]'))
-# # })
+test_that('names', {
+  descriptor = helpers.from.json.to.list('inst/data/data-package-multiple-resources.json')
+  dataPackage = Package.load(descriptor, basePath = 'inst/data')
+  expect_length(dataPackage$resources, 2)
+
+  expect_equal(dataPackage$resourceNames, helpers.from.json.to.list('["name1", "name2"]'))
+})
 # #
-# # test_that('add', {
-# #   descriptor = jsonlite::fromJSON('inst/data/dp1/datapackage.json')
-# #   dataPackage = Package.load(descriptor, basePath='inst/data/dp1')
-# #   resource = dataPackage.addResource({name: 'name', data: ['test']})
-# #   assert.isOk(resource)
-# #   assert.lengthOf(dataPackage.resources, 2)
-# #   expect_equal(dataPackage.resources[1].source, ['test'])
-# # })
+test_that('add', {
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  resource = dataPackage$addResource(helpers.from.json.to.list('{"name": "name", "data": ["test"]}'))
+  expect_failure(expect_null(resource))
+  expect_length(dataPackage$resources, 2)
+  expect_equal(dataPackage$resources[[2]]$source, list('test'))
+
+})
 # # 
-# # test_that('add invalid - throws array of errors in strict mode', {
-# #   descriptor = require('../data/dp1/datapackage.json')
-# #   dataPackage = Package.load(descriptor, {
-# #     basePath: 'data/dp1', strict: true,
-# #   })
-# #   error = catchError(dataPackage.addResource.bind(dataPackage), {})
-# #   assert.instanceOf(error, Error)
-# #   assert.instanceOf(error.errors[0], Error)
-# #   assert.include(error.errors[0].message, 'Data does not match any schemas')
-# # })
+test_that('add invalid - throws array of errors in strict mode', {
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  
+  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1', strict = TRUE)
+  
+  
+  expect_error(dataPackage$addResource(list()), 'schemas match')
+  
+})
 # # 
-# # test_that('add invalid - save errors in not a strict mode', {
-# #   descriptor = require('../data/dp1/datapackage.json')
-# #   dataPackage = Package.load(descriptor, {basePath: 'data/dp1'})
-# #   dataPackage.addResource({})
-# #   assert.instanceOf(dataPackage.errors[0], Error)
-# #   assert.include(dataPackage.errors[0].message, 'Data does not match any schemas')
-# #   assert.isFalse(dataPackage.valid)
-# # })
+test_that('add invalid - save errors in not a strict mode', {
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  dataPackage$addResource(list())
+  expect_match(dataPackage$errors[[1]], "schemas match")
+  expect_false(dataPackage$valid)
+
+})
 # # 
-# # test_that('add tabular - can read data', {
-# #   descriptor = require('../data/dp1/datapackage.json')
-# #   dataPackage = Package.load(descriptor, {basePath: 'data/dp1'})
-# #   dataPackage.addResource({
-# #     name: 'name',
-# #     data: [['id', 'name'], ['1', 'alex'], ['2', 'john']],
-# #     schema: {
-# #       fields: [
-# #         {name: 'id', type: 'integer'},
-# #         {name: 'name', type: 'string'},
-# #         ],
-# #     },
-# #   })
-# #   rows = dataPackage.resources[1].table.read()
-# #   expect_equal(rows, [[1, 'alex'], [2, 'john']])
-# # })
+test_that('add tabular - can read data', {
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  dataPackage$addResource(helpers.from.json.to.list('{
+    "name": "name",
+    "data": [["id", "name"], ["1", "alex"], ["2", "john"]],
+    "schema": {
+      "fields": [
+        {"name": "id", "type": "integer"},
+        {"name": "name", "type": "string"}
+        ]
+    }
+  }'))
+  rows = dataPackage$resources[[2]]$table$read()
+  expect_equal(rows, list(list(1, 'alex'), list(2, 'john')))
+})
 # # 
-# # test_that('add with not a safe path - throw an error', {
-# #   descriptor = require('../data/dp1/datapackage.json')
-# #   dataPackage = Package.load(descriptor, {basePath: 'data/dp1'})
-# #   try {
-# #     dataPackage.addResource({
-# #       name: 'name',
-# #       path: ['../dp1/data.csv'],
-# #     })
-# #     assert.isNotOk(true)
-# #   } catch (error) {
-# #     assert.instanceOf(error, Error)
-# #     assert.include(error.message, 'not safe')
-# #   }
-# # })
+test_that('add with not a safe path - throw an error', {
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  expect_error( dataPackage$addResource(helpers.from.json.to.list('{
+    "name": "name",
+    "path": ["../dp1/data.csv"]
+  }')), 'not safe')
+  
+ 
+})
 # # 
-# # test_that('get existent', {
-# #   descriptor = require('../data/dp1/datapackage.json')
-# #   dataPackage = Package.load(descriptor, {basePath: 'data/dp1'})
-# #   resource = dataPackage.getResource('random')
-# #   expect_equal(resource.name, 'random')
-# # })
+test_that('get existent', {
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  resource = dataPackage$getResource('random')
+  expect_equal(resource$name, 'random')
+})
 # # 
-# # test_that('get non existent', {
-# #   descriptor = require('../data/dp1/datapackage.json')
-# #   dataPackage = Package.load(descriptor, {basePath: 'data/dp1'})
-# #   resource = dataPackage.getResource('non-existent')
-# #   assert.isNull(resource)
-# # })
+test_that('get non existent', {
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  resource = dataPackage$getResource('non-existent')
+  expect_null(resource)
+
+})
 # # 
-# # test_that('remove existent', {
-# #   descriptor = require('../data/data-package-multiple-resources.json')
-# #   dataPackage = Package.load(descriptor, {basePath: 'data'})
-# #   assert.lengthOf(dataPackage.resources, 2)
-# #   assert.lengthOf(dataPackage.descriptor.resources, 2)
-# #   expect_equal(dataPackage.resources[0].name, 'name1')
-# #   expect_equal(dataPackage.resources[1].name, 'name2')
-# #   resource = dataPackage.removeResource('name2')
-# #   assert.lengthOf(dataPackage.resources, 1)
-# #   assert.lengthOf(dataPackage.descriptor.resources, 1)
-# #   expect_equal(dataPackage.resources[0].name, 'name1')
-# #   expect_equal(resource.name, 'name2')
-# # })
-# # 
-# # test_that('remove non existent', {
-# #   descriptor = require('../data/dp1/datapackage.json')
-# #   dataPackage = Package.load(descriptor, {basePath: 'data/dp1'})
-# #   resource = dataPackage.removeResource('non-existent')
-# #   assert.isNull(resource)
-# #   assert.lengthOf(dataPackage.resources, 1)
-# #   assert.lengthOf(dataPackage.descriptor.resources, 1)
-# # })
-# # 
+test_that('remove existent', {
+  descriptor = helpers.from.json.to.list('inst/data/data-package-multiple-resources.json')
+  dataPackage = Package.load(descriptor, basePath = 'data')
+  expect_length(dataPackage$resources, 2)
+  expect_length(dataPackage$descriptor$resources, 2)
+  expect_equal(dataPackage$resources[[1]]$name, 'name1')
+  expect_equal(dataPackage$resources[[2]]$name, 'name2')
+  resource = dataPackage$removeResource('name2')
+  expect_length(dataPackage$resources, 1)
+  expect_length(dataPackage$descriptor$resources, 1)
+  expect_equal(dataPackage$resources[[1]]$name, 'name1')
+
+  expect_equal(resource$name, 'name2')
+})
+
+test_that('remove non existent', {
+  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  resource = dataPackage$removeResource('non-existent')
+  expect_null(resource)
+  expect_length(dataPackage$resources, 1)
+  expect_length(dataPackage$descriptor$resources, 1)
+})
+
 # # 
 # # ###################################################
 # # testthat::context("Package #save")

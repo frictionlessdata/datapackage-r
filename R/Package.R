@@ -43,6 +43,33 @@ Package <- R6::R6Class(
       
       
     },
+    addResource = function(descriptor) {
+      if (is.null(private$currentDescriptor_$resources)) private$currentDescriptor_$resources = list()
+      private$currentDescriptor_$resources = rlist::list.append(private$currentDescriptor_$resources, descriptor)           
+
+      private$build_()
+      return(private$resources_[[length(private$resources_)]])
+    },
+    
+    getResource = function(name) {
+      resources = Filter(function(x) x$name == name, private$resources_)
+      if (length(resources) > 0) return(resources[[1]])
+      else return(NULL)
+
+    },
+    
+    removeResource = function(name) {
+      resource = self$getResource(name)
+      if (!is.null(resource)) {
+        predicat = function(resource) { return(resource$name != name) }
+        private$currentDescriptor_$resources = Filter(predicat, private$currentDescriptor_$resources)
+
+        private$build_()
+      }
+     return(resource)
+      
+    },
+    
     
     infer = function(pattern) {
       if (isTRUE(!is.null(pattern))) {
@@ -118,9 +145,7 @@ Package <- R6::R6Class(
     },
     
     resourceNames = function() {
-      return(purrr::compact(lapply(private$resources_, names))) # maybe $resources
-      # if(is.json(private$resources_)|is.character(private$resources_)) private$resources_ = jsonlite::fromJSON(private$resources_)
-      # return (jsonlite::toJSON(purrr::compact(lapply(private$resources_, names)))) # maybe $resources
+      return(purrr::map(self$resources, "name")) 
     },
     
     profile = function() {
@@ -144,17 +169,18 @@ Package <- R6::R6Class(
     
     errors = function() {
       errors = private$errors_
-      
-      for (index in private$resources_) {
-        if (!isTRUE(private$resources_[index]$valid)) {
+      if (length(private$resources_) > 0) {
+      for (index in 1:length(private$resources_)) {
+        if (!isTRUE(private$resources_[[index]]$valid)) {
           errors = append(
             errors,
             DataPackageError$new(
-              'Resource "${private$resources_[index]$name || index}" validation error(s)'
+              'Resource "${private$resources_[[index]]$name || index}" validation error(s)'
             )$message
           )
         }
       }
+    }
       return(errors)
     },
     
@@ -189,10 +215,12 @@ Package <- R6::R6Class(
       private$currentDescriptor_ = expandPackageDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
       
+      
       # Validate descriptor
       
       private$errors_ = list()
       valid_errors = private$profile_$validate(private$currentDescriptor_)
+      
       
       if (!isTRUE(valid_errors$valid)) {
         private$errors_ = valid_errors$errors
@@ -206,24 +234,25 @@ Package <- R6::R6Class(
       }
       
       
- 
+      
+      
       
       # Update resources
-      private$resources_length = if (is.null(private$currentDescriptor_$resources)) {
+      length(private$resources_) <- if (is.null(private$currentDescriptor_$resources)) {
         length(list())
       } else {
         length(private$currentDescriptor_$resources)
       }
       
 
-      if (private$resources_length > 0) {
-        for (index in 1:private$resources_length) {
+      if ( length(private$resources_) > 0) {
+        for (index in 1: length(private$resources_)) {
           descriptor = private$currentDescriptor_$resources[[index]]
        
           if (index > length(private$resources_) ||
-              !identical(resource$descriptor, descriptor) ||
-              (!is.null(resource$schema) &&
-               length(resource$schema$foreignKeys >= 1))) {
+              !identical(private$resources_[[index]], descriptor) ||
+              (!is.null(private$resources_[[index]]$schema) &&
+               length(private$resources_[[index]]$schema$foreignKeys >= 1))) {
             
             private$resources_[[index]] = Resource$new(
               descriptor,
@@ -272,7 +301,6 @@ Package.load = function(descriptor = list(),
     descriptor$profile
   
   profile = Profile.load(profile.to.load)
-  
   
   return(Package$new(descriptor, basePath, strict = strict, profile = profile))
   
