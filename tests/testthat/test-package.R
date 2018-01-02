@@ -8,10 +8,6 @@ library(webmockr)
 # Tests
 
 
-###################################
-testthat::context("Package #load")
-###################################
-
 
 test_that('initializes with Object descriptor', {
   descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
@@ -100,33 +96,37 @@ test_that('object', {
   dataPackage = Package.load(descriptor)
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(helpers.from.json.to.list(descriptor)))
 })
-# 
-# test_that('string remote path', {
-#   target.contents = jsonlite::fromJSON('inst/data/data-package.json',flatten = T,simplifyVector = T)
-#   descriptor = 'https://httpbin.org/data-resource.json'
-#   # Mocks
-#   (x = HttpClient$new(url = descriptor))
-#   (res = x$patch(path = "patch",
-#                  encode = "json",
-#                  body = target.contents
-#   ))
-#   ##
-#   target.contents=jsonlite::fromJSON(res$parse("UTF-8"))$json
-#   descriptor.response=jsonlite::fromJSON(res$parse("UTF-8"))$json
-#   dataPackage = Package.load(descriptor.response)
-#   
-#   expect_equal(dataPackage$descriptor, expandPackageDescriptor(target.contents))
-# })
-#  
-# # test_that('string remote path bad', {
-# #   descriptor = 'http://example.com/bad-path.json'
-# #   http.onGet(descriptor).reply(500)
-# #   error = catchError(Package.load, descriptor)
-# #   assert.instanceOf(error, Error)
-# #   assert.include(error.message, 'Can not retrieve remote')
-# # })
-# # 
-# 
+
+###################################
+testthat::context("Package #load")
+###################################
+test_that('string remote path', {
+  
+  descriptor = 'http://example.com/data-package.json'
+  # Mocks
+  contents =  helpers.from.json.to.list('inst/data/data-package.json')
+  httptest::with_mock_API({
+    dataPackage = Package.load(descriptor)
+  })
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(contents))
+})
+
+test_that('string remote path bad', {
+  descriptor = 'http://example.com/bad-path.json'
+  
+  expect_error(
+    with_mock(
+      `httr:::request_perform` = function()
+        httptest::fakeResponse(httr::GET(descriptor), status_code = 500) ,
+      `httptest::request_happened` = expect_message,
+      eval.parent(Package.load(descriptor)),
+      "Can not retrieve remote"
+    )
+  )
+
+})
+
+
 test_that('string local path', {
   contents =  'inst/data/data-package.json'
   descriptor = 'inst/data/data-package.json'
@@ -136,136 +136,147 @@ test_that('string local path', {
 
 test_that('string local path bad', {
   descriptor = 'inst/data/bad-path.json'
-  expect_error(Package.load(descriptor))
+  expect_error(Package.load(descriptor),  'Can not retrieve local')
 })
 
 ######################################################
 testthat::context("Package #descriptor (dereference)")
 ######################################################
-# 
-# 
-# test_that('mixed', {
-#   descriptor = jsonlite::fromJSON('inst/data/data-package-dereference.json')
-#   
-#     dataPackage = Package.load(descriptor)
-#     
-# target =
-# purrr::map(jsonlite::fromJSON('[
-#       {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
-#                                {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-#                                ]',simplifyVector=F),expandResourceDescriptor)
-#     
-# 
-# expect_equal( dataPackage$descriptor$resources, target)
-# 
-# })
-# # 
-# # test_that('pointer', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: '#/schemas/main'},
-# #       {name: 'name2', data: ['data'], dialect: '#/dialects/0'},
-# #       ],
-# #     schemas: {main: {fields: [{name: 'name'}]}},
-# #     dialects: [{delimiter: ','}],
-# #   }
-# #   dataPackage = Package.load(descriptor)
-# #   expect_equal(dataPackage.descriptor.resources, [
-# #     {name: 'name1', data: ['data'], schema: {fields: [{name: 'name'}]}},
-# #     {name: 'name2', data: ['data'], dialect: {delimiter: ','}},
-# #     ].map(expandResource))
-# # })
-# # 
-# # test_that('pointer bad', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: '#/schemas/main'},
-# #       ],
-# #   }
-# #   error = catchError(Package.load, descriptor)
-# #   assert.instanceOf(error, Error)
-# #   assert.include(error.message, 'Not resolved Pointer URI')
-# # })
-# # 
-# # test_that('remote', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: 'http://example.com/schema'},
-# #       {name: 'name2', data: ['data'], dialect: 'http://example.com/dialect'},
-# #       ],
-# #   }
-# #   http.onGet('http://example.com/schema').reply(200, {fields: [{name: 'name'}]})
-# #   http.onGet('http://example.com/dialect').reply(200, {delimiter: ','})
-# #   dataPackage = Package.load(descriptor)
-# #   expect_equal(dataPackage.descriptor.resources, [
-# #     {name: 'name1', data: ['data'], schema: {fields: [{name: 'name'}]}},
-# #     {name: 'name2', data: ['data'], dialect: {delimiter: ','}},
-# #     ].map(expandResource))
-# # })
-# # 
-# # test_that('remote bad', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: 'http://example.com/schema'},
-# #       ],
-# #   }
-# #   http.onGet('http://example.com/schema').reply(500)
-# #   error = catchError(Package.load, descriptor)
-# #   assert.instanceOf(error, Error)
-# #   assert.include(error.message, 'Not resolved Remote URI')
-# # })
-# # 
-# # test_that('local', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: 'table-schema.json'},
-# #       {name: 'name2', data: ['data'], dialect: 'csv-dialect.json'},
-# #       ],
-# #   }
-# #   if (process.env.USER_ENV !== 'browser') {
-# #     dataPackage = Package.load(descriptor, {basePath: 'data'})
-# #     expect_equal(dataPackage.descriptor.resources, [
-# #       {name: 'name1', data: ['data'], schema: {fields: [{name: 'name'}]}},
-# #       {name: 'name2', data: ['data'], dialect: {delimiter: ','}},
-# #       ].map(expandResource))
-# #   } else {
-# #     error = catchError(Package.load, descriptor, {basePath: 'data'})
-# #     assert.instanceOf(error, Error)
-# #     assert.include(error.message, 'in browser')
-# #   }
-# # })
-# # 
-# # test_that('local bad', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: 'bad-path.json'},
-# #       ],
-# #   }
-# #   error = catchError(Package.load, descriptor, {basePath: 'data'})
-# #   assert.instanceOf(error, Error)
-# #   if (process.env.USER_ENV !== 'browser') {
-# #     assert.include(error.message, 'Not resolved Local URI')
-# #   } else {
-# #     assert.include(error.message, 'in browser')
-# #   }
-# # })
-# # 
-# # test_that('local bad not safe', {
-# #   descriptor = {
-# #     resources: [
-# #       {name: 'name1', data: ['data'], schema: '../data/table-schema.json'},
-# #       ],
-# #   }
-# #   error = catchError(Package.load, descriptor, {basePath: 'data'})
-# #   assert.instanceOf(error, Error)
-# #   if (process.env.USER_ENV !== 'browser') {
-# #     assert.include(error.message, 'Not safe path')
-# #   } else {
-# #     assert.include(error.message, 'in browser')
-# #   }
-# # })
-# # 
-# # 
+
+test_that('mixed', {
+
+  descriptor = helpers.from.json.to.list('inst/data/data-package-dereference.json')
+
+  dataPackage = Package.load(descriptor)
+
+  target =
+    purrr::map(helpers.from.json.to.list('[
+                                         {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
+                                         {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
+                                         ]'),expandResourceDescriptor)
+
+  expect_equal( dataPackage$descriptor$resources, target)
+  
+})
+
+
+test_that('pointer', {
+  descriptor = '{
+    "resources": [
+      {"name": "name1", "data": ["data"], "schema": "#/schemas/main"},
+      {"name": "name2", "data": ["data"], "dialect": "#/dialects/0"}
+      ],
+    "schemas": {"main": {"fields": [{"name": "name"}]}},
+    "dialects": [{"delimiter": ","}]
+  }'
+  dataPackage = Package.load(descriptor)
+  expect_equal(dataPackage$descriptor$resources,  purrr::map(list(list(name = 'name1', data = list('data'), schema = list(fields = list(list(name = 'name')))),
+    list(name = 'name2', data = list('data'), dialect = list(delimiter = ','))), expandResourceDescriptor))
+})
+
+test_that('pointer bad', {
+  descriptor = '{
+    "resources": [
+      {"name": "name1", "data": ["data"], "schema": "#/schemas/main"}
+      ]
+  }'
+ expect_error(Package.load(descriptor), 'Not resolved Pointer URI')
+})
+
+
+test_that('remote', {
+  descriptor = '{
+  "resources": [
+  {"name": "name1", "data": ["data"], "schema": "http://example.com/schema"},
+  {"name": "name2", "data": ["data"], "dialect": "http://example.com/dialect"}
+  ]
+}'
+  dataPackage <-  with_mock(
+    `curl::curl` = function(url, ...) {
+      if (url == "http://example.com/schema") {
+        httptest::fakeResponse(
+          httr::GET("http://example.com/schema"),
+          status_code = 200,
+          content = list(fields = list(list(name = "name")))
+        )
+      }
+      else if (url == "http://example.com/dialect") {
+        httptest::fakeResponse(
+          httr::GET("http://example.com/dialect"),
+          status_code = 200,
+          content = list(delimiter = ",")
+        )
+      }
+    },
+    Package.load(descriptor)
+)
+  
+  expect_equal(dataPackage$descriptor$resources,  purrr::map(list(
+    list(name = 'name1', data = list('data'), schema = list(fields = list(list(name = 'name')))),
+    list(name = 'name2', data = list('data'), dialect = list(delimiter = ',')
+    )), expandResourceDescriptor))
+  })
+
+
+test_that('remote bad', {
+  descriptor = '{
+  "resources": [
+  {"name": "name1", "data": ["data"], "schema": "http://example.com/schema"}
+  ]
+}'
+  expect_error(
+    with_mock(
+      `curl::curl` = function(url, ...) {
+        if (url == "http://example.com/schema") {
+          stop('Could not resolve host')
+          
+        }
+        
+      },
+      Package.load(descriptor)
+    ),
+    'Not resolved Remote URI')
+  })
+
+
+test_that('local', {
+  descriptor = '{
+    "resources": [
+      {"name": "name1", "data": ["data"], "schema": "table-schema.json"},
+      {"name": "name2", "data": ["data"], "dialect": "csv-dialect.json"}
+      ]
+  }'
+ 
+    dataPackage = Package.load(descriptor, basePath = 'inst/data')
+    expect_equal(dataPackage$descriptor$resources,  purrr::map(list(
+      list(name = 'name1', data = list('data'), schema = list(fields = list(list(name = 'name')))),
+      list(name = 'name2', data = list('data'), dialect = list(delimiter = ',')))
+      , expandResourceDescriptor))
+  
+})
+
+test_that('local bad', {
+  descriptor = '{
+    "resources": [
+      {"name": "name1", "data": ["data"], "schema": "bad-path.json"}
+      ]
+  }'
+  expect_error(Package.load(descriptor, basePath = 'inst/data'), 'Not resolved Local URI')
+
+  
+})
+
+test_that('local bad not safe', {
+  descriptor = '{
+    "resources": [
+      {"name": "name1", "data": ["data"], "schema": "../data/table-schema.json"}
+      ]
+  }'
+  expect_error(Package.load(descriptor, basePath = 'data'), 'Not safe path')
+  
+})
+
+
 # #################################################
 # testthat::context("Package #descriptor (expand)")
 # #################################################

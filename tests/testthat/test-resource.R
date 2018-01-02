@@ -29,7 +29,7 @@ test_that('works with base descriptor', {
 })
 
 test_that('works with tabular descriptor', {
-  descriptor = '{"name":"name","data":["data"],"profile":"tabular-data-resource"}' #tabular-
+  descriptor = '{"name":"name","data":["data"],"profile":"tabular-data-resource"}' 
   resource = Resource.load(descriptor)
   expect_equal(resource$name, 'name')
   expect_true(resource$tabular)
@@ -38,7 +38,7 @@ test_that('works with tabular descriptor', {
   expect_true(resource$inline)
   
   expect_equal(resource$source, list("data"))
-  # expect_null(resource$table)
+
   
 })
 

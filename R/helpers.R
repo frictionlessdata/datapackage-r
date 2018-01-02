@@ -167,7 +167,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
       },
       error = function(e) {
         
-        
+  
         message = DataPackageError$new(
           stringr::str_interp(
             'Not resolved Remote URI "${value}" for ${descriptor[[property]]}'
