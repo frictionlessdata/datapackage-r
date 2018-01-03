@@ -107,12 +107,13 @@ Package <- R6::R6Class(
     },
     
     commit = function(strict = NULL) {
+ 
       if (is.logical(strict))
         private$strict_ = strict
       else if (identical(private$currentDescriptor_, private$nextDescriptor_))
         return(FALSE)
       private$currentDescriptor_ = private$nextDescriptor_
-      private$table_ = NULL
+
       private$build_()
       return(TRUE)
     },

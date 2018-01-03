@@ -207,7 +207,7 @@ Resource <- R6Class(
         return(private$nextDescriptor_)
       }
       else {
-        private$currentDescriptor_ = value
+       # private$currentDescriptor_ = value
         private$nextDescriptor_ = value
       }
 

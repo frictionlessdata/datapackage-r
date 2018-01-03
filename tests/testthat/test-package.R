@@ -517,35 +517,32 @@ test_that('remove non existent', {
 # # ###################################################
 # # 
 # # 
-# # test_that('modified', {
-# #   descriptor = {resources: [{name: 'name', data: ['data']}]}
-# #   dataPackage = Package.load(descriptor)
-# #   dataPackage.descriptor.resources[0].name = 'modified'
-# #   expect_equal(dataPackage.resources[0].name, 'name')
-# #   result = dataPackage.commtest_that()
-# #   expect_equal(dataPackage.resources[0].name, 'modified')
-# #   assert.isTrue(result)
-# # })
+test_that('modified', {
+  descriptor = helpers.from.json.to.list('{"resources": [{"name": "name", "data": ["data"]}]}')
+  dataPackage = Package.load(descriptor)
+  dataPackage$descriptor$resources[[1]]$name = 'modified'
+  expect_equal(dataPackage$resources[[1]]$name, 'name')
+  result = dataPackage$commit()
+  expect_equal(dataPackage$resources[[1]]$name, 'modified')
+  expect_true(result)
+})
+
+test_that('modified invalid in strict mode', {
+  descriptor = helpers.from.json.to.list('{"resources": [{"name": "name", "path": "data.csv"}]}')
+  dataPackage = Package.load(descriptor, 
+    basePath = 'inst/data', strict = TRUE
+  )
+  dataPackage$descriptor$resources = list()
+  expect_error(dataPackage$commit(), 'less items than allowed')
+})
 # # 
-# # test_that('modified invalid in strict mode', {
-# #   descriptor = {resources: [{name: 'name', path: 'data.csv'}]}
-# #   dataPackage = Package.load(descriptor, {
-# #     basePath: 'data', strict: true,
-# #   })
-# #   dataPackage.descriptor.resources = []
-# #   error = catchError(dataPackage.commit.bind(dataPackage), {})
-# #   assert.instanceOf(error, Error)
-# #   assert.instanceOf(error.errors[0], Error)
-# #   assert.include(error.errors[0].message, 'Array is too short')
-# # })
-# # 
-# # test_that('not modified', {
-# #   descriptor = {resources: [{name: 'name', data: ['data']}]}
-# #   dataPackage = Package.load(descriptor)
-# #   result = dataPackage.commtest_that()
-# #   expect_equal(dataPackage.descriptor, expand(descriptor))
-# #   assert.isFalse(result)
-# # })
+test_that('not modified', {
+  descriptor = helpers.from.json.to.list('{"resources": [{"name": "name", "data": ["data"]}]}')
+  dataPackage = Package.load(descriptor)
+  result = dataPackage$commit()
+  expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
+  expect_false(result)
+})
 # # 
 # # 
 # # ###################################################
