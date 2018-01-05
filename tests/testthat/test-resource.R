@@ -504,11 +504,20 @@ test_that('preserve resource format from descriptor ', {
   expect_equal(resource$infer(),
                helpers.from.json.to.list(
                  '{
-                 "path":"inst/data/data.csvformat",
-                 "format":"csv",
-                 "profile":"data-resource",
-                 "encoding":"utf-8"
-}')
-)
+"path": "inst/data/data.csvformat",
+"format": "csv",
+"profile": "tabular-data-resource",
+        "encoding": "utf-8",
+                 "name": "data",
+                 "mediatype": "text/csv",
+                 
+                 
+                 
+                 "schema": {"fields": [
+                 {"name": "city",  "type": "string","format": "default"},
+                 { "name": "population","type": "integer",  "format": "default"}],
+                 "missingValues": [""]
+                 }
+}'))
 })
 

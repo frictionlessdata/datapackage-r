@@ -481,7 +481,7 @@ is.json = function(object) {
 
 findFiles = function(pattern, path = getwd()) {
   
-  files = list.files(recursive = TRUE)
+  files = list.files(path, recursive = TRUE)
   #files=filepath(path)#, recursive = TRUE)
   # matched_files = files[grep(path, files, fixed = FALSE, ignore.case = FALSE)]
   

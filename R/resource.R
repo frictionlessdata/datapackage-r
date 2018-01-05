@@ -42,18 +42,19 @@ Resource <- R6Class(
       return(private$getTable_()$iter(relations, options))
     },
     
-    read = function(relations = FALSE, options = list()) {
+    read = function(relations = FALSE, ...) {
       
       # Error for non tabular
       if (!isTRUE(self$tabular)) {
         stop(DataPackageError$new('Methods iter/read are not supported for non tabular data')$message)
       }
-      
+   
       # Get relations
       if (isTRUE(relations)) {
         relations = private$getRelations_()
       }
-      return(private$getTable_()$read(relations, options))
+      
+      return(private$getTable_()$read(relations = relations, ...))
     },
     
     checkRelations = function() {
@@ -107,39 +108,32 @@ Resource <- R6Class(
       descriptor = private$currentDescriptor_
       
       # Blank -> Stop
-      if (isTRUE(is.null(private$sourceInspection_$blank))) return(descriptor)
+      if (isTRUE(private$sourceInspection_$blank)) return(descriptor)
       
       # Name 
-      if (!is.null(descriptor$name)) descriptor$name = private$sourceInspection_$name
+      if (is.null(descriptor$name) || stringr::str_length(descriptor$name) < 1) descriptor$name = private$sourceInspection_$name
       
       # Only for inline
-      if (!is.null(private$inline_)) {
+      if (!isTRUE(private$inline_)) {
         # Format 
-        if (isTRUE(!is.null(descriptor$format))) descriptor$format = private$sourceInspection_$format
+        if (isTRUE(is.null(descriptor$format)) || stringr::str_length(descriptor$format) < 1) descriptor$format = private$sourceInspection_$format
         
         # Mediatype
         
-        if (isTRUE(!is.null(descriptor$mediatype))) descriptor$mediatype = stringr::str_interp('text/${descriptor$format}')
+        if (isTRUE(is.null(descriptor$mediatype)) || stringr::str_length(descriptor$mediatype) < 1) descriptor$mediatype = stringr::str_interp('text/${descriptor$format}')
         
         # Encoding
         if (isTRUE(descriptor$encoding == config::get("DEFAULT_RESOURCE_ENCODING",file = "config.yaml"))) {
-          iterator = self$rawIter()
-          count = 0
-          repeat {
-            count = count + 1
-            bytes =  iterators::nextElem(iterator)
-            if (count == length(iterator) ) {
-              break
-            }
-          }
+        
           
-          encoding = stringi::stri_enc_detect(bytes)[[1]]$Encoding[1] #Ruchardet::detectEncoding
+          encoding = stringr::str_to_lower(readr::guess_encoding(self$source)[[1]])
+          
           descriptor$encoding = if (encoding == 'ascii') 'utf-8' else encoding
         }
         
         # Schema
         
-        if (purrr::is_empty(descriptor$schema)) {
+        if (is.null(descriptor$schema)) {
           if (isTRUE(self$tabular)) {
             descriptor$schema = private$getTable_()$infer() # or $infer
           }
@@ -327,12 +321,16 @@ Resource <- R6Class(
           stop(DataPackageError$new('Resource$table does not support multipart resources')$message)
         }
         # Resource -> Tabular
-        options = list()
+     
         schemaDescriptor = private$currentDescriptor_$schema
         
         schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema.load(helpers.from.list.to.json(schemaDescriptor)) else NULL
-        schema = schema$value()
-        table_ = tableschema.r::Table.load( self$source, schema = schema, options)
+
+        if (!is.null(schema)) {
+          schema = schema$value()
+        }
+        
+        table_ = tableschema.r::Table.load( self$source, schema = schema)
         private$table_ = table_$value()
       }
       
@@ -341,32 +339,35 @@ Resource <- R6Class(
     },
     
     getRelations_ = function() {
-      if (isTRUE(private$relations_ == FALSE)) {
+
+      if (isTRUE(private$relations_ == FALSE) || is.null(private$relations_)) {
         # Prepare resources
         resources = list()
         if (isTRUE(!is.null(private$getTable_())) && isTRUE(!is.null((private$getTable_()$schema)))) {
-          
+
           for (fk in private$getTable_()$schema$foreignKeys) {
-            
-            resources[fk$reference$resource] = resources[fk$reference$resource]
+            #hack to implement JavaScript's array[""] = sth - instead of "" use "$"
+            actualKey = if (stringr::str_length(fk$reference$resource) < 1) "$" else fk$reference$resource     
+            resources[[actualKey]] = if (!is.null(resources[[actualKey]])) resources[[actualKey]] else list()
             
             for (field in fk$reference$fields) {
-              push(resources[fk$reference$resource], field)
+              resources[[actualKey]] = push(resources[[actualKey]], field)
             }
+           
           }
         }
         # Fill Relations
         private$relations_ = list()
         
-        for (resource in purrr::list_along(resources)) {
-          
-          #if (resource && !this._dataPackage) continue
-          
-          private$relations_[resource] = if (is.null(private$relations_[resource])) private$relations_[resource] else list()
-          data = if (!is.null(resource)) private$dataPackage_$get_resource(resource) else resource
-          
+        for (resource in names(resources)) {
+        
+          if (!is.null(resource) && is.null(private$dataPackage_)) next
+   
+          private$relations_[[resource]] = if (!is.null(private$relations_[[resource]])) private$relations_[[resource]] else list()
+          data = if (!is.null(resource) && stringr::str_length(resource) > 0 && resource != "$") private$dataPackage_$getResource(resource) else self
+         
           if (data$tabular) {
-            private$relations_[resource] = read(data, keyed = TRUE)
+            private$relations_[[resource]] = data$read(keyed = TRUE)
           }
         }
         
@@ -469,7 +470,7 @@ inspectSource = function(data, path, basePath) {
     
     # Inspect
     inspection$format = tools::file_ext(path[[1]])[[1]]
-    inspection$name = basename(tools::list_files_with_exts(dir = path[[1]], exts = stringr::str_interp('.${inspection$format}') ))
+    inspection$name = tools::file_path_sans_ext(basename(path[[1]]))
     inspection$mediatype = stringr::str_interp('text/${inspection$format}')
     inspection$tabular = inspection$format %in% config::get("TABULAR_FORMATS",file = "config.yml")
     

@@ -26,7 +26,7 @@ foreach(name = 1:length(PROFILES) ) %do% {
   
   test_that(stringr::str_interp('load registry "${PROFILES[[name]]}" profile'), {
     
-    jsonschema = helpers.from.json.to.list(readLines(stringr::str_interp('inst/profiles/${PROFILES[[name]]}.json'),warn = FALSE))
+    jsonschema = helpers.from.json.to.list(stringr::str_interp('inst/profiles/${PROFILES[[name]]}.json'))
     
     profile = Profile.load(PROFILES[[name]])
     
@@ -50,11 +50,22 @@ test_that('throw loading bad registry profile', {
 
 
 
-# test_that('throw loading bad remote profile', {
-#   name = 'http://example.com/profile.json'
-# http.onGet(name).reply(400)
-# expect_error(Profile$load(name))
-# })
+test_that('throw loading bad remote profile', {
+  name = 'http://example.com/profile.json'
+  
+  
+  expect_error(
+    with_mock(
+      `httr:::request_perform` = function()
+        httptest::fakeResponse(httr::GET(name), status_code = 400) ,
+      `httptest::request_happened` = expect_message,
+      eval.parent(Profile.load(name)),
+      "Can not retrieve remote"
+    )
+  )
+  
+
+})
 
 
 ########################################
@@ -68,7 +79,7 @@ test_that('returns true for valid descriptor', {
 })
 
 test_that('errors for invalid descriptor', {
-  descriptor = jsonlite::toJSON("{}")
+  descriptor = helpers.from.json.to.list("{}")
   profile = Profile.load('data-package')
   valid_errors = profile$validate(descriptor)
   expect_false(valid_errors$valid)
@@ -82,10 +93,10 @@ testthat::context('Profile #up-to-date')
 
 ## method 1 readLines
 foreach(name = 1:length(PROFILES) ) %do% {
+  testthat::context(c('Profile #up-to-date - ', PROFILES[[name]]))
   test_that(stringr::str_interp('profile ${PROFILES[[name]]} should be up-to-date'), {
     profile = Profile.load(PROFILES[[name]])
-    response = readLines(stringr::str_interp('https://specs.frictionlessdata.io/schemas/${PROFILES[[name]]}.json'),warn = FALSE)
-    response.data = helpers.from.json.to.list(response )
+    response.data = helpers.from.json.to.list(stringr::str_interp('https://specs.frictionlessdata.io/schemas/${PROFILES[[name]]}.json'))
     expect_true(identical(profile$jsonschema, response.data))
   })
 }

@@ -5,8 +5,11 @@ library(stringr)
 library(crul)
 library(webmockr)
 
+# ###################################################
+ testthat::context("Load")
+# ###################################################
+# 
 # Tests
-
 
 test_that('initializes with Object descriptor', {
   descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
@@ -549,140 +552,165 @@ test_that('not modified', {
 # # testthat::context("Package #foreignKeys")
 # # ###################################################
 # # 
-# # DESCRIPTOR = {
-# #   resources: [
-# #     {
-# #       name: 'main',
-# #       data: [
-# #         ['id', 'name', 'surname', 'parent_id'],
-# #         ['1', 'Alex', 'Martin', ''],
-# #         ['2', 'John', 'Dockins', '1'],
-# #         ['3', 'Walter', 'White', '2'],
-# #         ],
-# #       schema: {
-# #         fields: [
-# #           {name: 'id'},
-# #           {name: 'name'},
-# #           {name: 'surname'},
-# #           {name: 'parent_id'},
-# #           ],
-# #         foreignKeys: [
-# #           {
-# #             fields: 'name',
-# #             reference: {resource: 'people', fields: 'firstname'},
-# #           },
-# #           ],
-# #       },
-# #     }, {
-# #       name: 'people',
-# #       data: [
-# #         ['firstname', 'surname'],
-# #         ['Alex', 'Martin'],
-# #         ['John', 'Dockins'],
-# #         ['Walter', 'White'],
-# #         ],
-# #     },
-# #     ],
-# # }
+DESCRIPTOR = helpers.from.json.to.list('{
+  "resources": [
+                                       {
+                                       "name": "main",
+                                       "data": [
+                                       ["id", "name", "surname", "parent_id"],
+                                       ["1", "Alex", "Martin", ""],
+                                       ["2", "John", "Dockins", "1"],
+                                       ["3", "Walter", "White", "2"]
+                                       ],
+                                       "schema": {
+                                       "fields": [
+                                       {"name": "id"},
+                                       {"name": "name"},
+                                       {"name": "surname"},
+                                       {"name": "parent_id"}
+                                       ],
+                                       "foreignKeys": [
+                                       {
+                                       "fields": "name",
+                                       "reference": {"resource": "people", "fields": "firstname"}
+                                       }
+                                       ]
+                                       }
+                                       }, {
+                                       "name": "people",
+                                       "data": [
+                                       ["firstname", "surname"],
+                                       ["Alex", "Martin"],
+                                       ["John", "Dockins"],
+                                       ["Walter", "White"]
+                                       ]
+                                       }
+                                       ]
+                                       }')
+
+test_that('should read rows if single field foreign keys is valid', {
+  resource = (Package.load(DESCRIPTOR))$getResource('main')
+  
+  rows = resource$read(relations = TRUE)
+  
+  expect_equal(rows, list(
+    list('1', list(firstname = 'Alex', surname = 'Martin'), 'Martin', NULL),
+    list('2', list(firstname = 'John', surname = 'Dockins'), 'Dockins', '1'),
+    list('3', list(firstname = 'Walter', surname = 'White'), 'White', '2')
+  ))
+})
 # # 
-# # test_that('should read rows if single field foreign keys is valid', {
-# #   resource = (Package.load(DESCRIPTOR)).getResource('main')
-# #   rows = resource.read({relations: true})
-# #   expect_equal(rows, [
-# #     ['1', {firstname: 'Alex', surname: 'Martin'}, 'Martin', null],
-# #     ['2', {firstname: 'John', surname: 'Dockins'}, 'Dockins', '1'],
-# #     ['3', {firstname: 'Walter', surname: 'White'}, 'White', '2'],
-# #     ])
-# # })
+test_that('should throw on read if single field foreign keys is invalid', {
+  descriptor = DESCRIPTOR
+  descriptor$resources[[2]]$data[[3]][[1]] = 'Max'
+  resource = (Package.load(descriptor))$getResource('main')
+  expect_error(resource$read(relations = TRUE, "Foreign key"))
+  
+}) 
 # # 
-# # test_that('should throw on read if single field foreign keys is invalid', {
-# #   descriptor = cloneDeep(DESCRIPTOR)
-# #   descriptor.resources[1].data[2][0] = 'Max'
-# #   resource = (Package.load(descriptor)).getResource('main')
-# #   error1 = catchError(resource.read.bind(resource), {relations: true})
-# #   error2 = catchError(resource.checkRelations.bind(resource))
-# #   assert.include(error1.message, 'Foreign key')
-# #   assert.include(error2.message, 'Foreign key')
-# # })
+test_that('should read rows if single self field foreign keys is valid', {
+  descriptor = DESCRIPTOR
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$fields = 'parent_id'
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$reference$resource = ''
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$reference$fields = 'id'
+  resource = (Package.load(descriptor))$getResource('main')
+  keyedRows = resource$read(keyed = TRUE, relations = TRUE)
+  expect_equal(keyedRows, list(
+    list(
+      id = '1',
+      name = 'Alex',
+      surname = 'Martin',
+      parent_id = NULL
+    ),
+    list(
+      id = '2',
+      name = 'John',
+      surname = 'Dockins',
+      parent_id = list(id = '1', name = 'Alex', surname = 'Martin', parent_id = NULL)
+    ),
+    list(
+      id = '3',
+      name = 'Walter',
+      surname = 'White',
+      parent_id = list(id = '2', name = 'John', surname = 'Dockins', parent_id = '1')
+    )
+    ))
+})
+test_that('should read rows if single self field foreign keys is valid', {
+  descriptor = DESCRIPTOR
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$fields = 'parent_id'
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$reference$resource = ''
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$reference$fields = 'id'
+  resource = (Package.load(descriptor))$getResource('main')
+  keyedRows = resource$read(keyed = TRUE, relations = TRUE)
+  
+  expect_equal(keyedRows, list(
+    list(
+      id = '1',
+      name = 'Alex',
+      surname = 'Martin',
+      parent_id = NULL
+    ),
+    list(
+      id = '2',
+      name = 'John',
+      surname = 'Dockins',
+      parent_id = list(id = '1', name = 'Alex', surname = 'Martin', parent_id = NULL)
+    ),
+    list(
+      id = '3',
+      name = 'Walter',
+      surname = 'White',
+      parent_id = list(id = '2', name = 'John', surname = 'Dockins', parent_id = '1')
+    )
+  ))
+})
+
+test_that('should throw on read if single self field foreign keys is invalid', {
+  descriptor = DESCRIPTOR
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$fields = 'parent_id'
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$reference$resource = ''
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$reference$fields = 'id'
+  descriptor$resources[[1]]$data[[3]][[1]] = '0'
+  resource = (Package.load(descriptor))$getResource('main')
+  expect_error(resource$read(relations = TRUE), 'Foreign key')
+
+})
+
+test_that('should read rows if multi field foreign keys is valid', {
+  descriptor = DESCRIPTOR
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$fields = list('name', 'surname')
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$reference$fields = list('firstname', 'surname')
+  resource = (Package.load(descriptor))$getResource('main')
+  keyedRows = resource$read(keyed = TRUE, relations = TRUE)
+  expect_equal(keyedRows, list(
+    list(
+      id = '1',
+      name = list(firstname = 'Alex', surname = 'Martin'),
+      surname = list(firstname = 'Alex', surname = 'Martin'),
+      parent_id = NULL
+    ),
+    list(
+      id = '2',
+      name = list(firstname = 'John', surname = 'Dockins'),
+      surname = list(firstname = 'John', surname = 'Dockins'),
+      parent_id = '1'
+    ),
+    list(
+      id = '3',
+      name = list(firstname = 'Walter', surname = 'White'),
+      surname = list(firstname = 'Walter', surname = 'White'),
+      parent_id = '2'
+    )
+    ))
+})
 # # 
-# # test_that('should read rows if single self field foreign keys is valid', {
-# #   descriptor = cloneDeep(DESCRIPTOR)
-# #   descriptor.resources[0].schema.foreignKeys[0].fields = 'parent_id'
-# #   descriptor.resources[0].schema.foreignKeys[0].reference.resource = ''
-# #   descriptor.resources[0].schema.foreignKeys[0].reference.fields = 'id'
-# #   resource = (Package.load(descriptor)).getResource('main')
-# #   keyedRows = resource.read({keyed: true, relations: true})
-# #   expect_equal(keyedRows, [
-# #     {
-# #       id: '1',
-# #       name: 'Alex',
-# #       surname: 'Martin',
-# #       parent_id: null,
-# #     },
-# #     {
-# #       id: '2',
-# #       name: 'John',
-# #       surname: 'Dockins',
-# #       parent_id: {id: '1', name: 'Alex', surname: 'Martin', parent_id: null},
-# #     },
-# #     {
-# #       id: '3',
-# #       name: 'Walter',
-# #       surname: 'White',
-# #       parent_id: {id: '2', name: 'John', surname: 'Dockins', parent_id: '1'},
-# #     },
-# #     ])
-# # })
-# # 
-# # test_that('should throw on read if single self field foreign keys is invalid', {
-# #   descriptor = cloneDeep(DESCRIPTOR)
-# #   descriptor.resources[0].schema.foreignKeys[0].fields = 'parent_id'
-# #   descriptor.resources[0].schema.foreignKeys[0].reference.resource = ''
-# #   descriptor.resources[0].schema.foreignKeys[0].reference.fields = 'id'
-# #   descriptor.resources[0].data[2][0] = '0'
-# #   resource = (Package.load(descriptor)).getResource('main')
-# #   error1 = catchError(resource.read.bind(resource), {relations: true})
-# #   error2 = catchError(resource.checkRelations.bind(resource))
-# #   assert.include(error1.message, 'Foreign key')
-# #   assert.include(error2.message, 'Foreign key')
-# # })
-# # 
-# # test_that('should read rows if multi field foreign keys is valid', {
-# #   descriptor = cloneDeep(DESCRIPTOR)
-# #   descriptor.resources[0].schema.foreignKeys[0].fields = ['name', 'surname']
-# #   descriptor.resources[0].schema.foreignKeys[0].reference.fields = ['firstname', 'surname']
-# #   resource = (Package.load(descriptor)).getResource('main')
-# #   keyedRows = resource.read({keyed: true, relations: true})
-# #   expect_equal(keyedRows, [
-# #     {
-# #       id: '1',
-# #       name: {firstname: 'Alex', surname: 'Martin'},
-# #       surname: {firstname: 'Alex', surname: 'Martin'},
-# #       parent_id: null,
-# #     },
-# #     {
-# #       id: '2',
-# #       name: {firstname: 'John', surname: 'Dockins'},
-# #       surname: {firstname: 'John', surname: 'Dockins'},
-# #       parent_id: '1',
-# #     },
-# #     {
-# #       id: '3',
-# #       name: {firstname: 'Walter', surname: 'White'},
-# #       surname: {firstname: 'Walter', surname: 'White'},
-# #       parent_id: '2',
-# #     },
-# #     ])
-# # })
-# # 
-# # test_that('should throw on read if multi field foreign keys is invalid', {
-# #   descriptor = cloneDeep(DESCRIPTOR)
-# #   descriptor.resources[0].schema.foreignKeys[0].fields = ['name', 'surname']
-# #   descriptor.resources[0].schema.foreignKeys[0].reference.fields = ['firstname', 'surname']
-# #   descriptor.resources[1].data[2][0] = 'Max'
-# #   resource = (Package.load(descriptor)).getResource('main')
-# #   error1 = catchError(resource.read.bind(resource), {relations: true})
-# #   error2 = catchError(resource.checkRelations.bind(resource))
-# #   assert.include(error1.message, 'Foreign key')
-# #   assert.include(error2.message, 'Foreign key')
-# # })
+test_that('should throw on read if multi field foreign keys is invalid', {
+  descriptor = DESCRIPTOR
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$fields = list('name', 'surname')
+  descriptor$resources[[1]]$schema$foreignKeys[[1]]$reference$fields = list('firstname', 'surname')
+  descriptor$resources[[2]]$data[[3]][[1]] = 'Max'
+  resource = (Package.load(descriptor))$getResource('main')
+  expect_error(resource$read(relations = TRUE), 'Foreign key')
+
+})

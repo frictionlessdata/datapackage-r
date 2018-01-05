@@ -72,35 +72,40 @@ Package <- R6::R6Class(
     
     
     infer = function(pattern) {
-      if (isTRUE(!is.null(pattern))) {
+
+      if (isTRUE(!is.null(pattern)) && stringr::str_length(pattern) > 0) {
         # No base path
-        if (is.null(private$basePath_)) {
-          DataPackageError$new('Base path is required for pattern infer')
+        if (is.null(private$basePath_) || stringr::str_length(private$basePath_) < 1) {
+         stop('Base path is required for pattern infer')
         }
         
         # Add resources
+
         files = findFiles(pattern, private$basePath_)
         for (file in files) {
-          self$addResource(path = list(files[file]))
+          self$addResource(list(path = file))
         }
       }
       
       # Resources
-      for (index in length(private$resources_)) {
-        descriptor = private$resources_[[index]]$infer()
-        private$currentDescriptor_$resources[[index]] = descriptor
-        private$build_()
-      }
-      # Profile
-      if (!isUndefined(private$nextDescriptor_$profile)) {
-        if (private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE")) {
-          if (length(private$resources) >= 1) {
-            #&& private$resources.every(resouce => resouce.tabular)) {
-            private$currentDescriptor_$profile = 'tabular-data-package'
-            private$build_()
-          }
+      if (length(private$resources_) > 0) {
+        for (index in 1:length(private$resources_)) {
+          descriptor = private$resources_[[index]]$infer()
+          private$currentDescriptor_$resources[[index]] = descriptor
+          private$build_()
         }
       }
+
+      # Profile
+
+      if (private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE")) {
+        if (length(private$resources_) >= 1 && rlist::list.all(private$resources_, r ~ isTRUE(r$tabular))) {
+          
+          private$currentDescriptor_$profile = 'tabular-data-package'
+          private$build_()
+        }
+      }
+      
       
       
       return(private$currentDescriptor_)
