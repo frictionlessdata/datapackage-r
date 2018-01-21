@@ -22,6 +22,7 @@ env:
  - covr		
  - crul
  - curl
+ - devtools
  - future		
  - httr
  - httptest 
@@ -42,14 +43,12 @@ env:
  - webmockr
 r_github_packages: 
  - okgreece/tableschema.r
- - hadley/devtools
 addons:
   apt:
     packages:
       - libxml2-dev
       - libv8-dev
       - libgit2-dev
-      - libssl-dev
 warnings_are_errors: false
 after_success:
  - Rscript -e 'covr::coveralls()'
