@@ -19,19 +19,21 @@ env:
  - V8		
 -r_packages:		
  - config
+ - covr		
  - crul
  - curl
- - covr		
  - future		
- - httr		
+ - httr
+ - httptest 
  - iterators		
  - jsonlite		
  - purrr		
  - R6		
- - R.utils		
+ - R.utils	
  - Rcpp		
  - RCurl		
- - readr		
+ - readr
+ - rlist 
  - roxygen2		
  - stringr		
  - tools

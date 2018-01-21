@@ -18,10 +18,10 @@ Suggests:
     covr,
     crul,
     foreach,
+    httptest,
     testthat,
     webmockr,
     mockery,
-    httptest
 Collate: 
     'DataPackageError.R'
     'Package.R'
