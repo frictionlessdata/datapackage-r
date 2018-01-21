@@ -43,7 +43,7 @@ env:
  - utils
  - webmockr
 r_github_packages: 
- - okgreece/tableschema.r
+ - okgreece/tableschema-r
 addons:
   apt:
     packages:
