@@ -17,7 +17,8 @@ env:
 -brew_packages:		
  - jsonvalidate		
  - V8		
--r_packages:		
+-r_packages:
+ - callr		
  - config
  - covr		
  - crul
