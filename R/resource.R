@@ -123,12 +123,11 @@ Resource <- R6Class(
         if (isTRUE(is.null(descriptor$mediatype)) || stringr::str_length(descriptor$mediatype) < 1) descriptor$mediatype = stringr::str_interp('text/${descriptor$format}')
         
         # Encoding
-        if (isTRUE(descriptor$encoding == config::get("DEFAULT_RESOURCE_ENCODING",file = "config.yaml"))) {
+        if (isTRUE(tolower(descriptor$encoding) == config::get("DEFAULT_RESOURCE_ENCODING",file = "config.yaml"))) {
         
-          
           encoding = stringr::str_to_lower(readr::guess_encoding(self$source)[[1]])
           
-          descriptor$encoding = if (encoding == 'ascii') 'utf-8' else encoding
+          descriptor$encoding = if (tolower(encoding) == 'ascii') 'utf-8' else tolower(encoding)
         }
         
         # Schema
@@ -470,7 +469,7 @@ inspectSource = function(data, path, basePath) {
     
     # Inspect
     inspection$format = tools::file_ext(path[[1]])[[1]]
-    inspection$name = tools::file_path_sans_ext(basename(path[[1]]))
+    inspection$name = file_basename(path[[1]])
     inspection$mediatype = stringr::str_interp('text/${inspection$format}')
     inspection$tabular = inspection$format %in% config::get("TABULAR_FORMATS",file = "config.yml")
     

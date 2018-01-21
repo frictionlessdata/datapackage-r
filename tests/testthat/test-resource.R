@@ -4,6 +4,7 @@ library(foreach)
 library(stringr)
 library(crul)
 library(webmockr)
+library(httptest)
 
 # Tests
 testthat::context("Resource")
@@ -57,11 +58,11 @@ test_that('object', {
 
 
  test_that('string remote path', {
-   fileName = system.file('data/data-resource.json', package = 'datapackage.r')
+   fileName = 'inst/data/data-resource.json'
    contents = helpers.from.json.to.list(fileName)
    
-   descriptor = 'https://httpbin.org/data-resource.json'
-   
+   descriptor = 'https://httpbin.org/data-resource/'
+
    httptest::with_mock_API({
      resource = Resource.load(descriptor)
      
@@ -276,6 +277,7 @@ test_that('tabular resource schema', {
   resource = Resource.load(descriptor)
   expect_equal(resource$descriptor[sort(names(resource$descriptor))], target_outcome[sort(names(target_outcome))])
   })
+
  test_that('tabular resource dialect', {
    descriptor = helpers.from.json.to.list('{
      "name": "name",
@@ -479,9 +481,9 @@ test_that('it raw reads local file source', {
 })
 
 
-# #######################################################
-# testthat::context('Resource #table')
-# ########################################################
+#######################################################
+testthat::context('Resource #table')
+########################################################
 test_that('general resource', {
   descriptor = '{
   "name": "name",
@@ -496,23 +498,20 @@ test_that('general resource', {
 
 #######################################################
 testthat::context('Resource #infer')
-########################################################
+#######################################################
 
 test_that('preserve resource format from descriptor ', {
-  descriptor = '{"path": "inst/data/data.csvformat", "format": "csv"}'
+  descriptor = '{"path": "inst/data/data.csvformat.txt", "format": "csv"}'
   resource = Resource.load(descriptor)
   expect_equal(resource$infer(),
                helpers.from.json.to.list(
                  '{
-"path": "inst/data/data.csvformat",
+"path": "inst/data/data.csvformat.txt",
 "format": "csv",
 "profile": "tabular-data-resource",
         "encoding": "utf-8",
                  "name": "data",
                  "mediatype": "text/csv",
-                 
-                 
-                 
                  "schema": {"fields": [
                  {"name": "city",  "type": "string","format": "default"},
                  { "name": "population","type": "integer",  "format": "default"}],

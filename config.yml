@@ -3,4 +3,4 @@ default:
   WARNING: 'tableschema.warning'
   DEFAULT_FIELD_TYPE: 'string'
   DEFAULT_FIELD_FORMAT: 'default'
-  DEFAULT_MISSING_VALUES: list()
+  DEFAULT_MISSING_VALUES: ['']

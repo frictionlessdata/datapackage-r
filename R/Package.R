@@ -258,7 +258,7 @@ Package <- R6::R6Class(
           if (index > length(private$resources_) ||
               !identical(private$resources_[[index]], descriptor) ||
               (!is.null(private$resources_[[index]]$schema) &&
-               length(private$resources_[[index]]$schema$foreignKeys >= 1))) {
+               length(private$resources_[[index]]$schema$foreignKeys >= 1)) ) {
             
             private$resources_[[index]] = Resource$new(
               descriptor,
@@ -301,10 +301,11 @@ Package.load = function(descriptor = list(),
   descriptor = dereferencePackageDescriptor(descriptor, basePath)
   # Get profile
 
-  profile.to.load = if (is.null(descriptor$profile))
+  profile.to.load = if (is.null(descriptor$profile)) {
     config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = "config.yaml")
-  else
+  } else {
     descriptor$profile
+  }
   
   profile = Profile.load(profile.to.load)
   

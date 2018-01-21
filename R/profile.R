@@ -11,7 +11,7 @@
 
 Profile <- R6::R6Class(
   
-  "profile",
+  "Profile",
   
   # Public
   

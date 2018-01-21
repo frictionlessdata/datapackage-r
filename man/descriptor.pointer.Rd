@@ -9,7 +9,7 @@ descriptor.pointer(value, baseDescriptor)
 \arguments{
 \item{value}{value}
 
-\item{descriptor}{descriptor}
+\item{baseDescriptor}{baseDescriptor}
 }
 \description{
 descriptor pointer

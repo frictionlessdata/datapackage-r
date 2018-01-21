@@ -4,17 +4,18 @@ library(foreach)
 library(stringr)
 library(crul)
 library(webmockr)
+library(httptest)
 
-# ###################################################
- testthat::context("Load")
-# ###################################################
-# 
 # Tests
+
+###################################################
+ testthat::context("Load")
+###################################################
 
 test_that('initializes with Object descriptor', {
   descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
   dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
-  expect_identical(dataPackage$descriptor,expandPackageDescriptor(descriptor))
+  expect_equal(dataPackage$descriptor,expandPackageDescriptor(descriptor))
 
 })
 
@@ -24,17 +25,19 @@ test_that('initializes with URL descriptor', {
     'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
 })
+
+
 test_that('throws errors for invalid datapackage in strict mode', {
   
-  expect_error(Package.load("{}",strict = TRUE), "is required")
+  expect_error(Package.load("{}",strict = TRUE))
 })
 
 
 test_that('stores errors for invalid datapackage', {
   dataPackage = Package.load()
-  expect_is(dataPackage$errors, "list")
-  expect_is(dataPackage$errors[[1]], "character")
-  expect_match(dataPackage$errors[[1]], "is required")
+  expect_type(dataPackage$errors, "list")
+  expect_type(dataPackage$errors[[1]], "character")
+  expect_match(dataPackage$errors[[1]], "Descriptor validation error")
 
   expect_false(dataPackage$valid)
 })
@@ -52,7 +55,7 @@ test_that('loads relative resource', {
   data = dataPackage$resources[[1]]$table$read()
   expect_equal(data, list(list('gb', 100), list('us', 200), list('cn', 300)))
 })
-# 
+ 
 
 test_that('loads resource from absolute URL',  {
 
@@ -89,10 +92,10 @@ test_that('loads remote resource with basePath',  {
 
 
 
-# ###################################################
-# testthat::context("Package #descriptor (retrieve)")
-# ###################################################
-# 
+###################################################
+testthat::context("Package #descriptor (retrieve)")
+###################################################
+
 test_that('object', {
   descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
   dataPackage = Package.load(descriptor)
@@ -104,7 +107,7 @@ testthat::context("Package #load")
 ###################################
 test_that('string remote path', {
   
-  descriptor = 'http://example.com/data-package.json'
+  descriptor = 'http://example.com/data-package'
   # Mocks
   contents =  helpers.from.json.to.list('inst/data/data-package.json')
   httptest::with_mock_API({
@@ -145,21 +148,21 @@ test_that('string local path bad', {
 testthat::context("Package #descriptor (dereference)")
 ######################################################
 
-test_that('mixed', {
-
-  descriptor = helpers.from.json.to.list('inst/data/data-package-dereference.json')
-
-  dataPackage = Package.load(descriptor)
-
-  target =
-    purrr::map(helpers.from.json.to.list('[
-                                         {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
-                                         {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-                                         ]'),expandResourceDescriptor)
-
-  expect_equal( dataPackage$descriptor$resources, target)
-  
-})
+# test_that('mixed', {
+# 
+#   descriptor = helpers.from.json.to.list('inst/data/data-package-dereference.json')
+# 
+#   dataPackage = Package.load(descriptor)
+# 
+#   target =
+#     purrr::map(helpers.from.json.to.list('[
+#                                          {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
+#                                          {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
+#                                          ]'),expandResourceDescriptor)
+# 
+#   expect_equal( dataPackage$descriptor$resources, target)
+#   
+# })
 
 
 test_that('pointer', {
@@ -279,10 +282,10 @@ test_that('local bad not safe', {
 })
 
 
-# #################################################
-# testthat::context("Package #descriptor (expand)")
-# #################################################
-# 
+#################################################
+testthat::context("Package #descriptor (expand)")
+#################################################
+
 test_that('resource', {
   descriptor = helpers.from.json.to.list('{
     "resources": [
@@ -384,11 +387,11 @@ test_that('tabular resource dialect', {
   expect_equal(dataPackage$descriptor, target)
   })
 
-# 
-# ###################################################
+
+###################################################
  testthat::context("Package #resources")
-# ###################################################
-# 
+###################################################
+
 test_that('names', {
   descriptor = helpers.from.json.to.list('inst/data/data-package-multiple-resources.json')
   dataPackage = Package.load(descriptor, basePath = 'inst/data')
@@ -515,11 +518,11 @@ test_that('remove non existent', {
 # # })
 # # 
 # # 
-# # ###################################################
-# # testthat::context("Package #commit")
-# # ###################################################
-# # 
-# # 
+###################################################
+testthat::context("Package #commit")
+###################################################
+
+
 test_that('modified', {
   descriptor = helpers.from.json.to.list('{"resources": [{"name": "name", "data": ["data"]}]}')
   dataPackage = Package.load(descriptor)
@@ -546,12 +549,12 @@ test_that('not modified', {
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
   expect_false(result)
 })
-# # 
-# # 
-# # ###################################################
-# # testthat::context("Package #foreignKeys")
-# # ###################################################
-# # 
+
+
+###################################################
+testthat::context("Package #foreignKeys")
+###################################################
+
 DESCRIPTOR = helpers.from.json.to.list('{
   "resources": [
                                        {

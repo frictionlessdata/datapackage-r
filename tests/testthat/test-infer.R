@@ -1,12 +1,12 @@
-# library(datapackage.r)
-# library(testthat)
-# library(foreach)
-# library(stringr)
-# 
+library(datapackage.r)
+library(testthat)
+library(foreach)
+library(stringr)
+
 # # Tests
-# 
+
  testthat::context("infer")
-# 
+
 test_that('it infers local data package', {
 
   descriptor = infer(pattern = 'csv', basePath = 'inst/data/dp1') # '**/*.csv'

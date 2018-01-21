@@ -8,6 +8,7 @@ cache: packages
 r:
   - oldrel
   - release
+  - devel
 before_install:
   - tlmgr install index
 env:
