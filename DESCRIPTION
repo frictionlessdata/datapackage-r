@@ -10,8 +10,27 @@ Description: A library for working with Data Package (<http://frictionlessdata.i
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: config, devtools, future, httr, iterators, jsonlite, jsonvalidate, purrr, R6, R.utils, readr, rlist, stringr, tableschema-r, tools, urltools, utils, V8
-Remotes: okgreece/tableschema-r
+Imports: 
+    config, 
+    devtools, 
+    future, 
+    httr, 
+    iterators, 
+    jsonlite, 
+    jsonvalidate, 
+    purrr, 
+    R6, 
+    R.utils, 
+    readr, 
+    rlist, 
+    stringr, 
+    tableschema.r, 
+    tools, 
+    urltools, 
+    utils, 
+    V8
+Remotes: 
+    okgreece/tableschema-r
 Suggests:
     covr,
     crul,

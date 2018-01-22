@@ -16,5 +16,10 @@ addons:
   apt:
     packages:
       - libxml2-dev
+      - libv8-dev
 repos:
   CRAN: http://cran.rstudio.com
+r_github_packages: okgreece/tableschema-r
+
+after_success:
+  - Rscript -e 'covr::codecov()'
