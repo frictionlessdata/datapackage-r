@@ -10,10 +10,8 @@ Description: A library for working with Data Package (<http://frictionlessdata.i
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: V8, brew, callr, config, curl, devtools, future, httr, iterators, jsonlite, jsonvalidate, pdftools, purrr, R6, R.utils, Rcpp, RCurl, readr, rlist, roxygen2, stringr, tableschema.r, tools, urltools, utils, xml2
+Imports: config, devtools, future, httr, iterators, jsonlite, jsonvalidate, purrr, R6, R.utils, readr, rlist, stringr, tableschema-r, tools, urltools, utils, V8
 Remotes: okgreece/tableschema-r
-SystemRequirements: V8 <= 3.15: libv8-3.14-dev (deb), v8-314-devel (rpm), v8-3.14 (arch, from AUR), v8@3.15 (homebrew)
-RoxygenNote: 6.0.1
 Suggests:
     covr,
     crul,
@@ -21,7 +19,7 @@ Suggests:
     httptest,
     testthat,
     webmockr,
-    mockery,
+    mockery
 Collate: 
     'DataPackageError.R'
     'Package.R'
@@ -34,3 +32,4 @@ Collate:
     'is.valid.R'
     'resource.R'
     'validate.R'
+RoxygenNote: 6.0.1
