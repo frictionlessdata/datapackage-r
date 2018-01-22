@@ -100,19 +100,22 @@ dataPackage
 
     ## <Package>
     ##   Public:
+    ##     addResource: function (descriptor) 
     ##     clone: function (deep = FALSE) 
     ##     commit: function (strict = NULL) 
     ##     descriptor: active binding
     ##     errors: active binding
+    ##     getResource: function (name) 
     ##     infer: function (pattern) 
-    ##     initialize: function (descriptor = list(), basePath = NULL, pattern = NULL, 
+    ##     initialize: function (descriptor = list(), basePath = NULL, strict = FALSE, 
     ##     profile: active binding
+    ##     removeResource: function (name) 
     ##     resourceNames: active binding
     ##     resources: active binding
     ##     save: function (target, type = "json") 
     ##     valid: active binding
     ##   Private:
-    ##     basePath_: NULL
+    ##     basePath_: C:/Users/Kleanthis-Okf/Documents/datapackage-r
     ##     build_: function () 
     ##     currentDescriptor_: list
     ##     currentDescriptor_json: NULL
@@ -120,15 +123,29 @@ dataPackage
     ##     errors_: list
     ##     nextDescriptor_: list
     ##     pattern_: NULL
-    ##     profile_: profile, R6
+    ##     profile_: Profile, R6
     ##     resources_: list
-    ##     resources_length: 0
+    ##     resources_length: NULL
     ##     strict_: FALSE
 
 ``` r
-#resource = dataPackage$getResource('example')
-#resource$read() # [[180, 18, 'Tony'], [192, 32, 'Jacob']]
+resource = dataPackage$getResource('example')
+jsonlite::prettify(helpers.from.list.to.json(resource$read())) # convert to json and add indentation with jsonlite prettify function
 ```
+
+    ## [
+    ##     [
+    ##         180,
+    ##         18,
+    ##         "Tony"
+    ##     ],
+    ##     [
+    ##         192,
+    ##         32,
+    ##         "Jacob"
+    ##     ]
+    ## ]
+    ## 
 
 Documentation
 =============
@@ -334,7 +351,7 @@ resource = Resource.load('{"path": "data.csv"}')
 resource$tabular# TRUE
 ```
 
-    ## [1] TRUE
+    ## [1] FALSE
 
 ``` r
 #resource$headers # ['city', 'location']
@@ -801,6 +818,324 @@ To run tests:
 ``` r
 devtools::test()
 ```
+
+    ## Loading datapackage.r
+
+    ## Loading required package: testthat
+
+    ## Testing datapackage.r
+
+    ## v | OK F W S | Context
+    ## 
+    / |  0       | helpers
+    - |  1       | helpers
+    \ |  2       | helpers
+    | |  3       | helpers
+    / |  4       | helpers
+    - |  5       | helpers
+    \ |  6       | helpers
+    | |  7       | helpers
+    / |  8       | helpers
+    - |  9       | helpers
+    \ | 10       | helpers
+    | | 11       | helpers
+    / | 12       | helpers
+    v | 12       | helpers [0.3 s]
+    ## 
+    / |  0       | infer
+    - |  1       | infer
+    \ |  2       | infer
+    | |  3       | infer
+    / |  4       | infer
+    - |  5       | infer
+    \ |  6       | infer
+    | |  7       | infer
+    / |  8       | infer
+    v |  8       | infer [5.7 s]
+    ## 
+    / |  0       | Load
+    - |  1       | Load
+    \ |  2       | Load
+    | |  3       | Load
+    / |  4       | Load
+    - |  5       | Load
+    \ |  6       | Load
+    | |  7       | Load
+    / |  8       | Load
+    - |  9       | Load
+    \ | 10       | Load
+    | | 11       | Load
+    v | 11       | Load [11.6 s]
+    ## 
+    / |  0       | Package #descriptor (retrieve)
+    - |  1       | Package #descriptor (retrieve)
+    v |  1       | Package #descriptor (retrieve) [0.1 s]
+    ## 
+    / |  0       | Package #load
+    - |  1       | Package #load
+    \ |  2       | Package #load
+    | |  3       | Package #load
+    / |  4       | Package #load
+    v |  4       | Package #load [0.2 s]
+    ## 
+    / |  0       | Package #descriptor (dereference)
+    - |  1       | Package #descriptor (dereference)
+    \ |  2       | Package #descriptor (dereference)
+    | |  3       | Package #descriptor (dereference)
+    / |  4       | Package #descriptor (dereference)
+    - |  5       | Package #descriptor (dereference)
+    \ |  6       | Package #descriptor (dereference)
+    | |  7       | Package #descriptor (dereference)
+    v |  7       | Package #descriptor (dereference) [0.9 s]
+    ## 
+    / |  0       | Package #descriptor (expand)
+    - |  1       | Package #descriptor (expand)
+    \ |  2       | Package #descriptor (expand)
+    | |  3       | Package #descriptor (expand)
+    v |  3       | Package #descriptor (expand) [0.6 s]
+    ## 
+    / |  0       | Package #resources
+    - |  1       | Package #resources
+    \ |  2       | Package #resources
+    | |  3       | Package #resources
+    / |  4       | Package #resources
+    - |  5       | Package #resources
+    \ |  6       | Package #resources
+    | |  7       | Package #resources
+    / |  8       | Package #resources
+    - |  9       | Package #resources
+    \ | 10       | Package #resources
+    | | 11       | Package #resources
+    / | 12       | Package #resources
+    - | 13       | Package #resources
+    \ | 14       | Package #resources
+    | | 15       | Package #resources
+    / | 16       | Package #resources
+    - | 17       | Package #resources
+    \ | 18       | Package #resources
+    | | 19       | Package #resources
+    / | 20       | Package #resources
+    - | 21       | Package #resources
+    \ | 22       | Package #resources
+    | | 23       | Package #resources
+    v | 23       | Package #resources [2.2 s]
+    ## 
+    / |  0       | Package #commit
+    - |  1       | Package #commit
+    \ |  2       | Package #commit
+    | |  3       | Package #commit
+    / |  4       | Package #commit
+    - |  5       | Package #commit
+    \ |  6       | Package #commit
+    v |  6       | Package #commit [0.4 s]
+    ## 
+    / |  0       | Package #foreignKeys
+    - |  1       | Package #foreignKeys
+    \ |  2       | Package #foreignKeys
+    | |  3       | Package #foreignKeys
+    / |  4       | Package #foreignKeys
+    - |  5       | Package #foreignKeys
+    \ |  6       | Package #foreignKeys
+    | |  7       | Package #foreignKeys
+    v |  7       | Package #foreignKeys [3.7 s]
+    ## 
+    / |  0       | Profile
+    - |  1       | Profile
+    \ |  2       | Profile
+    | |  3       | Profile
+    / |  4       | Profile
+    - |  5       | Profile
+    \ |  6       | Profile
+    | |  7       | Profile
+    / |  8       | Profile
+    - |  9       | Profile
+    v |  9       | Profile [0.4 s]
+    ## 
+    / |  0       | Profile #validate
+    - |  1       | Profile #validate
+    \ |  2       | Profile #validate
+    v |  2       | Profile #validate [0.1 s]
+    ## 
+    / |  0       | Profile #up-to-date
+    v |  0       | Profile #up-to-date
+    ## 
+    / |  0       | Profile #up-to-date - data-package
+    - |  1       | Profile #up-to-date - data-package
+    v |  1       | Profile #up-to-date - data-package [0.5 s]
+    ## 
+    / |  0       | Profile #up-to-date - tabular-data-package
+    - |  1       | Profile #up-to-date - tabular-data-package
+    v |  1       | Profile #up-to-date - tabular-data-package [0.6 s]
+    ## 
+    / |  0       | Profile #up-to-date - fiscal-data-package
+    - |  1       | Profile #up-to-date - fiscal-data-package
+    v |  1       | Profile #up-to-date - fiscal-data-package [0.8 s]
+    ## 
+    / |  0       | Profile #up-to-date - data-resource
+    - |  1       | Profile #up-to-date - data-resource
+    v |  1       | Profile #up-to-date - data-resource [0.3 s]
+    ## 
+    / |  0       | Profile #up-to-date - tabular-data-resource
+    - |  1       | Profile #up-to-date - tabular-data-resource
+    \ |  2       | Profile #up-to-date - tabular-data-resource
+    | |  3       | Profile #up-to-date - tabular-data-resource
+    / |  4       | Profile #up-to-date - tabular-data-resource
+    - |  5       | Profile #up-to-date - tabular-data-resource
+    \ |  6       | Profile #up-to-date - tabular-data-resource
+    | |  7       | Profile #up-to-date - tabular-data-resource
+    / |  8       | Profile #up-to-date - tabular-data-resource
+    - |  9       | Profile #up-to-date - tabular-data-resource
+    \ | 10       | Profile #up-to-date - tabular-data-resource
+    | | 11       | Profile #up-to-date - tabular-data-resource
+    / | 12       | Profile #up-to-date - tabular-data-resource
+    - | 13       | Profile #up-to-date - tabular-data-resource
+    \ | 14       | Profile #up-to-date - tabular-data-resource
+    | | 15       | Profile #up-to-date - tabular-data-resource
+    / | 16       | Profile #up-to-date - tabular-data-resource
+    - | 17       | Profile #up-to-date - tabular-data-resource
+    \ | 18       | Profile #up-to-date - tabular-data-resource
+    | | 19       | Profile #up-to-date - tabular-data-resource
+    / | 20       | Profile #up-to-date - tabular-data-resource
+    - | 21       | Profile #up-to-date - tabular-data-resource
+    \ | 22       | Profile #up-to-date - tabular-data-resource
+    | | 23       | Profile #up-to-date - tabular-data-resource
+    / | 24       | Profile #up-to-date - tabular-data-resource
+    - | 25       | Profile #up-to-date - tabular-data-resource
+    \ | 26       | Profile #up-to-date - tabular-data-resource
+    | | 27       | Profile #up-to-date - tabular-data-resource
+    / | 28       | Profile #up-to-date - tabular-data-resource
+    - | 29       | Profile #up-to-date - tabular-data-resource
+    \ | 30       | Profile #up-to-date - tabular-data-resource
+    | | 31       | Profile #up-to-date - tabular-data-resource
+    / | 32       | Profile #up-to-date - tabular-data-resource
+    - | 33       | Profile #up-to-date - tabular-data-resource
+    \ | 34       | Profile #up-to-date - tabular-data-resource
+    | | 35       | Profile #up-to-date - tabular-data-resource
+    / | 36       | Profile #up-to-date - tabular-data-resource
+    - | 37       | Profile #up-to-date - tabular-data-resource
+    \ | 38       | Profile #up-to-date - tabular-data-resource
+    | | 39       | Profile #up-to-date - tabular-data-resource
+    / | 40       | Profile #up-to-date - tabular-data-resource
+    - | 41       | Profile #up-to-date - tabular-data-resource
+    \ | 42       | Profile #up-to-date - tabular-data-resource
+    | | 43       | Profile #up-to-date - tabular-data-resource
+    / | 44       | Profile #up-to-date - tabular-data-resource
+    - | 45       | Profile #up-to-date - tabular-data-resource
+    \ | 46       | Profile #up-to-date - tabular-data-resource
+    | | 47       | Profile #up-to-date - tabular-data-resource
+    / | 48       | Profile #up-to-date - tabular-data-resource
+    - | 49       | Profile #up-to-date - tabular-data-resource
+    \ | 50       | Profile #up-to-date - tabular-data-resource
+    | | 51       | Profile #up-to-date - tabular-data-resource
+    / | 52       | Profile #up-to-date - tabular-data-resource
+    - | 53       | Profile #up-to-date - tabular-data-resource
+    \ | 54       | Profile #up-to-date - tabular-data-resource
+    | | 55       | Profile #up-to-date - tabular-data-resource
+    / | 56       | Profile #up-to-date - tabular-data-resource
+    - | 57       | Profile #up-to-date - tabular-data-resource
+    \ | 58       | Profile #up-to-date - tabular-data-resource
+    | | 59       | Profile #up-to-date - tabular-data-resource
+    v | 59       | Profile #up-to-date - tabular-data-resource [3.1 s]
+    ## 
+    / |  0       | Resource
+    v |  0       | Resource
+    ## 
+    / |  0       | Resource #load
+    - |  1       | Resource #load
+    \ |  2       | Resource #load
+    | |  3       | Resource #load
+    / |  4       | Resource #load
+    - |  5       | Resource #load
+    \ |  6       | Resource #load
+    | |  7       | Resource #load
+    / |  8       | Resource #load
+    - |  9       | Resource #load
+    \ | 10       | Resource #load
+    | | 11       | Resource #load
+    v | 11       | Resource #load [0.3 s]
+    ## 
+    / |  0       | Resource #descriptor (retrieve)
+    - |  1       | Resource #descriptor (retrieve)
+    \ |  2       | Resource #descriptor (retrieve)
+    | |  3       | Resource #descriptor (retrieve)
+    / |  4       | Resource #descriptor (retrieve)
+    - |  5       | Resource #descriptor (retrieve)
+    v |  5       | Resource #descriptor (retrieve) [0.1 s]
+    ## 
+    / |  0       | Resource #descriptor (dereference)
+    - |  1       | Resource #descriptor (dereference)
+    \ |  2       | Resource #descriptor (dereference)
+    | |  3       | Resource #descriptor (dereference)
+    / |  4       | Resource #descriptor (dereference)
+    - |  5       | Resource #descriptor (dereference)
+    \ |  6       | Resource #descriptor (dereference)
+    | |  7       | Resource #descriptor (dereference)
+    / |  8       | Resource #descriptor (dereference)
+    v |  8       | Resource #descriptor (dereference) [0.4 s]
+    ## 
+    / |  0       | Resource #descriptor (expand)
+    - |  1       | Resource #descriptor (expand)
+    \ |  2       | Resource #descriptor (expand)
+    | |  3       | Resource #descriptor (expand)
+    / |  4       | Resource #descriptor (expand)
+    - |  5       | Resource #descriptor (expand)
+    v |  5       | Resource #descriptor (expand) [0.7 s]
+    ## 
+    / |  0       | Resource #source/sourceType
+    - |  1       | Resource #source/sourceType
+    \ |  2       | Resource #source/sourceType
+    | |  3       | Resource #source/sourceType
+    / |  4       | Resource #source/sourceType
+    - |  5       | Resource #source/sourceType
+    \ |  6       | Resource #source/sourceType
+    | |  7       | Resource #source/sourceType
+    / |  8       | Resource #source/sourceType
+    - |  9       | Resource #source/sourceType
+    \ | 10       | Resource #source/sourceType
+    | | 11       | Resource #source/sourceType
+    / | 12       | Resource #source/sourceType
+    - | 13       | Resource #source/sourceType
+    \ | 14       | Resource #source/sourceType
+    | | 15       | Resource #source/sourceType
+    / | 16       | Resource #source/sourceType
+    - | 17       | Resource #source/sourceType
+    \ | 18       | Resource #source/sourceType
+    | | 19       | Resource #source/sourceType
+    / | 20       | Resource #source/sourceType
+    - | 21       | Resource #source/sourceType
+    \ | 22       | Resource #source/sourceType
+    | | 23       | Resource #source/sourceType
+    / | 24       | Resource #source/sourceType
+    - | 25       | Resource #source/sourceType
+    \ | 26       | Resource #source/sourceType
+    | | 27       | Resource #source/sourceType
+    / | 28       | Resource #source/sourceType
+    v | 28       | Resource #source/sourceType [0.3 s]
+    ## 
+    / |  0       | Resource #rawRead
+    - |  1       | Resource #rawRead
+    v |  1       | Resource #rawRead
+    ## 
+    / |  0       | Resource #table
+    - |  1       | Resource #table
+    v |  1       | Resource #table
+    ## 
+    / |  0       | Resource #infer
+    - |  1       | Resource #infer
+    v |  1       | Resource #infer [4.1 s]
+    ## 
+    / |  0       | validate
+    - |  1       | validate
+    \ |  2       | validate
+    v |  2       | validate
+    ## 
+    ## == Results =====================================================================================================================================================
+    ## Duration: 38.0 s
+    ## 
+    ## OK:       218
+    ## Failed:   0
+    ## Warnings: 0
+    ## Skipped:  0
 
 more detailed information about how to create and run tests you can find in [testthat package](https://github.com/hadley/testthat)
 

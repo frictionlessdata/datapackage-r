@@ -104,8 +104,8 @@ descriptor = '{
 
 dataPackage = Package.load(descriptor)
 dataPackage
-#resource = dataPackage$getResource('example')
-#resource$read() # [[180, 18, 'Tony'], [192, 32, 'Jacob']]
+resource = dataPackage$getResource('example')
+jsonlite::prettify(helpers.from.list.to.json(resource$read())) # convert to json and add indentation with jsonlite prettify function
 ```
 
 # Documentation
@@ -140,7 +140,7 @@ rome,2017,2860000
 
 First we create a blank data package::
 
-```{r eval=FALSE, include=TRUE, echo=TRUE}
+```{r eval=TRUE, include=TRUE, echo=TRUE}
 dataPackage = Package.load()
 ```
 
@@ -757,7 +757,7 @@ To make test:
 ```
 
 To run tests:
-```{r, eval=FALSE, warning=FALSE}
+```{r, eval=TRUE, include=TRUE, warning=FALSE}
 devtools::test()
 ```
 more detailed information about how to create and run tests you can find in [testthat package](https://github.com/hadley/testthat)
