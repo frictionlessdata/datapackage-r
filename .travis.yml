@@ -1,5 +1,4 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
-
 language: r
 r:
   - oldrel
@@ -8,10 +7,10 @@ r:
 sudo: false
 cache: packages
 warnings_are_errors: false
-
+r_packages:
+ - tableschema.r
 before_install:
   - tlmgr install index
-
 addons:
   apt:
     packages:
@@ -20,6 +19,5 @@ addons:
 repos:
   CRAN: http://cran.rstudio.com
 r_github_packages: okgreece/tableschema-r
-
 after_success:
-  - Rscript -e 'covr::codecov()'
+ - Rscript -e 'covr::coveralls()'
