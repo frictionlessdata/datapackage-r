@@ -29,7 +29,6 @@ env:
  - httptest 
  - iterators		
  - jsonlite
- - pdftools
  - purrr		
  - R6		
  - R.utils	
