@@ -37,7 +37,8 @@ env:
  - readr
  - rlist 
  - roxygen2		
- - stringr		
+ - stringr	
+ - tableschema.r 
  - tools
  - urltools		
  - utils
