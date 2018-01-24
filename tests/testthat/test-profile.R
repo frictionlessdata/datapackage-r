@@ -24,7 +24,7 @@ testthat::context("Profile")
 ########################################
 
 foreach(name = 1:length(PROFILES) ) %do% {
-  str
+  
   test_that(stringr::str_interp('load registry "${PROFILES[[name]]}" profile'), {
     
     jsonschema = helpers.from.json.to.list(stringr::str_interp('inst/profiles/${PROFILES[[name]]}.json'))
