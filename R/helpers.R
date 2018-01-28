@@ -487,7 +487,12 @@ findFiles = function(pattern, path = getwd()) {
                               files,
                               fixed = FALSE,
                               ignore.case = FALSE)]
-  matched_files = matched_files[1]
+  
+  matched_files = matched_files[grepl(stringr::str_c(".","csv"), 
+                                      matched_files, 
+                                      fixed = TRUE, 
+                                      ignore.case = FALSE)]
+  
   return(matched_files)
 }
 

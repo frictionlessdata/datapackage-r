@@ -1,0 +1,87 @@
+---
+title: "Using Data Packages in R"
+author: "Kleanthis Koupidis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This tutorial will show you how to install the R library for working with Data Packages and Table Schema, load a CSV file, infer its schema, and write a Tabular Data Package.
+
+
+#Setup
+
+For this tutorial, we will need the Data Package R library ([datapackage.r](https://github.com/frictionlessdata/datapackage-r)).
+
+To install the datapackage library it is necessary to install first [devtools library](https://cran.r-project.org/package=devtools) to make installation of github libraries available.
+
+```{r, eval=FALSE, include=TRUE}
+# Install devtools package if not already
+install.packages("devtools")
+```
+
+And then install the development version of [datapackage.r](https://github.com/frictionlessdata/datapackage-r) from github
+
+```{r, eval=FALSE, include=TRUE}
+devtools::install_github("frictionlessdata/datapackage.r")
+```
+
+#Load
+
+```{r, eval=TRUE, include=TRUE}
+library(datapackage.r)
+```
+
+You can start using the library by importing `datapackage`. You can add useful metadata by adding keys to metadata dict attribute. Below, we are adding the required `name` key as well as a human-readable `title` key. For the keys supported, please consult the full [Data Package spec](https://frictionlessdata.io/specs/data-package/#metadata). Note, we will be creating the required `resources` key further down below.
+
+```{r}
+dataPackage = Package.load()
+dataPackage$descriptor['name'] = 'period-table'
+dataPackage$descriptor['title'] = 'Periodic Table'
+```
+
+#Infer a CSV Schema
+Let's say we have a file called data.csv ([download](https://github.com/frictionlessdata/example-data-packages/blob/master/periodic-table/data.csv)) in our working directory that looks like this:
+
+We can guess at our CSV's [schema](https://frictionlessdata.io/guides/table-schema/) by using `infer` from the Table Schema library. We open the path as a stream, separating the headers from the rest of the file. We then pass the headers and values to infer. The result of which is an inferred schema. For example, if the processor detects only integers in a given column, it will assign `integer` as a column type.
+
+Once we have a schema, we are now ready to add a `resource` key to the Data Package which points to the resource path and its newly created schema.
+
+```{r}
+# import io
+# import csv
+# from jsontableschema import infer
+# # 
+# filepath = 'inst/data/data.csv'
+# # 
+# # with io.open(filepath) as stream:
+#     headers = read.csv(filepath,sep = ",")
+#     values = read.csv(filepath,sep = ",")
+# #     schema = infer(headers, values)
+#     dp.descriptor['resources'] = [
+#         {
+#             'name': 'data',
+#             'path': filepath,
+#             'schema': schema
+#         }
+#     ]
+```
+
+Now we are ready to write our `datapackage.json` file.
+
+```{r}
+# with open('datapackage.json', 'w') as f:
+#   f.write(dp.to_json())
+```
+
+The `datapackage.json` ([download](https://github.com/frictionlessdata/example-data-packages/blob/master/periodic-table/datapackage.json)) is inlined below. Note that atomic number has been correctly inferred as an `integer` and atomic mass as a `number` (float) while every other column is a `string`.
+```{r}
+# datapackage
+```
+
+#Publishing
+
+Now that you have created your Data Package, you might want to [publish your data online](https://frictionlessdata.io/guides/publish-online/) so that you can share it with others.

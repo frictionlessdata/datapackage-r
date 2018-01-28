@@ -10,7 +10,7 @@ Description: A library for working with Data Package (<http://frictionlessdata.i
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
     config, 
     devtools, 
     future, 
@@ -29,7 +29,7 @@ Imports:
     urltools, 
     utils, 
     V8
-Remotes: 
+Remotes:
     okgreece/tableschema-r
 Suggests:
     covr,
@@ -38,8 +38,10 @@ Suggests:
     httptest,
     testthat,
     webmockr,
-    mockery
-Collate: 
+    mockery,
+    knitr,
+    rmarkdown
+Collate:
     'DataPackageError.R'
     'Package.R'
     'helpers.R'
@@ -52,3 +54,4 @@ Collate:
     'resource.R'
     'validate.R'
 RoxygenNote: 6.0.1
+VignetteBuilder: knitr

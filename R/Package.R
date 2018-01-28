@@ -98,7 +98,7 @@ Package <- R6::R6Class(
 
       # Profile
 
-      if (private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE")) {
+      if (isTRUE(private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE"))) {
         if (length(private$resources_) >= 1 && rlist::list.all(private$resources_, r ~ isTRUE(r$tabular))) {
           
           private$currentDescriptor_$profile = 'tabular-data-package'

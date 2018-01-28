@@ -55,9 +55,9 @@ To install [RStudio][Rstudio], you can download [RStudio Desktop][Rstudiodown] w
 4. Select the appropriate file for your system
 5. Run installation file
 
-To install the `datapackage` library it is necessary to install first `devtools` library to make installation of github libraries available.
+To install the `datapackage` library it is necessary to install first [`devtools` library](https://cran.r-project.org/package=devtools) to make installation of github libraries available.
 
-```{r, eval=FALSE, include=T}
+```{r, eval=FALSE, include=TRUE}
 # Install devtools package if not already
 install.packages("devtools")
 ```
@@ -67,7 +67,7 @@ Install `datapackage.r`
 
 ```{r, eval=FALSE, include=T}
 # And then install the development version from github
-devtools::install_github("okgreece/datapackage.r")
+devtools::install_github("frictionlessdata/datapackage.r")
 ```
 
 ## Load library
@@ -147,7 +147,7 @@ dataPackage = Package.load()
 Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `*.csv`:
 
 ```{r eval=FALSE, include=TRUE}
-dataPackage$infer('**.csv')
+dataPackage$infer('csv')
 dataPackage$descriptor
 ```
 
