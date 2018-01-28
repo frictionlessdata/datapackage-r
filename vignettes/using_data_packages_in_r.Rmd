@@ -37,7 +37,7 @@ library(datapackage.r)
 
 You can start using the library by importing `datapackage`. You can add useful metadata by adding keys to metadata dict attribute. Below, we are adding the required `name` key as well as a human-readable `title` key. For the keys supported, please consult the full [Data Package spec](https://frictionlessdata.io/specs/data-package/#metadata). Note, we will be creating the required `resources` key further down below.
 
-```{r}
+```{r, eval=TRUE, include=TRUE}
 dataPackage = Package.load()
 dataPackage$descriptor['name'] = 'period-table'
 dataPackage$descriptor['title'] = 'Periodic Table'
@@ -50,7 +50,7 @@ We can guess at our CSV's [schema](https://frictionlessdata.io/guides/table-sche
 
 Once we have a schema, we are now ready to add a `resource` key to the Data Package which points to the resource path and its newly created schema.
 
-```{r}
+```{r, eval=F, include=TRUE}
 # import io
 # import csv
 # from jsontableschema import infer
@@ -72,13 +72,13 @@ Once we have a schema, we are now ready to add a `resource` key to the Data Pack
 
 Now we are ready to write our `datapackage.json` file.
 
-```{r}
+```{r, eval=F, include=TRUE}
 # with open('datapackage.json', 'w') as f:
 #   f.write(dp.to_json())
 ```
 
 The `datapackage.json` ([download](https://github.com/frictionlessdata/example-data-packages/blob/master/periodic-table/datapackage.json)) is inlined below. Note that atomic number has been correctly inferred as an `integer` and atomic mass as a `number` (float) while every other column is a `string`.
-```{r}
+```{r, eval=TRUE, include=TRUE}
 # datapackage
 ```
 
