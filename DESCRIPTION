@@ -41,14 +41,13 @@ Suggests:
     mockery,
     knitr,
     rmarkdown
-Collate:
+Collate: 
     'DataPackageError.R'
     'Package.R'
     'helpers.R'
     'profile.R'
     'binary.readable.connection.r'
     'binary.readable.r'
-    'errors.R'
     'infer.R'
     'is.valid.R'
     'resource.R'
