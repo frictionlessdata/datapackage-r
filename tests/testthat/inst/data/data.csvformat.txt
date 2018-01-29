@@ -1,4 +1,0 @@
-city,population
-london,8787892
-paris,2244000
-rome,2877215

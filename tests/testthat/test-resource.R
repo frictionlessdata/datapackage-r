@@ -7,9 +7,8 @@ library(jsonlite)
 
 
 # Tests
-testthat::context("Resource")
-#######################################################
 
+testthat::context("Resource")
 
 #######################################################
 testthat::context("Resource #load")
@@ -30,6 +29,7 @@ test_that('works with base descriptor', {
 })
 
 test_that('works with tabular descriptor', {
+  
   descriptor = '{"name":"name","data":["data"],"profile":"tabular-data-resource"}' 
   resource = Resource.load(descriptor)
   
@@ -47,6 +47,7 @@ testthat::context('Resource #descriptor (retrieve)')
 ########################################################
 
 test_that('object', {
+  
   descriptor = '{"name": "name","data": "data"}'
   resource = Resource.load(descriptor)
   
@@ -56,6 +57,7 @@ test_that('object', {
 
 
  test_that('string remote path', {
+   
    fileName = system.file('extdata/data-resource.json', package = "datapackage.r")
    contents = helpers.from.json.to.list(fileName)
    
@@ -63,16 +65,15 @@ test_that('object', {
 
    httptest::with_mock_API({
      resource = Resource.load(descriptor)
-     
    })
    
    expect_equal(resource$descriptor,
                 expandResourceDescriptor(descriptor = contents))
-   
  })
 
 
 test_that('string remote path bad', {
+  
   descriptor = 'https://httpbin.org/bad-path.json'
   
   expect_error(
@@ -87,28 +88,27 @@ test_that('string remote path bad', {
 })
 
 test_that('string local path', {
-  fileName = 'inst/data/data-resource.json'
   
+  fileName = system.file('extdata/data-resource.json', package = "datapackage.r")
   contents = helpers.from.json.to.list(fileName)
-  descriptor  = 'inst/data/data-resource.json'
+  descriptor  = 'inst/extdata/data-resource.json'
   resource = Resource.load(descriptor)
-  expect_equal(resource$descriptor, expandResourceDescriptor(contents))
   
+  expect_equal(resource$descriptor, expandResourceDescriptor(contents))
 })
 
 test_that('string local bad path', {
-  descriptor = 'bad-path.json'
-  expect_error(Resource.load(descriptor))#, "Can not retrieve local")
   
+  descriptor = 'bad-path.json'
+  expect_error(Resource.load(descriptor))
 })
-
-
 
 #########################################################
 testthat::context('Resource #descriptor (dereference)')
 #########################################################
+
 test_that('general', {
-  descriptor = 'inst/data/data-resource-dereference.json'
+  descriptor = system.file('extdata/data-resource-dereference.json', package = "datapackage.r")
   resource = Resource.load(descriptor)
   
   expect_equal(resource$descriptor,
@@ -117,7 +117,6 @@ test_that('general', {
                    '{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'
                  )
                ))
-  
 })
 
 
@@ -193,7 +192,7 @@ test_that('local', {
   "data": "data",
   "schema": "table-schema.json"
 }'
-  resource = Resource.load(descriptor, basePath = 'inst/data')
+  resource = Resource.load(descriptor, basePath = 'inst/extdata')
   expect_equal(resource$descriptor, 
                expandResourceDescriptor(helpers.from.json.to.list('{"name": "name","data": "data","schema": {"fields": [{"name": "name"}]} }')))
   })
@@ -202,15 +201,15 @@ test_that('local bad', {
   descriptor = '{"name": "name",
   "data": "data",
   "schema": "bad-path.json"}'
-  expect_error(Resource.load(descriptor, basePath = 'inst/data'))
+  expect_error(Resource.load(descriptor, basePath = 'inst/extdata'))
   
   })
 
 test_that('local bad not safe', {
   descriptor = '{"name": "name",
   "data": "data",
-  "schema": "../data/table_schema.json"}'
-  expect_error(Resource.load(descriptor, basePath = 'inst/data'), "Not safe path")
+  "schema": "../extdata/table-schema.json"}'
+  expect_error(Resource.load(descriptor, basePath = 'inst/extdata'), "Not safe path")
   })
 
 
@@ -218,14 +217,16 @@ test_that('local bad not safe', {
 #######################################################
 testthat::context('Resource #descriptor (expand)')
 ########################################################
+
 test_that('general resource', {
   descriptor = '{
   "name": "name",
   "data": "data"
 }'
   resource = Resource.load(descriptor)
-  expect_equal(resource$descriptor,jsonlite::fromJSON('{"name": "name","data": "data","profile": "data-resource","encoding": "utf-8"}'))
+  expect_equal(resource$descriptor, helpers.from.json.to.list('{"name": "name","data": "data","profile": "data-resource","encoding": "utf-8"}'))
   })
+
 test_that('tabular resource inline', {
   descriptor = helpers.from.json.to.list('{
                                          "name": "example",
@@ -247,7 +248,6 @@ test_that('tabular resource inline', {
   resource = Resource.load(descriptor)
 
   expect_is(resource$table, "Table")
-  
   expect_equal(resource$table$read(),
                helpers.from.json.to.list('[[180, 18, "Tony"], [192, 32, "Jacob"]]'))
   })
@@ -273,6 +273,7 @@ test_that('tabular resource schema', {
   }')
   
   resource = Resource.load(descriptor)
+  
   expect_equal(resource$descriptor[sort(names(resource$descriptor))], target_outcome[sort(names(target_outcome))])
   })
 
@@ -307,7 +308,6 @@ test_that('tabular resource schema', {
 
 
 
-
 #######################################################
 testthat::context('Resource #source/sourceType')
 ########################################################
@@ -329,8 +329,8 @@ test_that('local', {
   "name": "name",
   "path": ["table.csv"]
 }'
-  resource = Resource.load(descriptor, basePath = 'data')
-  expect_equal(resource$source, 'data/table.csv')
+  resource = Resource.load(descriptor, basePath = 'inst/extdata')
+  expect_equal(resource$source, 'inst/extdata/table.csv')
   expect_true(resource$local)
 })
 
@@ -347,7 +347,7 @@ test_that('local bad not safe absolute', {
   "name": "name",
   "path": ["/fixtures/table.csv"]
 }'
-  expect_error(Resource.load(descriptor,basePath = 'data'), "not safe")
+  expect_error(Resource.load(descriptor,basePath = 'extdata'), "not safe")
   })
 
 
@@ -356,7 +356,7 @@ test_that('local bad not safe traversing', {
   "name": "name",
   "path": ["../fixtures/table.csv"]
 }'
-  expect_error(Resource.load(descriptor,basePath = 'data'), "not safe")
+  expect_error(Resource.load(descriptor,basePath = 'extdata'), "not safe")
 })
 
 test_that('remote', {
@@ -395,8 +395,8 @@ test_that('multipart local', {
   "name": "name",
   "path": ["chunk1.csv", "chunk2.csv"]
 }'
-  resource = Resource.load(descriptor, basePath = 'data')
-  expect_equal(resource$source, unlist(jsonlite::fromJSON('["data/chunk1.csv", "data/chunk2.csv"]')))
+  resource = Resource.load(descriptor, basePath = 'extdata')
+  expect_equal(resource$source, unlist(jsonlite::fromJSON('["extdata/chunk1.csv", "extdata/chunk2.csv"]')))
   expect_equal(resource$local, TRUE)
   expect_true(resource$multipart)
   })
@@ -418,7 +418,7 @@ test_that('multipart local bad not safe absolute', {
   "name": "name",
   "path": ["/fixtures/chunk1.csv", "chunk2.csv"]
 }'
-  expect_error(Resource.load(descriptor,basePath = 'data'), 'not safe')
+  expect_error(Resource.load(descriptor,basePath = 'extdata'), 'not safe')
   })
 
 test_that('multipart local bad not safe traversing', {
@@ -426,7 +426,7 @@ test_that('multipart local bad not safe traversing', {
   "name": "name",
   "path": ["chunk1.csv", "../fixtures/chunk2.csv"]
 }'
-  expect_error(Resource.load(descriptor,basePath = 'data'), 'not safe')
+  expect_error(Resource.load(descriptor,basePath = 'extdata'), 'not safe')
   
 })
 
@@ -473,7 +473,7 @@ testthat::context('Resource #rawRead')
 
 test_that('it raw reads local file source', {
   
-  resource = Resource.load('{"path": "inst/data/data.csv"}', basePath = getwd())
+  resource = Resource.load('{"path": "inst/extdata/data.csv"}', basePath = getwd())
   bytes = resource$rawRead()
   expect_true(grepl('name,size', intToUtf8(bytes), fixed = TRUE))
 })
@@ -482,6 +482,8 @@ test_that('it raw reads local file source', {
 #######################################################
 testthat::context('Resource #table')
 ########################################################
+
+
 test_that('general resource', {
   descriptor = '{
   "name": "name",
@@ -492,19 +494,17 @@ test_that('general resource', {
   })
 
 
-
-
 #######################################################
 testthat::context('Resource #infer')
 #######################################################
 
 test_that('preserve resource format from descriptor ', {
-  descriptor = '{"path": "inst/data/data.csvformat.txt", "format": "csv"}'
+  descriptor = '{"path": "inst/extdata/data.csvformat.txt", "format": "csv"}'
   resource = Resource.load(descriptor)
   expect_equal(resource$infer(),
                helpers.from.json.to.list(
                  '{
-"path": "inst/data/data.csvformat.txt",
+"path": "inst/extdata/data.csvformat.txt",
 "format": "csv",
 "profile": "tabular-data-resource",
         "encoding": "utf-8",
@@ -517,4 +517,3 @@ test_that('preserve resource format from descriptor ', {
                  }
 }'))
 })
-

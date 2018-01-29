@@ -5,37 +5,37 @@
 ## ---- eval=FALSE, include=TRUE-------------------------------------------
 #  devtools::install_github("frictionlessdata/datapackage.r")
 
-## ---- eval=FALSE, include=TRUE-------------------------------------------
-#  library(datapackage.r)
+## ---- eval=TRUE, include=TRUE--------------------------------------------
+library(datapackage.r)
 
-## ------------------------------------------------------------------------
-# dataPackage = Package.load()
-# dataPackage$descriptor['name'] = 'period-table'
-# dataPackage$descriptor['title'] = 'Periodic Table'
+## ---- eval=TRUE, include=TRUE--------------------------------------------
+dataPackage = Package.load()
+dataPackage$descriptor['name'] = 'period-table'
+dataPackage$descriptor['title'] = 'Periodic Table'
 
-## ------------------------------------------------------------------------
-# import io
-# import csv
-# from jsontableschema import infer
-# 
-# filepath = './data.csv'
-# 
-# with io.open(filepath) as stream:
-#     headers = stream.readline().rstrip('\n').split(',')
-#     values = csv.reader(stream)
-#     schema = infer(headers, values)
-#     dp.descriptor['resources'] = [
-#         {
-#             'name': 'data',
-#             'path': filepath,
-#             'schema': schema
-#         }
-#     ]
+## ---- eval=F, include=TRUE-----------------------------------------------
+#  # import io
+#  # import csv
+#  # from jsontableschema import infer
+#  # #
+#  filepath = 'inst/extdata/data.csv'
+#  # #
+#  # # with io.open(filepath) as stream:
+#  #     headers = read.csv(filepath,sep = ",")
+#  #     values = read.csv(filepath,sep = ",")
+#  # #     schema = infer(headers, values)
+#  #     dp.descriptor['resources'] = [
+#  #         {
+#  #             'name': 'data',
+#  #             'path': filepath,
+#  #             'schema': schema
+#  #         }
+#  #     ]
 
-## ------------------------------------------------------------------------
-# with open('datapackage.json', 'w') as f:
-#   f.write(dp.to_json())
+## ---- eval=F, include=TRUE-----------------------------------------------
+#  # with open('datapackage.json', 'w') as f:
+#  #   f.write(dp.to_json())
 
-## ------------------------------------------------------------------------
+## ---- eval=TRUE, include=TRUE--------------------------------------------
 # datapackage
 

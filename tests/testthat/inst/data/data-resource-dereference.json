@@ -1,9 +1,0 @@
-{
-    "name": "name",
-    "data": "data",
-    "schema": "table-schema.json",
-    "dialect": "#/dialects/main",
-    "dialects": {
-        "main": {"delimiter": ","}
-    }
-}

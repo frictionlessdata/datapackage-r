@@ -1,16 +1,13 @@
 library(datapackage.r)
 library(testthat)
-library(foreach)
-library(stringr)
 
-# # Tests
+# Tests
 
- testthat::context("infer")
+testthat::context("infer")
 
 test_that('it infers local data package', {
 
-  descriptor = infer(pattern = 'csv', basePath = 'inst/data/dp1') # '**/*.csv'
-
+  descriptor = infer(pattern = 'csv', basePath = 'inst/extdata/dp1') # '**/*.csv'
 
   expect_equal(descriptor$profile, 'tabular-data-package')
   expect_equal(length(descriptor$resources), 1)
@@ -20,5 +17,4 @@ test_that('it infers local data package', {
   expect_equal(descriptor$resources[[1]]$profile, 'tabular-data-resource')
   expect_equal(descriptor$resources[[1]]$schema$fields[[1]]$name, 'name')
   expect_equal(descriptor$resources[[1]]$schema$fields[[2]]$name, 'size')
-
 })

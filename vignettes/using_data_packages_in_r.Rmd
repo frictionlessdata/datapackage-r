@@ -44,6 +44,7 @@ dataPackage$descriptor['title'] = 'Periodic Table'
 ```
 
 #Infer a CSV Schema
+
 Let's say we have a file called data.csv ([download](https://github.com/frictionlessdata/example-data-packages/blob/master/periodic-table/data.csv)) in our working directory that looks like this:
 
 We can guess at our CSV's [schema](https://frictionlessdata.io/guides/table-schema/) by using `infer` from the Table Schema library. We open the path as a stream, separating the headers from the rest of the file. We then pass the headers and values to infer. The result of which is an inferred schema. For example, if the processor detects only integers in a given column, it will assign `integer` as a column type.
@@ -55,7 +56,7 @@ Once we have a schema, we are now ready to add a `resource` key to the Data Pack
 # import csv
 # from jsontableschema import infer
 # # 
-# filepath = 'inst/data/data.csv'
+filepath = 'inst/extdata/data.csv'
 # # 
 # # with io.open(filepath) as stream:
 #     headers = read.csv(filepath,sep = ",")

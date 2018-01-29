@@ -1,10 +1,9 @@
 library(datapackage.r)
 library(testthat)
 library(foreach)
-library(jsonlite)
 library(stringr)
+library(httr)
 library(httptest)
-
 
 # Constants
 
@@ -15,7 +14,6 @@ PROFILES = list(
   'data-resource',
   'tabular-data-resource'
 )
-
 
 # Tests
 
@@ -65,8 +63,6 @@ test_that('throw loading bad remote profile', {
       "Can not retrieve remote"
     )
   )
-  
-
 })
 
 
@@ -86,7 +82,7 @@ test_that('errors for invalid descriptor', {
   valid_errors = profile$validate(descriptor)
   expect_false(valid_errors$valid)
 })
-#
+
 ############################################
 testthat::context('Profile #up-to-date')
 ############################################
