@@ -1,4 +1,5 @@
 library(datapackage.r)
+library(tableschema.r)
 library(testthat)
 
 # Tests
@@ -36,3 +37,15 @@ test_that('should be catchable as a normal error', {
     expect_equivalent(methods::is(error,"DataPackageError"), TRUE)
     })
   })
+
+
+test_that('should work with table schema error', {
+  tryCatch({
+   tableschema.r::TableSchemaError$new('message')
+  }, error = function(e) {
+    expect_equivalent(error$message, 'message')
+    expect_equivalent(methods::is(error, "Error"), TRUE)
+    expect_equivalent(methods::is(error, "DataPackageError"), TRUE)
+    expect_equivalent(methods::is(error, "TableSchemaError"), TRUE)
+  })
+})
