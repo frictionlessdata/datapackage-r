@@ -9,18 +9,18 @@ library(httptest)
 # Tests
 
 ###################################################
- testthat::context("Load")
+testthat::context("Load")
 ###################################################
 
 test_that('initializes with Object descriptor', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
-  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1')
   expect_equal(dataPackage$descriptor,expandPackageDescriptor(descriptor))
-
+  
 })
 
 test_that('initializes with URL descriptor', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
   dataPackage = Package.load(
     'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json')
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(descriptor))
@@ -38,7 +38,7 @@ test_that('stores errors for invalid datapackage', {
   expect_type(dataPackage$errors, "list")
   expect_type(dataPackage$errors[[1]], "character")
   expect_match(dataPackage$errors[[1]], "Descriptor validation error")
-
+  
   expect_false(dataPackage$valid)
 })
 
@@ -49,16 +49,16 @@ test_that('loads relative resource', {
   # }
   descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
   dataPackage = Package.load(descriptor)
-
+  
   dataPackage$resources[[1]]$descriptor$profile = 'tabular-data-resource'
-
+  
   data = dataPackage$resources[[1]]$table$read()
   expect_equal(data, list(list('gb', 100), list('us', 200), list('cn', 300)))
 })
- 
+
 
 test_that('loads resource from absolute URL',  {
-
+  
   descriptor = 'https://dev.keitaro.info/dpkjs/datapackage.json'
   dataPackage = Package.load(descriptor)
   dataPackage$resources[[1]]$descriptor$profile = 'tabular-data-resource'
@@ -68,7 +68,7 @@ test_that('loads resource from absolute URL',  {
 })
 
 test_that('loads resource from absolute URL disregarding basePath', {
-
+  
   descriptor = 'https://dev.keitaro.info/dpkjs/datapackage.json'
   dataPackage = Package.load(descriptor, basePath = 'local/basePath')
   dataPackage$resources[[1]]$descriptor$profile = 'tabular-data-resource'
@@ -81,7 +81,7 @@ test_that('loads resource from absolute URL disregarding basePath', {
 test_that('loads remote resource with basePath',  {
   
   descriptor = 'https://dev.keitaro.info/dpkjs/datapackage.json'
-  dataPackage = Package.load(descriptor, basePath = 'inst/data')
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata')
   dataPackage$resources[[2]]$descriptor$profile = 'tabular-data-resource'
   table = dataPackage$resources[[2]]$table
   
@@ -109,7 +109,7 @@ test_that('string remote path', {
   
   descriptor = 'http://example.com/data-package'
   # Mocks
-  contents =  helpers.from.json.to.list('inst/data/data-package.json')
+  contents =  helpers.from.json.to.list(system.file('extdata/data-package.json', package = "datapackage.r"))
   httptest::with_mock_API({
     dataPackage = Package.load(descriptor)
   })
@@ -128,19 +128,19 @@ test_that('string remote path bad', {
       "Can not retrieve remote"
     )
   )
-
+  
 })
 
 
 test_that('string local path', {
-  contents =  'inst/data/data-package.json'
-  descriptor = 'inst/data/data-package.json'
+  contents =  system.file('extdata/data-package.json', package = "datapackage.r")
+  descriptor = system.file('extdata/data-package.json', package = "datapackage.r")
   dataPackage = Package.load(descriptor)
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(helpers.from.json.to.list(contents)))
- })
+})
 
 test_that('string local path bad', {
-  descriptor = 'inst/data/bad-path.json'
+  descriptor = 'inst/extdata/bad-path.json'
   expect_error(Package.load(descriptor),  'Can not retrieve local')
 })
 
@@ -148,45 +148,45 @@ test_that('string local path bad', {
 testthat::context("Package #descriptor (dereference)")
 ######################################################
 
-# test_that('mixed', {
-# 
-#   descriptor = helpers.from.json.to.list('inst/data/data-package-dereference.json')
-# 
-#   dataPackage = Package.load(descriptor)
-# 
-#   target =
-#     purrr::map(helpers.from.json.to.list('[
-#                                          {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
-#                                          {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
-#                                          ]'),expandResourceDescriptor)
-# 
-#   expect_equal( dataPackage$descriptor$resources, target)
-#   
-# })
+test_that('mixed', {
+
+  descriptor = system.file('extdata/data-package-dereference.json', package = "datapackage.r")
+
+  dataPackage = Package.load(descriptor)
+
+  target =
+    purrr::map(helpers.from.json.to.list('[
+                                         {"name": "name1", "data": ["data"], "schema": {"fields": [{"name": "name"}]}},
+                                         {"name": "name2", "data": ["data"], "dialect": {"delimiter": ","}}
+                                         ]'),expandResourceDescriptor)
+
+  expect_equal( dataPackage$descriptor$resources, target)
+
+})
 
 
 test_that('pointer', {
   descriptor = '{
-    "resources": [
-      {"name": "name1", "data": ["data"], "schema": "#/schemas/main"},
-      {"name": "name2", "data": ["data"], "dialect": "#/dialects/0"}
-      ],
-    "schemas": {"main": {"fields": [{"name": "name"}]}},
-    "dialects": [{"delimiter": ","}]
-  }'
+  "resources": [
+  {"name": "name1", "data": ["data"], "schema": "#/schemas/main"},
+  {"name": "name2", "data": ["data"], "dialect": "#/dialects/0"}
+  ],
+  "schemas": {"main": {"fields": [{"name": "name"}]}},
+  "dialects": [{"delimiter": ","}]
+}'
   dataPackage = Package.load(descriptor)
   expect_equal(dataPackage$descriptor$resources,  purrr::map(list(list(name = 'name1', data = list('data'), schema = list(fields = list(list(name = 'name')))),
-    list(name = 'name2', data = list('data'), dialect = list(delimiter = ','))), expandResourceDescriptor))
-})
+                                                                  list(name = 'name2', data = list('data'), dialect = list(delimiter = ','))), expandResourceDescriptor))
+  })
 
 test_that('pointer bad', {
   descriptor = '{
-    "resources": [
-      {"name": "name1", "data": ["data"], "schema": "#/schemas/main"}
-      ]
-  }'
+  "resources": [
+  {"name": "name1", "data": ["data"], "schema": "#/schemas/main"}
+  ]
+}'
  expect_error(Package.load(descriptor), 'Not resolved Pointer URI')
-})
+  })
 
 
 test_that('remote', {
@@ -246,40 +246,40 @@ test_that('remote bad', {
 
 test_that('local', {
   descriptor = '{
-    "resources": [
-      {"name": "name1", "data": ["data"], "schema": "table-schema.json"},
-      {"name": "name2", "data": ["data"], "dialect": "csv-dialect.json"}
-      ]
-  }'
+  "resources": [
+  {"name": "name1", "data": ["data"], "schema": "table-schema.json"},
+  {"name": "name2", "data": ["data"], "dialect": "csv-dialect.json"}
+  ]
+}'
  
-    dataPackage = Package.load(descriptor, basePath = 'inst/data')
-    expect_equal(dataPackage$descriptor$resources,  purrr::map(list(
-      list(name = 'name1', data = list('data'), schema = list(fields = list(list(name = 'name')))),
-      list(name = 'name2', data = list('data'), dialect = list(delimiter = ',')))
-      , expandResourceDescriptor))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata')
+  expect_equal(dataPackage$descriptor$resources,  purrr::map(list(
+    list(name = 'name1', data = list('data'), schema = list(fields = list(list(name = 'name')))),
+    list(name = 'name2', data = list('data'), dialect = list(delimiter = ',')))
+    , expandResourceDescriptor))
   
-})
+  })
 
 test_that('local bad', {
   descriptor = '{
-    "resources": [
-      {"name": "name1", "data": ["data"], "schema": "bad-path.json"}
-      ]
-  }'
-  expect_error(Package.load(descriptor, basePath = 'inst/data'), 'Not resolved Local URI')
-
+  "resources": [
+  {"name": "name1", "data": ["data"], "schema": "bad-path.json"}
+  ]
+}'
+  expect_error(Package.load(descriptor, basePath = 'inst/extdata'), 'Not resolved Local URI')
   
-})
+  
+  })
 
 test_that('local bad not safe', {
   descriptor = '{
-    "resources": [
-      {"name": "name1", "data": ["data"], "schema": "../data/table-schema.json"}
-      ]
-  }'
-  expect_error(Package.load(descriptor, basePath = 'data'), 'Not safe path')
+  "resources": [
+  {"name": "name1", "data": ["data"], "schema": "../data/table-schema.json"}
+  ]
+}'
+  expect_error(Package.load(descriptor, basePath = 'inst/data'), 'Not safe path')
   
-})
+  })
 
 
 #################################################
@@ -288,30 +288,30 @@ testthat::context("Package #descriptor (expand)")
 
 test_that('resource', {
   descriptor = helpers.from.json.to.list('{
-    "resources": [
-      {
-        "name": "name",
-        "data": ["data"]
-      }
-      ]
-  }')
+                                         "resources": [
+                                         {
+                                         "name": "name",
+                                         "data": ["data"]
+                                         }
+                                         ]
+}')
 
   target = helpers.from.json.to.list('{
-    "profile": "data-package",
-    "resources": [
-      {
-        "name": "name",
-        "data": ["data"],
-        "profile": "data-resource",
-        "encoding": "utf-8"
-      }
-      ]
-  }')
+                                     "profile": "data-package",
+                                     "resources": [
+                                     {
+                                     "name": "name",
+                                     "data": ["data"],
+                                     "profile": "data-resource",
+                                     "encoding": "utf-8"
+                                     }
+                                     ]
+                                     }')
 
   dataPackage = Package.load(descriptor)
   expect_equal(dataPackage$descriptor[sort(names(target))],target) # sort names by target to match
-})
-# 
+  })
+
 test_that('tabular resource schema', {
   
   descriptor = helpers.from.json.to.list( '{
@@ -338,13 +338,13 @@ test_that('tabular resource schema', {
                                      "encoding": "utf-8"
                                      }],
                                      "profile": "data-package"
-                                     }')
+}')
 
   dataPackage = Package.load(descriptor)
   
   expect_equal(dataPackage$descriptor, target)
   })
-# 
+
 test_that('tabular resource dialect', {
   
   descriptor = helpers.from.json.to.list('{
@@ -379,7 +379,7 @@ test_that('tabular resource dialect', {
                                      "encoding": "utf-8"
                                      }],
                                      "profile": "data-package"
-                                     }')
+      }')
 
   dataPackage = Package.load(descriptor)
   
@@ -389,92 +389,92 @@ test_that('tabular resource dialect', {
 
 
 ###################################################
- testthat::context("Package #resources")
+testthat::context("Package #resources")
 ###################################################
 
 test_that('names', {
-  descriptor = helpers.from.json.to.list('inst/data/data-package-multiple-resources.json')
-  dataPackage = Package.load(descriptor, basePath = 'inst/data')
+  descriptor = helpers.from.json.to.list(system.file('extdata/data-package-multiple-resources.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata')
   expect_length(dataPackage$resources, 2)
-
+  
   expect_equal(dataPackage$resourceNames, helpers.from.json.to.list('["name1", "name2"]'))
 })
-# #
+
 test_that('add', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
-  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1')
   resource = dataPackage$addResource(helpers.from.json.to.list('{"name": "name", "data": ["test"]}'))
   expect_failure(expect_null(resource))
   expect_length(dataPackage$resources, 2)
   expect_equal(dataPackage$resources[[2]]$source, list('test'))
-
-})
-# # 
-test_that('add invalid - throws array of errors in strict mode', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
   
-  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1', strict = TRUE)
+})
+
+test_that('add invalid - throws array of errors in strict mode', {
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+  
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1', strict = TRUE)
   
   
   expect_error(dataPackage$addResource(list()), 'schemas match')
   
 })
-# # 
+
 test_that('add invalid - save errors in not a strict mode', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
-  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1')
   dataPackage$addResource(list())
   expect_match(dataPackage$errors[[1]], "schemas match")
   expect_false(dataPackage$valid)
-
+  
 })
 # # 
 test_that('add tabular - can read data', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
-  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1')
   dataPackage$addResource(helpers.from.json.to.list('{
-    "name": "name",
-    "data": [["id", "name"], ["1", "alex"], ["2", "john"]],
-    "schema": {
-      "fields": [
-        {"name": "id", "type": "integer"},
-        {"name": "name", "type": "string"}
-        ]
-    }
-  }'))
+                                                    "name": "name",
+                                                    "data": [["id", "name"], ["1", "alex"], ["2", "john"]],
+                                                    "schema": {
+                                                    "fields": [
+                                                    {"name": "id", "type": "integer"},
+                                                    {"name": "name", "type": "string"}
+                                                    ]
+                                                    }
+}'))
   rows = dataPackage$resources[[2]]$table$read()
   expect_equal(rows, list(list(1, 'alex'), list(2, 'john')))
-})
-# # 
+  })
+
 test_that('add with not a safe path - throw an error', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
-  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1')
   expect_error( dataPackage$addResource(helpers.from.json.to.list('{
-    "name": "name",
-    "path": ["../dp1/data.csv"]
-  }')), 'not safe')
+                                                                  "name": "name",
+                                                                  "path": ["../dp1/data.csv"]
+}')), 'not safe')
   
- 
-})
-# # 
+  
+  })
+
 test_that('get existent', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
-  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1')
   resource = dataPackage$getResource('random')
   expect_equal(resource$name, 'random')
 })
 # # 
 test_that('get non existent', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
-  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1')
   resource = dataPackage$getResource('non-existent')
   expect_null(resource)
-
+  
 })
 # # 
 test_that('remove existent', {
-  descriptor = helpers.from.json.to.list('inst/data/data-package-multiple-resources.json')
-  dataPackage = Package.load(descriptor, basePath = 'data')
+  descriptor = helpers.from.json.to.list(system.file('extdata/data-package-multiple-resources.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/data')
   expect_length(dataPackage$resources, 2)
   expect_length(dataPackage$descriptor$resources, 2)
   expect_equal(dataPackage$resources[[1]]$name, 'name1')
@@ -483,13 +483,13 @@ test_that('remove existent', {
   expect_length(dataPackage$resources, 1)
   expect_length(dataPackage$descriptor$resources, 1)
   expect_equal(dataPackage$resources[[1]]$name, 'name1')
-
+  
   expect_equal(resource$name, 'name2')
 })
 
 test_that('remove non existent', {
-  descriptor = helpers.from.json.to.list('inst/data/dp1/datapackage.json')
-  dataPackage = Package.load(descriptor, basePath = 'inst/data/dp1')
+  descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+  dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1')
   resource = dataPackage$removeResource('non-existent')
   expect_null(resource)
   expect_length(dataPackage$resources, 1)
@@ -536,7 +536,7 @@ test_that('modified', {
 test_that('modified invalid in strict mode', {
   descriptor = helpers.from.json.to.list('{"resources": [{"name": "name", "path": "data.csv"}]}')
   dataPackage = Package.load(descriptor, 
-    basePath = 'inst/data', strict = TRUE
+                             basePath = 'inst/extdata', strict = TRUE
   )
   dataPackage$descriptor$resources = list()
   expect_error(dataPackage$commit(), 'less items than allowed')
@@ -556,7 +556,7 @@ testthat::context("Package #foreignKeys")
 ###################################################
 
 DESCRIPTOR = helpers.from.json.to.list('{
-  "resources": [
+                                       "resources": [
                                        {
                                        "name": "main",
                                        "data": [
@@ -637,7 +637,7 @@ test_that('should read rows if single self field foreign keys is valid', {
       surname = 'White',
       parent_id = list(id = '2', name = 'John', surname = 'Dockins', parent_id = '1')
     )
-    ))
+  ))
 })
 test_that('should read rows if single self field foreign keys is valid', {
   descriptor = DESCRIPTOR
@@ -677,7 +677,7 @@ test_that('should throw on read if single self field foreign keys is invalid', {
   descriptor$resources[[1]]$data[[3]][[1]] = '0'
   resource = (Package.load(descriptor))$getResource('main')
   expect_error(resource$read(relations = TRUE), 'Foreign key')
-
+  
 })
 
 test_that('should read rows if multi field foreign keys is valid', {
@@ -705,7 +705,7 @@ test_that('should read rows if multi field foreign keys is valid', {
       surname = list(firstname = 'Walter', surname = 'White'),
       parent_id = '2'
     )
-    ))
+  ))
 })
 # # 
 test_that('should throw on read if multi field foreign keys is invalid', {
@@ -715,5 +715,5 @@ test_that('should throw on read if multi field foreign keys is invalid', {
   descriptor$resources[[2]]$data[[3]][[1]] = 'Max'
   resource = (Package.load(descriptor))$getResource('main')
   expect_error(resource$read(relations = TRUE), 'Foreign key')
-
+  
 })

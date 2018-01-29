@@ -1,10 +1,10 @@
 library(datapackage.r)
 library(testthat)
-library(foreach)
-library(stringr)
-library(crul)
-library(webmockr)
 library(httptest)
+library(httr)
+library(curl)
+library(jsonlite)
+
 
 # Tests
 testthat::context("Resource")
@@ -32,17 +32,14 @@ test_that('works with base descriptor', {
 test_that('works with tabular descriptor', {
   descriptor = '{"name":"name","data":["data"],"profile":"tabular-data-resource"}' 
   resource = Resource.load(descriptor)
+  
   expect_equal(resource$name, 'name')
   expect_true(resource$tabular)
   expect_equal(resource$descriptor,
                expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
   expect_true(resource$inline)
-  
   expect_equal(resource$source, list("data"))
-
-  
 })
-
 
 
 #######################################################
@@ -52,13 +49,14 @@ testthat::context('Resource #descriptor (retrieve)')
 test_that('object', {
   descriptor = '{"name": "name","data": "data"}'
   resource = Resource.load(descriptor)
+  
   expect_equal(resource$descriptor,
                expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
 })
 
 
  test_that('string remote path', {
-   fileName = 'inst/data/data-resource.json'
+   fileName = system.file('extdata/data-resource.json', package = "datapackage.r")
    contents = helpers.from.json.to.list(fileName)
    
    descriptor = 'https://httpbin.org/data-resource/'
@@ -456,7 +454,7 @@ test_that('multipart remote path relative and base path remote', {
   expect_true(resource$multipart)
 })
 
-#
+
 test_that('multipart remote path remote and base path remote', {
   descriptor = '{
   "name": "name",
