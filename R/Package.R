@@ -129,8 +129,8 @@ Package <- R6::R6Class(
       # if(type == "zip"){
       # write.csv(private$currentDescriptor_, file=stringr::str_c(target, "package.txt",sep = "/"))
       # }
-      write(private$currentDescriptor_,
-            file = stringr::str_c(target, "package.txt", sep = "/"))
+      rlist::list.save(private$currentDescriptor_,
+            file = stringr::str_c(target, "package.json", sep = "/"))
       save = stringr::str_interp('Package saved at: "${target}"')
       return(save)
       
@@ -196,6 +196,7 @@ Package <- R6::R6Class(
       }
       else {
         private$resources_ = value
+        return(private$resources_)
       }
 
     }

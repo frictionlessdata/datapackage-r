@@ -45,7 +45,7 @@ To install [RStudio](https://www.rstudio.com/), you can download [RStudio Deskto
 4.  Select the appropriate file for your system
 5.  Run installation file
 
-To install the `datapackage` library it is necessary to install first `devtools` library to make installation of github libraries available.
+To install the `datapackage` library it is necessary to install first [`devtools` library](https://cran.r-project.org/package=devtools) to make installation of github libraries available.
 
 ``` r
 # Install devtools package if not already
@@ -56,7 +56,7 @@ Install `datapackage.r`
 
 ``` r
 # And then install the development version from github
-devtools::install_github("okgreece/datapackage.r")
+devtools::install_github("frictionlessdata/datapackage.r")
 ```
 
 Load library
@@ -188,7 +188,7 @@ dataPackage = Package.load()
 Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `*.csv`:
 
 ``` r
-dataPackage$infer('**.csv')
+dataPackage$infer('csv')
 dataPackage$descriptor
 ```
 
@@ -821,11 +821,33 @@ devtools::test()
 
     ## Loading datapackage.r
 
+    ## Updating collate directive in  C:\Users\Kleanthis-Okf\Documents\datapackage-r/DESCRIPTION
+
     ## Loading required package: testthat
 
     ## Testing datapackage.r
 
     ## v | OK F W S | Context
+    ## 
+    / |  0       | DataPackageError
+    - |  1       | DataPackageError
+    \ |  2       | DataPackageError
+    | |  3       | DataPackageError
+    / |  4       | DataPackageError
+    - |  5       | DataPackageError
+    \ |  6       | DataPackageError
+    | |  7       | DataPackageError
+    / |  8       | DataPackageError
+    - |  8     1 | DataPackageError
+    \ |  8     2 | DataPackageError
+    v |  8     2 | DataPackageError
+    ## ---------------------------------------------------------------------------------------------------------------------------------------------------
+    ## test-errors.R:31: skip: should be catchable as a normal error
+    ## Empty test
+    ## 
+    ## test-errors.R:42: skip: should work with table schema error
+    ## Empty test
+    ## ---------------------------------------------------------------------------------------------------------------------------------------------------
     ## 
     / |  0       | helpers
     - |  1       | helpers
@@ -840,7 +862,7 @@ devtools::test()
     \ | 10       | helpers
     | | 11       | helpers
     / | 12       | helpers
-    v | 12       | helpers [0.3 s]
+    v | 12       | helpers [0.2 s]
     ## 
     / |  0       | infer
     - |  1       | infer
@@ -851,7 +873,7 @@ devtools::test()
     \ |  6       | infer
     | |  7       | infer
     / |  8       | infer
-    v |  8       | infer [5.7 s]
+    v |  8       | infer [5.0 s]
     ## 
     / |  0       | Load
     - |  1       | Load
@@ -865,7 +887,7 @@ devtools::test()
     - |  9       | Load
     \ | 10       | Load
     | | 11       | Load
-    v | 11       | Load [11.6 s]
+    v | 11       | Load [10.8 s]
     ## 
     / |  0       | Package #descriptor (retrieve)
     - |  1       | Package #descriptor (retrieve)
@@ -886,13 +908,14 @@ devtools::test()
     - |  5       | Package #descriptor (dereference)
     \ |  6       | Package #descriptor (dereference)
     | |  7       | Package #descriptor (dereference)
-    v |  7       | Package #descriptor (dereference) [0.9 s]
+    / |  8       | Package #descriptor (dereference)
+    v |  8       | Package #descriptor (dereference) [1.1 s]
     ## 
     / |  0       | Package #descriptor (expand)
     - |  1       | Package #descriptor (expand)
     \ |  2       | Package #descriptor (expand)
     | |  3       | Package #descriptor (expand)
-    v |  3       | Package #descriptor (expand) [0.6 s]
+    v |  3       | Package #descriptor (expand) [0.4 s]
     ## 
     / |  0       | Package #resources
     - |  1       | Package #resources
@@ -918,7 +941,7 @@ devtools::test()
     - | 21       | Package #resources
     \ | 22       | Package #resources
     | | 23       | Package #resources
-    v | 23       | Package #resources [2.2 s]
+    v | 23       | Package #resources [1.7 s]
     ## 
     / |  0       | Package #commit
     - |  1       | Package #commit
@@ -927,7 +950,7 @@ devtools::test()
     / |  4       | Package #commit
     - |  5       | Package #commit
     \ |  6       | Package #commit
-    v |  6       | Package #commit [0.4 s]
+    v |  6       | Package #commit [0.3 s]
     ## 
     / |  0       | Package #foreignKeys
     - |  1       | Package #foreignKeys
@@ -937,7 +960,7 @@ devtools::test()
     - |  5       | Package #foreignKeys
     \ |  6       | Package #foreignKeys
     | |  7       | Package #foreignKeys
-    v |  7       | Package #foreignKeys [3.7 s]
+    v |  7       | Package #foreignKeys [3.4 s]
     ## 
     / |  0       | Profile
     - |  1       | Profile
@@ -949,7 +972,7 @@ devtools::test()
     | |  7       | Profile
     / |  8       | Profile
     - |  9       | Profile
-    v |  9       | Profile [0.4 s]
+    v |  9       | Profile [0.6 s]
     ## 
     / |  0       | Profile #validate
     - |  1       | Profile #validate
@@ -965,11 +988,11 @@ devtools::test()
     ## 
     / |  0       | Profile #up-to-date - tabular-data-package
     - |  1       | Profile #up-to-date - tabular-data-package
-    v |  1       | Profile #up-to-date - tabular-data-package [0.6 s]
+    v |  1       | Profile #up-to-date - tabular-data-package [0.8 s]
     ## 
     / |  0       | Profile #up-to-date - fiscal-data-package
     - |  1       | Profile #up-to-date - fiscal-data-package
-    v |  1       | Profile #up-to-date - fiscal-data-package [0.8 s]
+    v |  1       | Profile #up-to-date - fiscal-data-package [0.6 s]
     ## 
     / |  0       | Profile #up-to-date - data-resource
     - |  1       | Profile #up-to-date - data-resource
@@ -1035,7 +1058,7 @@ devtools::test()
     - | 57       | Profile #up-to-date - tabular-data-resource
     \ | 58       | Profile #up-to-date - tabular-data-resource
     | | 59       | Profile #up-to-date - tabular-data-resource
-    v | 59       | Profile #up-to-date - tabular-data-resource [3.1 s]
+    v | 59       | Profile #up-to-date - tabular-data-resource [3.3 s]
     ## 
     / |  0       | Resource
     v |  0       | Resource
@@ -1052,7 +1075,7 @@ devtools::test()
     - |  9       | Resource #load
     \ | 10       | Resource #load
     | | 11       | Resource #load
-    v | 11       | Resource #load [0.3 s]
+    v | 11       | Resource #load [0.2 s]
     ## 
     / |  0       | Resource #descriptor (retrieve)
     - |  1       | Resource #descriptor (retrieve)
@@ -1060,7 +1083,7 @@ devtools::test()
     | |  3       | Resource #descriptor (retrieve)
     / |  4       | Resource #descriptor (retrieve)
     - |  5       | Resource #descriptor (retrieve)
-    v |  5       | Resource #descriptor (retrieve) [0.1 s]
+    v |  5       | Resource #descriptor (retrieve) [0.3 s]
     ## 
     / |  0       | Resource #descriptor (dereference)
     - |  1       | Resource #descriptor (dereference)
@@ -1079,7 +1102,7 @@ devtools::test()
     | |  3       | Resource #descriptor (expand)
     / |  4       | Resource #descriptor (expand)
     - |  5       | Resource #descriptor (expand)
-    v |  5       | Resource #descriptor (expand) [0.7 s]
+    v |  5       | Resource #descriptor (expand) [0.6 s]
     ## 
     / |  0       | Resource #source/sourceType
     - |  1       | Resource #source/sourceType
@@ -1122,20 +1145,22 @@ devtools::test()
     ## 
     / |  0       | Resource #infer
     - |  1       | Resource #infer
-    v |  1       | Resource #infer [4.1 s]
+    v |  1       | Resource #infer [3.8 s]
     ## 
     / |  0       | validate
     - |  1       | validate
     \ |  2       | validate
-    v |  2       | validate
+    | |  3       | validate
+    / |  4       | validate
+    v |  4       | validate [0.3 s]
     ## 
-    ## == Results =====================================================================================================================================================
-    ## Duration: 38.0 s
+    ## == Results ========================================================================================================================================
+    ## Duration: 36.0 s
     ## 
-    ## OK:       218
+    ## OK:       229
     ## Failed:   0
     ## Warnings: 0
-    ## Skipped:  0
+    ## Skipped:  2
 
 more detailed information about how to create and run tests you can find in [testthat package](https://github.com/hadley/testthat)
 
