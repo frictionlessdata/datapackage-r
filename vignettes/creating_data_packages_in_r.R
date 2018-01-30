@@ -19,6 +19,7 @@ filepath = 'https://raw.githubusercontent.com/frictionlessdata/example-data-pack
 
 schema = tableschema.r::infer(filepath)
 
+## ---- eval=TRUE, include=TRUE--------------------------------------------
 # define resources using json text 
 resources = helpers.from.json.to.list(
   '[{
