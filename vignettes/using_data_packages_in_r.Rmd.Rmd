@@ -1,0 +1,50 @@
+---
+title: "Using Data Packages in R"
+author: "Kleanthis Koupidis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using Data Packages in R}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This tutorial will show you how to install the R libraries for working with Tabular Data Packages and demonstrate a very simple example of loading a Tabular Data Package from the web and pushing it directly into a local SQL database. Short examples of pushing your dataset to Google’s BigQuery and Amazon’s RedShift follow.
+
+#Setup
+
+For this tutorial, we will need the Data Package R library ([datapackage.r](https://github.com/frictionlessdata/datapackage-r)).
+
+[devtools library](https://cran.r-project.org/package=devtools) is required to install the datapackage.r library from github.
+
+```{r, eval=FALSE, include=TRUE}
+# Install devtools package if not already
+install.packages("devtools")
+```
+
+And then install the development version of [datapackage.r](https://github.com/frictionlessdata/datapackage-r) from github.
+
+```{r, eval=FALSE, include=TRUE}
+devtools::install_github("frictionlessdata/datapackage.r")
+```
+
+#Load
+
+You can start using the library by loading `datapackage.r`.
+
+```{r, eval=TRUE, include=TRUE}
+library(datapackage.r)
+```
+
+
+
+#Reading Basic Metadata
+
+In this case, we are using an example Tabular Data Package containing the periodic table stored on GitHub (datapackage.json, data.csv). This dataset includes the atomic number, symbol, element name, atomic mass, and the metallicity of the element. Here are the first five rows:
+
+
+```{r, echo=FALSE, results='asis'}
+url = 'https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv'
+pt_data = read.csv2(url, sep = ',')
+knitr::kable(head(pt_data, 5), align = 'c')
+```

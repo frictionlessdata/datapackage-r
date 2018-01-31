@@ -4,7 +4,7 @@ author: "Kleanthis Koupidis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Creating Data Packages in R}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -47,12 +47,18 @@ dataPackage$commit()
 
 #Infer a CSV Schema
 
-We will use periodic-table data from remote path: <https://github.com/frictionlessdata/example-data-packages/blob/master/periodic-table/data.csv>
+We will use periodic-table data from remote path: <https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example%20data/data.csv>
+
+```{r, echo=FALSE, results='asis'}
+url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example%20data/data.csv'
+pt_data = read.csv2(url, sep = ',')
+knitr::kable(head(pt_data, 10), align = 'c')
+```
 
 We can guess at our CSV's [schema](https://frictionlessdata.io/guides/table-schema/) by using `infer` from the Table Schema library. We pass directly the remote link to the infer function, the result of which is an inferred schema. For example, if the processor detects only integers in a given column, it will assign `integer` as a column type.
 
 ```{r, eval=TRUE, include=TRUE}
-filepath = 'https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv'
+filepath = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example%20data/data.csv'
 
 schema = tableschema.r::infer(filepath)
 ```
@@ -89,7 +95,7 @@ dataPackage$descriptor['resources'] = resources
 Now we are ready to write our `datapackage.json` file to the current working directory.
 
 ```{r, eval=FALSE, include=TRUE}
-dataPackage$save(getwd())
+dataPackage$save('example_data')
 ```
 
 The `datapackage.json` ([download](https://github.com/frictionlessdata/example-data-packages/blob/master/periodic-table/datapackage.json)) is inlined below. Note that atomic number has been correctly inferred as an `integer` and atomic mass as a `number` (float) while every other column is a `string`.
