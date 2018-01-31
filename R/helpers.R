@@ -608,6 +608,18 @@ file_extension = function(path){
   } else tools::file_ext(basename(path))
 }
 
+#' save json
+#' @description save json
+#' @param x x
+#' @param file file
+#' @rdname write_json
+#' @export
+#'
+
+write_json <- function(x, file){
+  x = jsonlite::prettify(helpers.from.list.to.json(x))
+  x = writeLines(x, file)
+}
 
 # #' Catch Error
 # #' @param expr expr
