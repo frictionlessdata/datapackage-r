@@ -617,7 +617,7 @@ file_extension = function(path){
 #'
 
 write_json <- function(x, file){
-  x = jsonlite::prettify(helpers.from.list.to.json(x))
+  x = jsonlite::prettify(jsonlite::toJSON(x)) #toDO: helpers.from.list.to.json breaks in package load
   x = writeLines(x, file)
 }
 

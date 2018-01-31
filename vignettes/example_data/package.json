@@ -1,40 +1,82 @@
 {
-    "profile": "data-package",
-    "name": "period-table",
-    "title": "Periodic Table",
+    "profile": [
+        "data-package"
+    ],
+    "name": [
+        "period-table"
+    ],
+    "title": [
+        "Periodic Table"
+    ],
     "resources": {
-        "name": "data",
-        "path": "https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv",
+        "name": [
+            "data"
+        ],
+        "path": [
+            "https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv"
+        ],
         "schema": {
             "fields": [
                 {
-                    "name": "atomic number",
-                    "type": "integer",
-                    "format": "default"
+                    "name": [
+                        "atomic number"
+                    ],
+                    "type": [
+                        "integer"
+                    ],
+                    "format": [
+                        "default"
+                    ]
                 },
                 {
-                    "name": "symbol",
-                    "type": "string",
-                    "format": "default"
+                    "name": [
+                        "symbol"
+                    ],
+                    "type": [
+                        "string"
+                    ],
+                    "format": [
+                        "default"
+                    ]
                 },
                 {
-                    "name": "name",
-                    "type": "string",
-                    "format": "default"
+                    "name": [
+                        "name"
+                    ],
+                    "type": [
+                        "string"
+                    ],
+                    "format": [
+                        "default"
+                    ]
                 },
                 {
-                    "name": "atomic mass",
-                    "type": "number",
-                    "format": "default"
+                    "name": [
+                        "atomic mass"
+                    ],
+                    "type": [
+                        "number"
+                    ],
+                    "format": [
+                        "default"
+                    ]
                 },
                 {
-                    "name": "metal or nonmetal?",
-                    "type": "string",
-                    "format": "default"
+                    "name": [
+                        "metal or nonmetal?"
+                    ],
+                    "type": [
+                        "string"
+                    ],
+                    "format": [
+                        "default"
+                    ]
                 }
             ],
             "missingValues": [
-                ""
+                [
+                    ""
+                ]
             ]
         }
     }
