@@ -14,8 +14,13 @@ dataPackage$descriptor['name'] = 'period-table'
 dataPackage$descriptor['title'] = 'Periodic Table'
 dataPackage$commit()
 
+## ---- echo=FALSE, results='asis'-----------------------------------------
+url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv'
+pt_data = read.csv2(url, sep = ',')
+knitr::kable(head(pt_data, 10), align = 'c')
+
 ## ---- eval=TRUE, include=TRUE--------------------------------------------
-filepath = 'https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv'
+filepath = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv'
 
 schema = tableschema.r::infer(filepath)
 
@@ -43,7 +48,7 @@ resources = list(
 dataPackage$descriptor['resources'] = resources
 
 ## ---- eval=FALSE, include=TRUE-------------------------------------------
-#  dataPackage$save(getwd())
+#  dataPackage$save('example_data')
 
 ## ---- eval=TRUE, include=TRUE--------------------------------------------
 jsonlite::toJSON(dataPackage$descriptor, pretty = TRUE)

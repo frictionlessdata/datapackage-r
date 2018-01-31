@@ -384,7 +384,7 @@ test_that('remote path remote and base path remote', {
   "name": "name",
   "path": ["http://example1.com/table.csv"]
 }'
-  resource = Resource.load(descriptor, basePath = 'http://example2.com/')
+  resource = Resource.load(descriptor, basePath = 'http://example1.com/')
   expect_equal(resource$source, 'http://example1.com/table.csv')
   expect_true(resource$remote)
   })

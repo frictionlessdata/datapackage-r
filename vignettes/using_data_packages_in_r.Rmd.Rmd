@@ -36,15 +36,50 @@ You can start using the library by loading `datapackage.r`.
 library(datapackage.r)
 ```
 
-
-
 #Reading Basic Metadata
 
-In this case, we are using an example Tabular Data Package containing the periodic table stored on GitHub (datapackage.json, data.csv). This dataset includes the atomic number, symbol, element name, atomic mass, and the metallicity of the element. Here are the first five rows:
+In this case, we are using an example Tabular Data Package containing the periodic table stored on [GitHub](https://github.com/frictionlessdata/example-data-packages/tree/master/periodic-table) ([datapackage.json](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/datapackage.json), [data.csv](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv)). This dataset includes the atomic number, symbol, element name, atomic mass, and the metallicity of the element. Here are the first five rows:
 
 
 ```{r, echo=FALSE, results='asis'}
-url = 'https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv'
+url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv'
 pt_data = read.csv2(url, sep = ',')
 knitr::kable(head(pt_data, 5), align = 'c')
 ```
+
+Data Packages can be loaded either from a local path or directly from the web.
+
+```{r}
+url = helpers.from.json.to.list('https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/package.json')
+datapackage = Package.load(url)
+# resource = Resource.load(url,basePath = 'https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table' )
+# resource$read()
+```
+
+At the most basic level, Data Packages provide a standardized format for general metadata (for example, the dataset title, source, author, and/or description) about your dataset. Now that you have loaded this Data Package, you have access to this `metadata` using the metadata dict attribute. Note that these fields are optional and may not be specified for all Data Packages. For more information on which fields are supported, see [the full Data Package standard](https://frictionlessdata.io/specs/data-package/).
+
+```{r}
+# datapackage$resources[[1]]$read(keyed= TRUE)
+```
+
+#Reading Data
+
+Now that you have loaded your Data Package, you can read its data. A Data Package can contain multiple files which are accessible via the `resources` attribute. The `resources` attribute is an array of objects containing information (e.g. path, schema, description) about each file in the package.
+
+You can access the data in a given resource in the `resources` array by reading the `data` attribute. For example, using our our Periodic Table Data Package, we can return all elements with an atomic number of less than 10 by doing the following:
+
+print( 
+[
+e['name'] for e in dp.resources[0].data if int(e['atomic number']) < 10
+]
+)
+
+```{r}
+datapackage$descriptor$resources[[1]]$path
+def = tableschema.r::Table.load('https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv')
+table=def$value()
+periodic_table_data = table$read(keyed = TRUE)
+str(periodic_table_data)
+```
+
+

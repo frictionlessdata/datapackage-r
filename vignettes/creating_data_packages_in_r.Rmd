@@ -50,7 +50,7 @@ dataPackage$commit()
 We will use periodic-table data from remote path: <https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example%20data/data.csv>
 
 ```{r, echo=FALSE, results='asis'}
-url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example%20data/data.csv'
+url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv'
 pt_data = read.csv2(url, sep = ',')
 knitr::kable(head(pt_data, 10), align = 'c')
 ```
@@ -58,7 +58,7 @@ knitr::kable(head(pt_data, 10), align = 'c')
 We can guess at our CSV's [schema](https://frictionlessdata.io/guides/table-schema/) by using `infer` from the Table Schema library. We pass directly the remote link to the infer function, the result of which is an inferred schema. For example, if the processor detects only integers in a given column, it will assign `integer` as a column type.
 
 ```{r, eval=TRUE, include=TRUE}
-filepath = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example%20data/data.csv'
+filepath = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv'
 
 schema = tableschema.r::infer(filepath)
 ```

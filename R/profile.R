@@ -24,7 +24,7 @@ Profile <- R6::R6Class(
       
       private$profile_ = profile
       
-      if (is.character(private$profile_)) {
+      if (is.character(unlist(private$profile_))) {
         
         private$profile_ =system.file(stringr::str_interp("profiles/${private$profile_}.json"), package = "datapackage.r")
         # private$profile_ =  stringr::str_interp("inst/profiles/${private$profile_}\.json")
@@ -38,7 +38,7 @@ Profile <- R6::R6Class(
         }
       }
       
-      private$jsonschema_ = helpers.from.json.to.list(private$profile_)
+      private$jsonschema_ = helpers.from.json.to.list(unlist(private$profile_))
       
     },
     
