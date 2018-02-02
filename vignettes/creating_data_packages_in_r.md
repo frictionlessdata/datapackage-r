@@ -1,9 +1,12 @@
+Creating Data Packages in R
+===========================
+
 This tutorial will show you how to install the R library for working
 with Data Packages and Table Schema, load a CSV file, infer its schema,
 and write a Tabular Data Package.
 
 Setup
-=====
+-----
 
 For this tutorial, we will need the Data Package R library
 ([datapackage.r](https://github.com/frictionlessdata/datapackage-r)).
@@ -21,7 +24,7 @@ github.
     devtools::install_github("frictionlessdata/datapackage.r")
 
 Load
-====
+----
 
 You can start using the library by loading `datapackage.r`.
 
@@ -43,7 +46,7 @@ below.
     ## [1] TRUE
 
 Infer a CSV Schema
-==================
+------------------
 
 We will use periodic-table data from remote path:
 <https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example%20data/data.csv>
@@ -246,7 +249,7 @@ column is a `string`.
     ## 
 
 Publishing
-==========
+----------
 
 Now that you have created your Data Package, you might want to [publish
 your data online](https://frictionlessdata.io/guides/publish-online/) so
