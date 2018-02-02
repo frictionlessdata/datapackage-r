@@ -1,26 +1,17 @@
 Using Data Packages in R
 ========================
 
-This tutorial will show you how to install the R libraries for working
-with Tabular Data Packages and demonstrate a very simple example of
-loading a Tabular Data Package from the web and pushing it directly into
-a local SQL database and send query to retrieve results.
+This tutorial will show you how to install the R libraries for working with Tabular Data Packages and demonstrate a very simple example of loading a Tabular Data Package from the web and pushing it directly into a local SQL database and send query to retrieve results.
 
 Setup
 -----
 
-For this tutorial, we will need the Data Package R library
-([datapackage.r](https://github.com/frictionlessdata/datapackage-r)).
-
-[devtools library](https://cran.r-project.org/package=devtools) is
-required to install the datapackage.r library from github.
+For this tutorial, we will need the Data Package R library ([datapackage.r](https://github.com/frictionlessdata/datapackage-r)). [Devtools library](https://cran.r-project.org/package=devtools) is also required to install the datapackage.r library from github.
 
     # Install devtools package if not already
     install.packages("devtools")
 
-And then install the development version of
-[datapackage.r](https://github.com/frictionlessdata/datapackage-r) from
-github.
+And then install the development version of [datapackage.r](https://github.com/frictionlessdata/datapackage-r) from github.
 
     devtools::install_github("frictionlessdata/datapackage.r")
 
@@ -34,13 +25,7 @@ You can start using the library by loading `datapackage.r`.
 Reading Basic Metadata
 ----------------------
 
-In this case, we are using an example Tabular Data Package containing
-the periodic table stored on
-[GitHub](https://github.com/frictionlessdata/example-data-packages/tree/master/periodic-table)
-([datapackage.json](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/datapackage.json),
-[data.csv](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv)).
-This dataset includes the atomic number, symbol, element name, atomic
-mass, and the metallicity of the element. Here are the first five rows:
+In this case, we are using an example Tabular Data Package containing the periodic table stored on [GitHub](https://github.com/frictionlessdata/example-data-packages/tree/master/periodic-table) ([datapackage.json](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/datapackage.json), [data.csv](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv)). This dataset includes the atomic number, symbol, element name, atomic mass, and the metallicity of the element. Here are the first five rows:
 
     url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv'
     pt_data = read.csv2(url, sep = ',')
@@ -95,8 +80,7 @@ mass, and the metallicity of the element. Here are the first five rows:
 </tbody>
 </table>
 
-Data Packages can be loaded either from a local path or directly from
-the web.
+Data Packages can be loaded either from a local path or directly from the web.
 
     url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/package.json'
     datapackage = Package.load(url)
@@ -105,14 +89,7 @@ the web.
 
     ## [1] TRUE
 
-At the most basic level, Data Packages provide a standardized format for
-general metadata (for example, the dataset title, source, author, and/or
-description) about your dataset. Now that you have loaded this Data
-Package, you have access to this `metadata` using the metadata dict
-attribute. Note that these fields are optional and may not be specified
-for all Data Packages. For more information on which fields are
-supported, see [the full Data Package
-standard](https://frictionlessdata.io/specs/data-package/).
+At the most basic level, Data Packages provide a standardized format for general metadata (for example, the dataset title, source, author, and/or description) about your dataset. Now that you have loaded this Data Package, you have access to this `metadata` using the metadata dict attribute. Note that these fields are optional and may not be specified for all Data Packages. For more information on which fields are supported, see [the full Data Package standard](https://frictionlessdata.io/specs/data-package/).
 
     datapackage$descriptor$title
 
@@ -121,37 +98,21 @@ standard](https://frictionlessdata.io/specs/data-package/).
 Reading Data
 ------------
 
-Now that you have loaded your Data Package, you can read its data. A
-Data Package can contain multiple files which are accessible via the
-`resources` attribute. The `resources` attribute is an array of objects
-containing information (e.g. path, schema, description) about each file
-in the package.
+Now that you have loaded your Data Package, you can read its data. A Data Package can contain multiple files which are accessible via the `resources` attribute. The `resources` attribute is an array of objects containing information (e.g. path, schema, description) about each file in the package.
 
-You can access the data in a given resource in the `resources` array by
-reading the `data` attribute.
+You can access the data in a given resource in the `resources` array by reading the `data` attribute.
 
     table = datapackage$resources[[1]]$table
     periodic_table_data = table$read()
 
-You can further manipulate list objects in R by using
-[purrr](https://cran.r-project.org/package=purrr),
-[rlist](https://cran.r-project.org/package=rlist) packages.
+You can further manipulate list objects in R by using [purrr](https://cran.r-project.org/package=purrr), [rlist](https://cran.r-project.org/package=rlist) packages.
 
 Loading into an SQL database
 ----------------------------
 
-[Tabular Data
-Packages](https://frictionlessdata.io/specs/tabular-data-package/)
-contains schema information about its data using [Table
-Schema](https://frictionlessdata.io/specs/table-schema/). This means you
-can easily import your Data Package into the SQL backend of your choice.
-In this case, we are creating an [SQLite](http://sqlite.org/) database.
+[Tabular Data Packages](https://frictionlessdata.io/specs/tabular-data-package/) contains schema information about its data using [Table Schema](https://frictionlessdata.io/specs/table-schema/). This means you can easily import your Data Package into the SQL backend of your choice. In this case, we are creating an [SQLite](http://sqlite.org/) database.
 
-To create a new SQLite database and load the data into SQL we will need
-[DBI](https://cran.r-project.org/package=DBI) package and
-[RSQLite](https://cran.r-project.org/package=RSQLite) package, which
-contains [SQLite](https://www.sqlite.org/) (no external software is
-needed).
+To create a new SQLite database and load the data into SQL we will need [DBI](https://cran.r-project.org/package=DBI) package and [RSQLite](https://cran.r-project.org/package=RSQLite) package, which contains [SQLite](https://www.sqlite.org/) (no external software is needed).
 
 You can install and load them by using:
 
@@ -160,13 +121,11 @@ You can install and load them by using:
     library(DBI)
     library(RSQLite)
 
-To create a new SQLite database, you simply supply the filename to
-`dbConnect()`:
+To create a new SQLite database, you simply supply the filename to `dbConnect()`:
 
     dp.database = dbConnect(RSQLite::SQLite(), "") # temporary database
 
-We will use data.table package to convert the list object with the data
-to a data frame in order to copy them to database table.
+We will use [data.table](https://cran.r-project.org/package=RSQLite) package to convert the list object with the data to a data frame object to copy them to database table.
 
     # install data.table package if not already
     # install.packages("data.table")
@@ -174,8 +133,7 @@ to a data frame in order to copy them to database table.
     periodic_table_sql = data.table::rbindlist(periodic_table_data)
     periodic_table_sql = setNames(periodic_table_sql,unlist(datapackage$resources[[1]]$headers))
 
-You can easily copy an R data frame into a SQLite database with
-dbWriteTable():
+You can easily copy an R data frame into a SQLite database with `dbWriteTable()`:
 
     dbWriteTable(dp.database, "periodic_table_sql", periodic_table_sql)
     # show remote tables accessible through this connection
@@ -185,9 +143,7 @@ dbWriteTable():
 
 The data are already to the database.
 
-We can further issue queries to hte database:
-
-Return first 5 elements:
+We can further issue queries to hte database and return first 5 elements:
 
     dbGetQuery(dp.database, 'SELECT * FROM periodic_table_sql LIMIT 5')
 
@@ -198,7 +154,7 @@ Return first 5 elements:
     ## 4             4     Be Beryllium    9.012182 alkaline earth metal
     ## 5             5      B     Boron   10.811000            metalloid
 
-Return all elements with an atomic number of less than 10:
+Or return all elements with an atomic number of less than 10:
 
     dbGetQuery(dp.database, 'SELECT * FROM periodic_table_sql WHERE "atomic number" < 10')
 
@@ -213,6 +169,4 @@ Return all elements with an atomic number of less than 10:
     ## 8             8      O    Oxygen   15.999400             nonmetal
     ## 9             9      F  Fluorine   18.998403              halogen
 
-More about using databases, SQLite in R you can find in vignettes of
-[DBI](https://cran.r-project.org/package=DBI) and
-[RSQLite](https://cran.r-project.org/package=RSQLite) packages.
+More about using databases, SQLite in R you can find in vignettes of [DBI](https://cran.r-project.org/package=DBI) and [RSQLite](https://cran.r-project.org/package=RSQLite) packages.
