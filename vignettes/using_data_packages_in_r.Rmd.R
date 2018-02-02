@@ -14,7 +14,7 @@ pt_data = read.csv2(url, sep = ',')
 knitr::kable(head(pt_data, 5), align = 'c')
 
 ## ---- eval=TRUE, include=TRUE--------------------------------------------
-url = 'example_data/package.json'
+url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/package.json'
 datapackage = Package.load(url)
 datapackage$resources[[1]]$descriptor$profile = 'tabular-data-resource' # tabular resource descriptor profile 
 datapackage$resources[[1]]$commit() # commit changes
