@@ -138,7 +138,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
       
       
       # URI -> Pointer
-    } else if (startsWith(unlist(value), '#')) {
+    } else if (isTRUE(startsWith(unlist(value), '#'))) {
       
       descriptor[[property]]  = tryCatch({descriptor.pointer(value, baseDescriptor)},
                                          error = function(e) {
@@ -170,7 +170,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
         
         message = DataPackageError$new(
           stringr::str_interp(
-            'Not resolved Remote URI "${value}" for ${descriptor[[property]]}'
+            'Not resolved Remote URI "${value}" for descriptor[[${property}]]'
           )
         )$message
         
@@ -203,7 +203,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
         # TODO: support other that Unix OS
         fullPath = stringr::str_c(basePath, value, sep = '/')
         # TODO: rebase on promisified fs.readFile (async)
-        descriptor[[property]] = helpers.from.json.to.list(file(fullPath))
+        descriptor[[property]] = helpers.from.json.to.list(fullPath)
         # contents = readLines(fullPath, 'utf-8')
         # descriptor[[property]] = jsonlite::fromJSON(contents)
       },
@@ -617,7 +617,7 @@ file_extension = function(path){
 #'
 
 write_json <- function(x, file){
-  x = jsonlite::prettify(jsonlite::toJSON(x)) #toDO: helpers.from.list.to.json breaks in package load
+  x = jsonlite::prettify(helpers.from.list.to.json(x))
   x = writeLines(x, file)
 }
 

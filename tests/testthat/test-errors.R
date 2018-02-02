@@ -33,7 +33,7 @@ test_that('should be catchable as a normal error', {
     DataPackageError$new('message')
   }, error = function(e) {
     expect_equivalent(error$message, 'message')
-    expect_equivalent(methods::is(error,"Error") , TRUE)
+    expect_equivalent(methods::is(error,"Error"), TRUE)
     expect_equivalent(methods::is(error,"DataPackageError"), TRUE)
     })
   })

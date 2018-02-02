@@ -38,7 +38,7 @@ Profile <- R6::R6Class(
         }
       }
       
-      private$jsonschema_ = helpers.from.json.to.list(unlist(private$profile_))
+      private$jsonschema_ = helpers.from.json.to.list(private$profile_)
       
     },
     

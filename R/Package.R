@@ -45,7 +45,7 @@ Package <- R6::R6Class(
     },
     addResource = function(descriptor) {
       if (is.null(private$currentDescriptor_$resources)) private$currentDescriptor_$resources = list()
-      private$currentDescriptor_$resources = rlist::list.append(private$currentDescriptor_$resources, descriptor)           
+      private$currentDescriptor_$resources = rlist::list.append(private$currentDescriptor_$resources, descriptor)
 
       private$build_()
       return(private$resources_[[length(private$resources_)]])

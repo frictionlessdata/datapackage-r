@@ -5,6 +5,7 @@ Version: 0.1.0
 Date: 2017-07-01
 Author: c(person("Kleanthis", "Koupidis", email = "koupidis.okfgr@gmail.com", role = c("aut", "cre"), 
             person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role = "cre"))
+            person("Charalampos", "Bratsas", email = "charalampos.bratsas@okfn.org", role = "aut"))
 Maintainer: Open Knowledge Greece <info@okfn.gr>
 Description: A library for working with Data Package (<http://frictionlessdata.io/specs/data-package/>).
 License: MIT + file LICENSE
@@ -34,13 +35,16 @@ Remotes:
 Suggests:
     covr,
     crul,
+    data.table,
+    DBI,
     foreach,
     httptest,
-    testthat,
-    webmockr,
-    mockery,
     knitr,
-    rmarkdown
+    mockery,
+    rmarkdown,
+    RSQLite,
+    testthat,
+    webmockr
 Collate: 
     'DataPackageError.R'
     'Package.R'
