@@ -12,6 +12,7 @@ library(datapackage.r)
 dataPackage = Package.load()
 dataPackage$descriptor['name'] = 'period-table'
 dataPackage$descriptor['title'] = 'Periodic Table'
+# commit the changes to Package class
 dataPackage$commit()
 
 ## ---- echo=FALSE, results='asis'-----------------------------------------
@@ -24,32 +25,42 @@ filepath = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vign
 
 schema = tableschema.r::infer(filepath)
 
-## ---- eval=TRUE, include=TRUE--------------------------------------------
-# define resources using json text 
-resources = helpers.from.json.to.list(
-  '[{
-	"name": "data",
-	"path": "filepath",
-	"schema": "schema"
-  }]'
-)
-resources[[1]]$schema = schema
-resources[[1]]$path = filepath
+## ---- eval=FALSE, include=TRUE-------------------------------------------
+#  # define resources using json text
+#  resources = helpers.from.json.to.list(
+#    '[{
+#  	"name": "data",
+#  	"path": "filepath",
+#  	"schema": "schema"
+#    }]'
+#  )
+#  resources[[1]]$schema = schema
+#  resources[[1]]$path = filepath
 
-# define resources using list object
-resources = list(
-  list( name = "data",
+## ---- eval=TRUE, include=TRUE--------------------------------------------
+# or define resources using list object
+resources = list(list(
+  name = "data",
   path = filepath,
   schema = schema
   ))
 
-
 ## ---- eval=TRUE, include=TRUE--------------------------------------------
-dataPackage$descriptor['resources'] = resources
+dataPackage$descriptor[['resources']] = resources
+dataPackage$commit()
+
+## ---- eval=FALSE, include=TRUE-------------------------------------------
+#  resources = list(list(
+#    name = "data",
+#    path = filepath,
+#    schema = schema
+#    ))
+#  
+#  dataPackage$addResource(resources)
 
 ## ---- eval=FALSE, include=TRUE-------------------------------------------
 #  dataPackage$save('example_data')
 
 ## ---- eval=TRUE, include=TRUE--------------------------------------------
-jsonlite::toJSON(dataPackage$descriptor, pretty = TRUE)
+jsonlite::prettify(helpers.from.list.to.json(dataPackage$descriptor))
 

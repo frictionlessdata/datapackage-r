@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This tutorial will show you how to install the R libraries for working with Tabular Data Packages and demonstrate a very simple example of loading a Tabular Data Package from the web and pushing it directly into a local SQL database. Short examples of pushing your dataset to Google’s BigQuery and Amazon’s RedShift follow.
+This tutorial will show you how to install the R libraries for working with Tabular Data Packages and demonstrate a very simple example of loading a Tabular Data Package from the web and pushing it directly into a local SQL database and send query to retrieve results.
 
 #Setup
 
@@ -41,7 +41,7 @@ library(datapackage.r)
 In this case, we are using an example Tabular Data Package containing the periodic table stored on [GitHub](https://github.com/frictionlessdata/example-data-packages/tree/master/periodic-table) ([datapackage.json](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/datapackage.json), [data.csv](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv)). This dataset includes the atomic number, symbol, element name, atomic mass, and the metallicity of the element. Here are the first five rows:
 
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=TRUE, results='asis'}
 url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv'
 pt_data = read.csv2(url, sep = ',')
 knitr::kable(head(pt_data, 5), align = 'c')
@@ -49,37 +49,85 @@ knitr::kable(head(pt_data, 5), align = 'c')
 
 Data Packages can be loaded either from a local path or directly from the web.
 
-```{r}
-url = helpers.from.json.to.list('https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/package.json')
+```{r, eval=TRUE, include=TRUE}
+url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/package.json'
 datapackage = Package.load(url)
-# resource = Resource.load(url,basePath = 'https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table' )
-# resource$read()
+datapackage$resources[[1]]$descriptor$profile = 'tabular-data-resource' # tabular resource descriptor profile 
+datapackage$resources[[1]]$commit() # commit changes
 ```
 
 At the most basic level, Data Packages provide a standardized format for general metadata (for example, the dataset title, source, author, and/or description) about your dataset. Now that you have loaded this Data Package, you have access to this `metadata` using the metadata dict attribute. Note that these fields are optional and may not be specified for all Data Packages. For more information on which fields are supported, see [the full Data Package standard](https://frictionlessdata.io/specs/data-package/).
 
-```{r}
-# datapackage$resources[[1]]$read(keyed= TRUE)
+```{r, eval=TRUE, include=TRUE}
+datapackage$descriptor$title
 ```
 
 #Reading Data
 
 Now that you have loaded your Data Package, you can read its data. A Data Package can contain multiple files which are accessible via the `resources` attribute. The `resources` attribute is an array of objects containing information (e.g. path, schema, description) about each file in the package.
 
-You can access the data in a given resource in the `resources` array by reading the `data` attribute. For example, using our our Periodic Table Data Package, we can return all elements with an atomic number of less than 10 by doing the following:
+You can access the data in a given resource in the `resources` array by reading the `data` attribute. 
 
-print( 
-[
-e['name'] for e in dp.resources[0].data if int(e['atomic number']) < 10
-]
-)
-
-```{r}
-datapackage$descriptor$resources[[1]]$path
-def = tableschema.r::Table.load('https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv')
-table=def$value()
-periodic_table_data = table$read(keyed = TRUE)
-str(periodic_table_data)
+```{r, eval=TRUE, include=TRUE}
+table = datapackage$resources[[1]]$table
+periodic_table_data = table$read()
 ```
 
+You can further manipulate list objects in R by using [purrr](https://cran.r-project.org/package=purrr), [rlist](https://cran.r-project.org/package=rlist) packages.
 
+#Loading into an SQL database
+
+[Tabular Data Packages](https://frictionlessdata.io/specs/tabular-data-package/) contains schema information about its data using [Table Schema](https://frictionlessdata.io/specs/table-schema/). This means you can easily import your Data Package into the SQL backend of your choice. In this case, we are creating an [SQLite](http://sqlite.org/) database.
+
+To create a new SQLite database and load the data into SQL we will need [DBI](https://cran.r-project.org/package=DBI) package and [RSQLite](https://cran.r-project.org/package=RSQLite) package, which contains [SQLite](https://www.sqlite.org/) (no external software is needed).
+
+You can install and load them by using:
+
+```{r, eval=FALSE, include=TRUE}
+install.packages(c("DBI","RSQLite"))
+```
+
+```{r, eval=TRUE, include=TRUE}
+library(DBI)
+library(RSQLite)
+```
+
+To create a new SQLite database, you simply supply the filename to `dbConnect()`:
+
+```{r, eval=TRUE, include=TRUE}
+dp.database = dbConnect(RSQLite::SQLite(), "") # temporary database
+```
+
+We will use data.table package to convert the list object with the data to a data frame in order to copy them to database table.
+
+```{r, eval=TRUE, include=TRUE}
+# install data.table package if not already
+# install.packages("data.table")
+
+periodic_table_sql = data.table::rbindlist(periodic_table_data)
+periodic_table_sql = setNames(periodic_table_sql,unlist(datapackage$resources[[1]]$headers))
+```
+
+You can easily copy an R data frame into a SQLite database with dbWriteTable():
+
+```{r, eval=TRUE, include=TRUE}
+dbWriteTable(dp.database, "periodic_table_sql", periodic_table_sql)
+# show remote tables accessible through this connection
+dbListTables(dp.database)
+```
+The data are already to the database.
+
+We can further issue queries to hte database:
+
+Return first 5 elements:
+```{r, eval=TRUE, include=TRUE}
+dbGetQuery(dp.database, 'SELECT * FROM periodic_table_sql LIMIT 5')
+```
+
+Return all elements with an atomic number of less than 10:
+
+```{r, eval=TRUE, include=TRUE}
+dbGetQuery(dp.database, 'SELECT * FROM periodic_table_sql WHERE "atomic number" < 10')
+```
+
+More about using databases, SQLite in R you can find in vignettes of [DBI](https://cran.r-project.org/package=DBI) and [SQLite](https://www.sqlite.org/) packages.
