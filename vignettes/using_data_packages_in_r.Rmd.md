@@ -215,4 +215,4 @@ Return all elements with an atomic number of less than 10:
 
 More about using databases, SQLite in R you can find in vignettes of
 [DBI](https://cran.r-project.org/package=DBI) and
-[SQLite](https://www.sqlite.org/) packages.
+[RSQLite](https://cran.r-project.org/package=RSQLite) packages.
