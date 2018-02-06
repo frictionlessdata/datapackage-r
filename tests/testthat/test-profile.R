@@ -17,8 +17,10 @@ PROFILES = list(
 
 # Tests
 
-########################################
 testthat::context("Profile")
+
+########################################
+testthat::context('Profile #load')
 ########################################
 
 foreach(name = 1:length(PROFILES) ) %do% {
