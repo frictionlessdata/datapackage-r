@@ -1,6 +1,5 @@
 library(datapackage.r)
 library(testthat)
-library(foreach)
 library(stringr)
 library(crul)
 library(webmockr)
@@ -43,7 +42,7 @@ test_that('stores errors for invalid datapackage', {
 })
 
 test_that('loads relative resource', {
-
+  
   descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
   dataPackage = Package.load(descriptor)
   dataPackage$resources[[1]]$descriptor$profile = 'tabular-data-resource'
@@ -151,7 +150,7 @@ testthat::context("Package #descriptor (dereference)")
 ######################################################
 
 test_that('mixed', {
-
+  
   descriptor = system.file('extdata/data-package-dereference.json', package = "datapackage.r")
   dataPackage = Package.load(descriptor)
   target =
@@ -161,18 +160,34 @@ test_that('mixed', {
                                          ]'),expandResourceDescriptor)
   
   expect_equal( dataPackage$descriptor$resources, target)
-
+  
 })
 
 test_that('pointer', {
   descriptor = '{
-  "resources": [
-  {"name": "name1", "data": ["data"], "schema": "#/schemas/main"},
-  {"name": "name2", "data": ["data"], "dialect": "#/dialects/0"}
-  ],
-  "schemas": {"main": {"fields": [{"name": "name"}]}},
-  "dialects": [{"delimiter": ","}]
-}'
+                  "resources": [{
+                    "name": "name1",
+                    "data": ["data"],
+                    "schema": "#/schemas/main"
+                  },
+                  {
+                    "name": "name2",
+                    "data": ["data"],
+                    "dialect": "#/dialects/0"
+                  }
+                  ],
+                  "schemas": {
+                    "main": {
+                      "fields": [{
+                        "name": "name"
+                      }]
+                    }
+                  },
+                  "dialects": [{
+                    "delimiter": ","
+                  }]
+                }'
+  
   dataPackage = Package.load(descriptor)
   
   expect_equal(dataPackage$descriptor$resources,  purrr::map(list(list(name = 'name1', data = list('data'), schema = list(fields = list(list(name = 'name')))),
@@ -181,22 +196,32 @@ test_that('pointer', {
 
 test_that('pointer bad', {
   descriptor = '{
-  "resources": [
-  {"name": "name1", "data": ["data"], "schema": "#/schemas/main"}
-  ]
-}'
+                  "resources": [{
+                    "name": "name1",
+                    "data": ["data"],
+                    "schema": "#/schemas/main"
+                  }]
+                }'
   
- expect_error(Package.load(descriptor), 'Not resolved Pointer URI')
-  })
+  expect_error(Package.load(descriptor), 'Not resolved Pointer URI')
+})
 
 
 test_that('remote', {
   descriptor = '{
-  "resources": [
-  {"name": "name1", "data": ["data"], "schema": "http://example.com/schema"},
-  {"name": "name2", "data": ["data"], "dialect": "http://example.com/dialect"}
-  ]
-}'
+                  "resources": [{
+                    "name": "name1",
+                    "data": ["data"],
+                    "schema": "http://example.com/schema"
+                  },
+                  {
+                    "name": "name2",
+                    "data": ["data"],
+                    "dialect": "http://example.com/dialect"
+                  }
+                  ]
+                }'
+  
   dataPackage <-  with_mock(
     `curl::curl` = function(url, ...) {
       if (url == "http://example.com/schema") {
@@ -221,15 +246,17 @@ test_that('remote', {
     list(name = 'name1', data = list('data'), schema = list(fields = list(list(name = 'name')))),
     list(name = 'name2', data = list('data'), dialect = list(delimiter = ',')
     )), expandResourceDescriptor))
-  })
+})
 
 
 test_that('remote bad', {
   descriptor = '{
-  "resources": [
-  {"name": "name1", "data": ["data"], "schema": "http://example.com/schema"}
-  ]
-}'
+                  "resources": [{
+                    "name": "name1",
+                    "data": ["data"],
+                    "schema": "http://example.com/schema"
+                  }]
+                }'
   
   expect_error(
     with_mock(
@@ -243,16 +270,24 @@ test_that('remote bad', {
       Package.load(descriptor)
     ),
     'Not resolved Remote URI')
-  })
+})
 
 
 test_that('local', {
   descriptor = '{
-  "resources": [
-  {"name": "name1", "data": ["data"], "schema": "table-schema.json"},
-  {"name": "name2", "data": ["data"], "dialect": "csv-dialect.json"}
-  ]
-}'
+                  "resources": [{
+                    "name": "name1",
+                    "data": ["data"],
+                    "schema": "table-schema.json"
+                  },
+                  {
+                    "name": "name2",
+                    "data": ["data"],
+                    "dialect": "csv-dialect.json"
+                  }
+                  ]
+                }'
+  
   dataPackage = Package.load(descriptor, basePath = 'inst/extdata')
   
   expect_equal(dataPackage$descriptor$resources, 
@@ -261,26 +296,31 @@ test_that('local', {
                  list(name = 'name2', data = list('data'), dialect = list(delimiter = ','))), 
                  expandResourceDescriptor))
   
-  })
+})
 
 test_that('local bad', {
   descriptor = '{
-  "resources": [
-  {"name": "name1", "data": ["data"], "schema": "bad-path.json"}
-  ]}'
+                  "resources": [{
+                    "name": "name1",
+                    "data": ["data"],
+                    "schema": "bad-path.json"
+                  }]
+                }'
   
   expect_error(Package.load(descriptor, basePath = 'inst/extdata'), 'Not resolved Local URI')
-  })
+})
 
 test_that('local bad not safe', {
   descriptor = '{
-  "resources": [
-  {"name": "name1", "data": ["data"], "schema": "../data/table-schema.json"}
-  ]
-}'
+                   "resources": [{
+                     "name": "name1",
+                     "data": ["data"],
+                     "schema": "../data/table-schema.json"
+                   }]
+                 }'
   
   expect_error(Package.load(descriptor, basePath = 'inst/data'), 'Not safe path')
-  })
+})
 
 
 #################################################
@@ -289,97 +329,100 @@ testthat::context("Package #descriptor (expand)")
 
 test_that('resource', {
   descriptor = helpers.from.json.to.list('{
-                                         "resources": [
-                                         {
-                                         "name": "name",
-                                         "data": ["data"]
-                                         }
-                                         ]}')
-
+                                             "resources": [{
+                                               "name": "name",
+                                               "data": ["data"]
+                                             }]
+                                           }')
   target = helpers.from.json.to.list('{
-                                     "profile": "data-package",
-                                     "resources": [
-                                     {
-                                     "name": "name",
-                                     "data": ["data"],
-                                     "profile": "data-resource",
-                                     "encoding": "utf-8"
-                                     }
-                                     ]
-                                     }')
+                                        	"profile": "data-package",
+                                        		"resources": [{
+                                        			"name": "name",
+                                        			"data": ["data"],
+                                        			"profile": "data-resource",
+                                        			"encoding": "utf-8"
+                                        		}]
+                                        	}')
 
   dataPackage = Package.load(descriptor)
   
   expect_equal(dataPackage$descriptor[sort(names(target))],target) # sort names by target to match
-  })
+})
 
 test_that('tabular resource schema', {
   
-  descriptor = helpers.from.json.to.list( '{
-                                          "resources": [{
-                                          "name": "name",
-                                          "data": ["data"],
-                                          "profile": "tabular-data-resource",
-                                          "schema": {
-                                          "fields": [{"name": "name"}]
-                                          }
-                                          }]}')
+  descriptor = helpers.from.json.to.list('{
+                                            "resources": [{
+                                                  "name": "name",
+                                                  "data": ["data"],
+                                                  "profile": "tabular-data-resource",
+                                                  "schema": {
+                                                    "fields": [{
+                                                      "name": "name"
+                                                    }]
+                                                  }
+                                                }]
+                                              }')
   target = helpers.from.json.to.list('{
-                                     
-                                     "resources": [{
-                                     "name": "name",
-                                     "data": ["data"],
-                                     "profile": "tabular-data-resource",
-                                     "schema": {
-                                     "fields": [{"name": "name", "type": "string", "format": "default"}],
-                                     "missingValues": [""]
-                                     },
-                                     "encoding": "utf-8"
-                                     }],
-                                     "profile": "data-package"
-}')
+	                                      "resources": [{
+	                                      		"name": "name",
+	                                      		"data": ["data"],
+	                                      		"profile": "tabular-data-resource",
+	                                      		"schema": {
+	                                      			"fields": [{
+	                                      				"name": "name",
+	                                      				"type": "string",
+	                                      				"format": "default"
+	                                      			}],
+	                                      			"missingValues": [""]
+	                                      		},
+	                                      		"encoding": "utf-8"
+	                                      	}],
+	                                      	"profile": "data-package"
+	                                      }')
   dataPackage = Package.load(descriptor)
   
   expect_equal(dataPackage$descriptor, target)
-  })
+})
 
 test_that('tabular resource dialect', {
   
   descriptor = helpers.from.json.to.list('{
-                                         "resources": [
-                                         {
-                                         "name": "name",
-                                         "data": ["data"],
-                                         "profile": "tabular-data-resource",
-                                         "dialect": {"delimiter": "custom"}
-                                         }
-                                         ]}')
-
+                                          	"resources": [{
+                                          			"name": "name",
+                                          			"data": ["data"],
+                                          			"profile": "tabular-data-resource",
+                                          			"dialect": {
+                                          				"delimiter": "custom"
+                                          			}
+                                          		}]
+                                          	}')
+  
   target = helpers.from.json.to.list('{
-                                     "resources": [{
-                                     "name": "name",
-                                     "data": ["data"],
-                                     "profile": "tabular-data-resource",
-                                     
-                                     "dialect": {
-                                     "delimiter": "custom",
-                                     "doubleQuote": true,
-                                     "lineTerminator": "\\r\\n",
-                                     "quoteChar": "\\"",
-                                     "escapeChar": "\\\\",
-                                     "skipInitialSpace": true,
-                                     "header": true,
-                                     "caseSensitiveHeader": false
-                                     
-                                     },
-                                     "encoding": "utf-8"
-                                     }],
-                                     "profile": "data-package"
-      }')
+                                       	"resources": [{
+                                       			"name": "name",
+                                       			"data": ["data"],
+                                       			"profile": "tabular-data-resource",
+                                       	
+                                       			"dialect": {
+                                       				"delimiter": "custom",
+                                       				"doubleQuote": true,
+                                       				"lineTerminator": "\\r\\n",
+                                       				"quoteChar": "\\"",
+                                       				"escapeChar": "\\\\",
+                                       				"skipInitialSpace": true,
+                                       				"header": true,
+                                       				"caseSensitiveHeader": false
+                                       	
+                                       			},
+                                       			"encoding": "utf-8"
+                                       		}],
+                                       		"profile": "data-package"
+                                       	}')
   dataPackage = Package.load(descriptor)
   
   expect_equal(dataPackage$descriptor, target)
-  })
+})
 
 
 ###################################################
@@ -425,14 +468,24 @@ test_that('add tabular - can read data', {
   descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
   dataPackage = Package.load(descriptor, basePath = 'inst/extdata/dp1')
   dataPackage$addResource(helpers.from.json.to.list('{
-                                                    "name": "name",
-                                                    "data": [["id", "name"], ["1", "alex"], ["2", "john"]],
-                                                    "schema": {
-                                                    "fields": [
-                                                    {"name": "id", "type": "integer"},
-                                                    {"name": "name", "type": "string"}
-                                                    ]
-                                                    }}'))
+                                                          "name": "name",
+                                                      		"data": [
+                                                      			["id", "name"],
+                                                      			["1", "alex"],
+                                                      			["2", "john"]
+                                                      		],
+                                                      		"schema": {
+                                                      			"fields": [{
+                                                      					"name": "id",
+                                                      					"type": "integer"
+                                                      				},
+                                                      				{
+                                                      					"name": "name",
+                                                      					"type": "string"
+                                                      				}
+                                                      			]
+                                                      		}
+                                                      	}'))
   rows = dataPackage$resources[[2]]$table$read()
   
   expect_equal(rows, list(list(1, 'alex'), list(2, 'john')))
@@ -445,7 +498,7 @@ test_that('add with not a safe path - throw an error', {
   expect_error( dataPackage$addResource(helpers.from.json.to.list('{
                                                                   "name": "name",
                                                                   "path": ["../dp1/data.csv"]}')), 'not safe')
-  })
+})
 
 test_that('get existent', {
   descriptor = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
@@ -551,41 +604,46 @@ testthat::context("Package #foreignKeys")
 ###################################################
 
 DESCRIPTOR = helpers.from.json.to.list('{
-                                       "resources": [
-                                       {
-                                       "name": "main",
-                                       "data": [
-                                       ["id", "name", "surname", "parent_id"],
-                                       ["1", "Alex", "Martin", ""],
-                                       ["2", "John", "Dockins", "1"],
-                                       ["3", "Walter", "White", "2"]
-                                       ],
-                                       "schema": {
-                                       "fields": [
-                                       {"name": "id"},
-                                       {"name": "name"},
-                                       {"name": "surname"},
-                                       {"name": "parent_id"}
-                                       ],
-                                       "foreignKeys": [
-                                       {
-                                       "fields": "name",
-                                       "reference": {"resource": "people", "fields": "firstname"}
-                                       }
-                                       ]
-                                       }
-                                       }, {
-                                       "name": "people",
-                                       "data": [
-                                       ["firstname", "surname"],
-                                       ["Alex", "Martin"],
-                                       ["John", "Dockins"],
-                                       ["Walter", "White"]
-                                       ]
-                                       }
-                                       ]
-                                       }')
-
+                                          "resources": [{
+                                            "name": "main",
+                                            "data": [
+                                              ["id", "name", "surname", "parent_id"],
+                                              ["1", "Alex", "Martin", ""],
+                                              ["2", "John", "Dockins", "1"],
+                                              ["3", "Walter", "White", "2"]
+                                              ],
+                                            "schema": {
+                                              "fields": [{
+                                                "name": "id"
+                                              },
+                                              {
+                                                "name": "name"
+                                              },
+                                              {
+                                                "name": "surname"
+                                              },
+                                              {
+                                                "name": "parent_id"
+                                              }
+                                              ],
+                                              "foreignKeys": [{
+                                                "fields": "name",
+                                                "reference": {
+                                                  "resource": "people",
+                                                  "fields": "firstname"
+                                                }
+                                              }]
+                                            }
+                                          }, {
+                                            "name": "people",
+                                            "data": [
+                                              ["firstname", "surname"],
+                                              ["Alex", "Martin"],
+                                              ["John", "Dockins"],
+                                              ["Walter", "White"]
+                                              ]
+                                          }]
+                                        }')
 
 test_that('should read rows if single field foreign keys is valid', {
   resource = (Package.load(DESCRIPTOR))$getResource('main')
@@ -605,7 +663,6 @@ test_that('should throw on read if single field foreign keys is invalid', {
   resource = (Package.load(descriptor))$getResource('main')
   
   expect_error(resource$read(relations = TRUE, "Foreign key"))
-  
 }) 
 
 
@@ -680,7 +737,6 @@ test_that('should throw on read if single self field foreign keys is invalid', {
   resource = (Package.load(descriptor))$getResource('main')
   
   expect_error(resource$read(relations = TRUE), 'Foreign key')
-  
 })
 
 
@@ -722,5 +778,4 @@ test_that('should throw on read if multi field foreign keys is invalid', {
   resource = (Package.load(descriptor))$getResource('main')
   
   expect_error(resource$read(relations = TRUE), 'Foreign key')
-  
 })
