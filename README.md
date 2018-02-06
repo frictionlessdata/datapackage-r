@@ -150,8 +150,6 @@ jsonlite::prettify(helpers.from.list.to.json(resource$read())) # convert to json
 Documentation
 =============
 
-The package is still under development and some properties may not be working properly.
-
 Json objects are not included in R base data types. [Jsonlite package](https://CRAN.R-project.org/package=jsonlite) is internally used to convert json data to list objects. The input parameters of functions could be json strings, files or lists and the outputs are in list format to easily further process your data in R environment and exported as desired. The examples below show how to use jsonlite package to convert the output back to json adding indentation whitespace. More details about handling json you can see jsonlite documentation or vignettes [here](https://CRAN.R-project.org/package=jsonlite).
 
 Package
@@ -195,7 +193,7 @@ dataPackage$descriptor
 An `infer` method has found all our files and inspected it to extract useful metadata like profile, encoding, format, Table Schema etc. Let's tweak it a little bit:
 
 ``` r
-#dataPackage$descriptor$resources[1]$schema$fields[1]$type = 'year'
+dataPackage$descriptor$resources[[2]]$schema$fields[[2]]$type = 'year'
 dataPackage$commit()
 dataPackage$valid # true
 ```
@@ -299,9 +297,12 @@ Update data package instance if there are in-place changes in the descriptor.
 
 ``` r
 dataPackage = Package.load('{
-    "name": "package",
-    "resources": [{"name": "resource", "data": ["data"]}]
-}')
+                                                            "name": "package",
+                                                            "resources": [{
+                                                                    "name": "resource",
+                                                                    "data": ["data"]
+                                                                }]
+                                                            }')
 
 dataPackage$descriptor$name # package
 ```
@@ -310,7 +311,7 @@ dataPackage$descriptor$name # package
 
 ``` r
 dataPackage$descriptor$name = 'renamed-package'
-dataPackage$commit()
+dataPackage$commit() # TRUE
 ```
 
     ## [1] TRUE
@@ -348,12 +349,7 @@ Let's create and read a resource. We use static `Resource$load` method instantia
 
 ``` r
 resource = Resource.load('{"path": "data.csv"}')
-resource$tabular# TRUE
-```
-
-    ## [1] FALSE
-
-``` r
+resource$tabular # TRUE
 #resource$headers # ['city', 'location']
 #resource$read(keyed = TRUE)
 
@@ -802,7 +798,7 @@ Contributing
 The project follows the [Open Knowledge International coding standards](https://github.com/okfn/coding-standards). There are common commands to work with the project.Recommended way to get started is to create, activate and load the library environment. To install package and development dependencies into active environment:
 
 ``` r
-devtools::install_github("okgreece/datapackage-r", dependencies=TRUE)
+devtools::install_github("frictionlessdata/datapackage-r", dependencies=TRUE)
 ```
 
 To make test:
@@ -821,8 +817,6 @@ devtools::test()
 
     ## Loading datapackage.r
 
-    ## Updating collate directive in  C:\Users\Kleanthis-Okf\Documents\datapackage-r/DESCRIPTION
-
     ## Loading required package: testthat
 
     ## Testing datapackage.r
@@ -840,14 +834,14 @@ devtools::test()
     / |  8       | DataPackageError
     - |  8     1 | DataPackageError
     \ |  8     2 | DataPackageError
-    v |  8     2 | DataPackageError
-    ## ---------------------------------------------------------------------------------------------------------------------------------------------------
+    v |  8     2 | DataPackageError [0.2 s]
+    ## -------------------------------------------------------------------------------------------------------------------------------------------------
     ## test-errors.R:31: skip: should be catchable as a normal error
     ## Empty test
     ## 
     ## test-errors.R:42: skip: should work with table schema error
     ## Empty test
-    ## ---------------------------------------------------------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------------------------------------------------------
     ## 
     / |  0       | helpers
     - |  1       | helpers
@@ -873,7 +867,7 @@ devtools::test()
     \ |  6       | infer
     | |  7       | infer
     / |  8       | infer
-    v |  8       | infer [5.0 s]
+    v |  8       | infer [6.3 s]
     ## 
     / |  0       | Load
     - |  1       | Load
@@ -887,18 +881,18 @@ devtools::test()
     - |  9       | Load
     \ | 10       | Load
     | | 11       | Load
-    v | 11       | Load [10.8 s]
+    v | 11       | Load [12.1 s]
     ## 
     / |  0       | Package #descriptor (retrieve)
     - |  1       | Package #descriptor (retrieve)
-    v |  1       | Package #descriptor (retrieve) [0.1 s]
+    v |  1       | Package #descriptor (retrieve)
     ## 
     / |  0       | Package #load
     - |  1       | Package #load
     \ |  2       | Package #load
     | |  3       | Package #load
     / |  4       | Package #load
-    v |  4       | Package #load [0.2 s]
+    v |  4       | Package #load [0.3 s]
     ## 
     / |  0       | Package #descriptor (dereference)
     - |  1       | Package #descriptor (dereference)
@@ -909,13 +903,13 @@ devtools::test()
     \ |  6       | Package #descriptor (dereference)
     | |  7       | Package #descriptor (dereference)
     / |  8       | Package #descriptor (dereference)
-    v |  8       | Package #descriptor (dereference) [1.1 s]
+    v |  8       | Package #descriptor (dereference) [1.4 s]
     ## 
     / |  0       | Package #descriptor (expand)
     - |  1       | Package #descriptor (expand)
     \ |  2       | Package #descriptor (expand)
     | |  3       | Package #descriptor (expand)
-    v |  3       | Package #descriptor (expand) [0.4 s]
+    v |  3       | Package #descriptor (expand) [0.6 s]
     ## 
     / |  0       | Package #resources
     - |  1       | Package #resources
@@ -941,7 +935,7 @@ devtools::test()
     - | 21       | Package #resources
     \ | 22       | Package #resources
     | | 23       | Package #resources
-    v | 23       | Package #resources [1.7 s]
+    v | 23       | Package #resources [2.7 s]
     ## 
     / |  0       | Package #commit
     - |  1       | Package #commit
@@ -950,7 +944,7 @@ devtools::test()
     / |  4       | Package #commit
     - |  5       | Package #commit
     \ |  6       | Package #commit
-    v |  6       | Package #commit [0.3 s]
+    v |  6       | Package #commit [0.4 s]
     ## 
     / |  0       | Package #foreignKeys
     - |  1       | Package #foreignKeys
@@ -960,19 +954,22 @@ devtools::test()
     - |  5       | Package #foreignKeys
     \ |  6       | Package #foreignKeys
     | |  7       | Package #foreignKeys
-    v |  7       | Package #foreignKeys [3.4 s]
+    v |  7       | Package #foreignKeys [4.4 s]
     ## 
     / |  0       | Profile
-    - |  1       | Profile
-    \ |  2       | Profile
-    | |  3       | Profile
-    / |  4       | Profile
-    - |  5       | Profile
-    \ |  6       | Profile
-    | |  7       | Profile
-    / |  8       | Profile
-    - |  9       | Profile
-    v |  9       | Profile [0.6 s]
+    v |  0       | Profile
+    ## 
+    / |  0       | Profile #load
+    - |  1       | Profile #load
+    \ |  2       | Profile #load
+    | |  3       | Profile #load
+    / |  4       | Profile #load
+    - |  5       | Profile #load
+    \ |  6       | Profile #load
+    | |  7       | Profile #load
+    / |  8       | Profile #load
+    - |  9       | Profile #load
+    v |  9       | Profile #load [0.5 s]
     ## 
     / |  0       | Profile #validate
     - |  1       | Profile #validate
@@ -988,11 +985,11 @@ devtools::test()
     ## 
     / |  0       | Profile #up-to-date - tabular-data-package
     - |  1       | Profile #up-to-date - tabular-data-package
-    v |  1       | Profile #up-to-date - tabular-data-package [0.8 s]
+    v |  1       | Profile #up-to-date - tabular-data-package [0.7 s]
     ## 
     / |  0       | Profile #up-to-date - fiscal-data-package
     - |  1       | Profile #up-to-date - fiscal-data-package
-    v |  1       | Profile #up-to-date - fiscal-data-package [0.6 s]
+    v |  1       | Profile #up-to-date - fiscal-data-package [0.7 s]
     ## 
     / |  0       | Profile #up-to-date - data-resource
     - |  1       | Profile #up-to-date - data-resource
@@ -1058,7 +1055,7 @@ devtools::test()
     - | 57       | Profile #up-to-date - tabular-data-resource
     \ | 58       | Profile #up-to-date - tabular-data-resource
     | | 59       | Profile #up-to-date - tabular-data-resource
-    v | 59       | Profile #up-to-date - tabular-data-resource [3.3 s]
+    v | 59       | Profile #up-to-date - tabular-data-resource [4.0 s]
     ## 
     / |  0       | Resource
     v |  0       | Resource
@@ -1083,7 +1080,7 @@ devtools::test()
     | |  3       | Resource #descriptor (retrieve)
     / |  4       | Resource #descriptor (retrieve)
     - |  5       | Resource #descriptor (retrieve)
-    v |  5       | Resource #descriptor (retrieve) [0.3 s]
+    v |  5       | Resource #descriptor (retrieve) [0.2 s]
     ## 
     / |  0       | Resource #descriptor (dereference)
     - |  1       | Resource #descriptor (dereference)
@@ -1094,15 +1091,13 @@ devtools::test()
     \ |  6       | Resource #descriptor (dereference)
     | |  7       | Resource #descriptor (dereference)
     / |  8       | Resource #descriptor (dereference)
-    v |  8       | Resource #descriptor (dereference) [0.4 s]
+    v |  8       | Resource #descriptor (dereference) [0.8 s]
     ## 
     / |  0       | Resource #descriptor (expand)
     - |  1       | Resource #descriptor (expand)
     \ |  2       | Resource #descriptor (expand)
     | |  3       | Resource #descriptor (expand)
-    / |  4       | Resource #descriptor (expand)
-    - |  5       | Resource #descriptor (expand)
-    v |  5       | Resource #descriptor (expand) [0.6 s]
+    v |  3       | Resource #descriptor (expand) [0.6 s]
     ## 
     / |  0       | Resource #source/sourceType
     - |  1       | Resource #source/sourceType
@@ -1133,7 +1128,7 @@ devtools::test()
     \ | 26       | Resource #source/sourceType
     | | 27       | Resource #source/sourceType
     / | 28       | Resource #source/sourceType
-    v | 28       | Resource #source/sourceType [0.3 s]
+    v | 28       | Resource #source/sourceType [0.5 s]
     ## 
     / |  0       | Resource #rawRead
     - |  1       | Resource #rawRead
@@ -1141,23 +1136,31 @@ devtools::test()
     ## 
     / |  0       | Resource #table
     - |  1       | Resource #table
-    v |  1       | Resource #table
+    \ |  2       | Resource #table
+    | |  3       | Resource #table
+    / |  4       | Resource #table
+    - |  5       | Resource #table
+    v |  5       | Resource #table [3.8 s]
     ## 
     / |  0       | Resource #infer
     - |  1       | Resource #infer
-    v |  1       | Resource #infer [3.8 s]
+    v |  1       | Resource #infer [4.4 s]
+    ## 
+    / |  0       | Resource #dialect
+    - |  1       | Resource #dialect
+    v |  1       | Resource #dialect [3.1 s]
     ## 
     / |  0       | validate
     - |  1       | validate
     \ |  2       | validate
     | |  3       | validate
     / |  4       | validate
-    v |  4       | validate [0.3 s]
+    v |  4       | validate [0.5 s]
     ## 
-    ## == Results ========================================================================================================================================
-    ## Duration: 36.0 s
+    ## == Results ======================================================================================================================================
+    ## Duration: 50.1 s
     ## 
-    ## OK:       229
+    ## OK:       232
     ## Failed:   0
     ## Warnings: 0
     ## Skipped:  2

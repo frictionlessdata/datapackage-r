@@ -104,13 +104,14 @@ descriptor = '{
 
 dataPackage = Package.load(descriptor)
 dataPackage
+```
+```{r eval=TRUE, include=TRUE, warning=FALSE}
 resource = dataPackage$getResource('example')
 jsonlite::prettify(helpers.from.list.to.json(resource$read())) # convert to json and add indentation with jsonlite prettify function
 ```
 
-# Documentation
 
-The package is still under development and some properties may not be working properly.
+# Documentation
 
 Json objects are not included in R base data types. [Jsonlite package](https://CRAN.R-project.org/package=jsonlite) is internally used to convert json data to list objects. The input parameters of functions could be json strings, files or lists and the outputs are in list format to easily further process your data in R environment and exported as desired. The examples below show how to use jsonlite package to convert the output back to json adding indentation whitespace. More details about handling json you can see jsonlite documentation or vignettes [here](https://CRAN.R-project.org/package=jsonlite).
 
@@ -140,13 +141,13 @@ rome,2017,2860000
 
 First we create a blank data package::
 
-```{r eval=TRUE, include=TRUE, echo=TRUE}
+```{r eval=FALSE, include=TRUE, echo=TRUE}
 dataPackage = Package.load()
 ```
 
 Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `*.csv`:
 
-```{r eval=FALSE, include=TRUE}
+```{r eval=FALSE, include=TRUE, warning=FALSE, message=FALSE}
 dataPackage$infer('csv')
 dataPackage$descriptor
 ```
@@ -154,7 +155,7 @@ dataPackage$descriptor
 An `infer` method has found all our files and inspected it to extract useful metadata like profile, encoding, format, Table Schema etc. Let's tweak it a little bit:
 
 ```{r eval=FALSE, include=TRUE}
-#dataPackage$descriptor$resources[1]$schema$fields[1]$type = 'year'
+dataPackage$descriptor$resources[[2]]$schema$fields[[2]]$type = 'year'
 dataPackage$commit()
 dataPackage$valid # true
 ```
@@ -258,16 +259,19 @@ Update data package instance if there are in-place changes in the descriptor.
 
 ```{r eval=TRUE, include=TRUE}
 dataPackage = Package.load('{
-    "name": "package",
-    "resources": [{"name": "resource", "data": ["data"]}]
-}')
+															"name": "package",
+															"resources": [{
+																	"name": "resource",
+																	"data": ["data"]
+																}]
+															}')
 
 dataPackage$descriptor$name # package
 ```
 
 ```{r eval=TRUE, include=TRUE}
 dataPackage$descriptor$name = 'renamed-package'
-dataPackage$commit()
+dataPackage$commit() # TRUE
 dataPackage$descriptor$name # renamed-package
 ```
 
@@ -297,9 +301,9 @@ rome,N/A
 
 Let's create and read a resource. We use static `Resource$load` method instantiate a resource. Because resource is tabular we could use `resourceread` method with a `keyed` option to get an array of keyed rows:
 
-```{r eval=TRUE, include=TRUE}
+```{r eval=FALSE, include=TRUE}
 resource = Resource.load('{"path": "data.csv"}')
-resource$tabular# TRUE
+resource$tabular # TRUE
 #resource$headers # ['city', 'location']
 #resource$read(keyed = TRUE)
 
@@ -312,7 +316,7 @@ resource$tabular# TRUE
 
 As we could see our locations are just a strings. But it should be geopoints. Also Rome's location is not available but it's also just a `N/A` string instead of JavaScript `null`. First we have to infer resource metadata:
 
-```{r eval=FALSE, include=TRUE}
+```{r eval=FALSE, include=TRUE, error=TRUE}
 resource$infer()
 resource$descriptor
 #{ path: 'data.csv',
@@ -746,7 +750,7 @@ In [NEWS.md][news] described only breaking and the most important changes. The f
 The project follows the [Open Knowledge International coding standards][coding_standards]. There are common commands to work with the project.Recommended way to get started is to create, activate and load the library environment. To install package and development dependencies into active environment:
 
 ```{r, eval=FALSE, include=T}
-devtools::install_github("okgreece/datapackage-r", dependencies=TRUE)
+devtools::install_github("frictionlessdata/datapackage-r", dependencies=TRUE)
 ```
 
 To make test:
