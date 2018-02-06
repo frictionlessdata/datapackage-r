@@ -544,25 +544,17 @@ test_that('remove non existent', {
   expect_length(dataPackage$descriptor$resources, 1)
 })
 
-# # ###################################################
-# # testthat::context("Package #save")
-# # ###################################################
-# # 
-# # 
-# # # TODO: recover stub with async writeFile
-# # it.skip('general', async function () {
-# #   # TODO: check it trows correct error in browser
-# #   if (process.env.USER_ENV === 'browser') {
-# #     this.skip()
-# #   }
-# #   descriptor = {resources: [{name: 'name', data: ['data']}]}
-# #   dataPackage = Package.load(descriptor)
-# #   writeFile = sinon.stub(fs, 'writeFile')
-# #   dataPackage.save('target')
-# #   writeFile.restore()
-# #   sinon.assert.calledWith(writeFile,
-# #                           'target', JSON.stringify(expand(descriptor)))
-# # })
+###################################################
+testthat::context("Package #save")
+###################################################
+
+test_that("general", {
+  descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
+  dataPackage = Package.load(descriptor)
+  dataPackage$save("inst/extdata")
+  
+  expect_true(file.exists("inst/extdata/package.json"))
+})
 
 ###################################################
 testthat::context("Package #commit")
