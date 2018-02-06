@@ -227,31 +227,6 @@ test_that('general resource', {
   expect_equal(resource$descriptor, helpers.from.json.to.list('{"name": "name","data": "data","profile": "data-resource","encoding": "utf-8"}'))
   })
 
-test_that('tabular resource inline', {
-  descriptor = helpers.from.json.to.list('{
-                                         "name": "example",
-                                         "profile": "tabular-data-resource",
-                                         "data": [
-                                         ["height", "age", "name"],
-                                         ["180", "18", "Tony"],
-                                         ["192", "32", "Jacob"]
-                                         ],
-                                         "schema": {
-                                         "fields": [
-                                         {"name": "height", "type": "integer"},
-                                         {"name": "age", "type": "integer"},
-                                         {"name": "name", "type": "string"}
-                                         ]
-                                         }
-}')
- 
-  resource = Resource.load(descriptor)
-
-  expect_is(resource$table, "Table")
-  expect_equal(resource$table$read(),
-               helpers.from.json.to.list('[[180, 18, "Tony"], [192, 32, "Jacob"]]'))
-  })
-
 test_that('tabular resource schema', {
   descriptor = helpers.from.json.to.list('{
                                          "name": "name",
@@ -491,8 +466,70 @@ test_that('general resource', {
 }'
   resource = Resource.load(descriptor)
   expect_equal(resource$table, NULL)
-  })
+})
 
+
+test_that('tabular resource inline', {
+  descriptor = '{
+                  "name": "example",
+                  "profile": "tabular-data-resource",
+                  "data": [
+                    ["height", "age", "name"],
+                    ["180", "18", "Tony"],
+                    ["192", "32", "Jacob"]
+                    ],
+                  "schema": {
+                    "fields": [{
+                      "name": "height",
+                      "type": "integer"
+                    },
+                    {
+                      "name": "age",
+                      "type": "integer"
+                    },
+                    {
+                      "name": "name",
+                      "type": "string"
+                    }
+                    ]
+                  }
+                }'
+  resource = Resource.load(descriptor)
+  expect_equal(class(resource$table), c("Table","R6"))
+  expect_equal(resource$table$read(), 
+               helpers.from.json.to.list('[
+                                            [180, 18, "Tony"],
+                                            [192, 32, "Jacob"]
+                                           ]'))
+})
+
+test_that('tabular resource local', {
+  descriptor = '{
+    "name": "example",
+    "profile": "tabular-data-resource",
+    "path": ["inst/extdata/dp1/data.csv"],
+    "schema": {
+      "fields": [{
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "size",
+        "type": "integer"
+      }
+      ]
+    }
+  }'
+  
+  resource = Resource.load(descriptor)
+  expect_equal(class(resource$table), c("Table","R6"))
+  expect_equal(resource$table$read(), 
+               helpers.from.json.to.list('[
+                                        ["gb", 100],
+                                         ["us", 200],
+                                         ["cn", 300]
+                                         ]'))
+})
 
 #######################################################
 testthat::context('Resource #infer')
@@ -517,3 +554,40 @@ test_that('preserve resource format from descriptor ', {
                  }
 }'))
 })
+
+#######################################################
+testthat::context('Resource #dialect')
+#######################################################
+
+test_that('it supports dialect.delimiter', {
+  descriptor =helpers.from.json.to.list('{
+                                           "profile": "tabular-data-resource",
+                                           "path": "inst/extdata/data.dialect.csv",
+                                           "schema": {
+                                             "fields": [{
+                                               "name": "name"
+                                             }, {
+                                               "name": "size"
+                                             }]
+                                           },
+                                           "dialect": {
+                                             "delimiter": ","
+                                           }
+                                         }')
+  resource = Resource.load(descriptor)
+  rows = resource$read(keyed = TRUE)
+  expect_equal(rows, helpers.from.json.to.list('[{
+                                                   "name": "gb",
+                                                   "size": "105"
+                                                 },
+                                                   {
+                                                     "name": "us",
+                                                     "size": "205"
+                                                   },
+                                                   {
+                                                     "name": "cn",
+                                                     "size": "305"
+                                                   }
+                                                   ]'))
+})
+
