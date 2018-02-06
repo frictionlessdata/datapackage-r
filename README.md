@@ -834,14 +834,14 @@ devtools::test()
     / |  8       | DataPackageError
     - |  8     1 | DataPackageError
     \ |  8     2 | DataPackageError
-    v |  8     2 | DataPackageError [0.2 s]
-    ## -------------------------------------------------------------------------------------------------------------------------------------------------
+    v |  8     2 | DataPackageError
+    ## -----------------------------------------------------------------------------------------------------------------------------------------------------------
     ## test-errors.R:31: skip: should be catchable as a normal error
     ## Empty test
     ## 
     ## test-errors.R:42: skip: should work with table schema error
     ## Empty test
-    ## -------------------------------------------------------------------------------------------------------------------------------------------------
+    ## -----------------------------------------------------------------------------------------------------------------------------------------------------------
     ## 
     / |  0       | helpers
     - |  1       | helpers
@@ -867,7 +867,7 @@ devtools::test()
     \ |  6       | infer
     | |  7       | infer
     / |  8       | infer
-    v |  8       | infer [6.3 s]
+    v |  8       | infer [5.0 s]
     ## 
     / |  0       | Load
     - |  1       | Load
@@ -881,7 +881,7 @@ devtools::test()
     - |  9       | Load
     \ | 10       | Load
     | | 11       | Load
-    v | 11       | Load [12.1 s]
+    v | 11       | Load [10.5 s]
     ## 
     / |  0       | Package #descriptor (retrieve)
     - |  1       | Package #descriptor (retrieve)
@@ -892,7 +892,7 @@ devtools::test()
     \ |  2       | Package #load
     | |  3       | Package #load
     / |  4       | Package #load
-    v |  4       | Package #load [0.3 s]
+    v |  4       | Package #load [0.2 s]
     ## 
     / |  0       | Package #descriptor (dereference)
     - |  1       | Package #descriptor (dereference)
@@ -903,13 +903,13 @@ devtools::test()
     \ |  6       | Package #descriptor (dereference)
     | |  7       | Package #descriptor (dereference)
     / |  8       | Package #descriptor (dereference)
-    v |  8       | Package #descriptor (dereference) [1.4 s]
+    v |  8       | Package #descriptor (dereference) [1.0 s]
     ## 
     / |  0       | Package #descriptor (expand)
     - |  1       | Package #descriptor (expand)
     \ |  2       | Package #descriptor (expand)
     | |  3       | Package #descriptor (expand)
-    v |  3       | Package #descriptor (expand) [0.6 s]
+    v |  3       | Package #descriptor (expand) [0.4 s]
     ## 
     / |  0       | Package #resources
     - |  1       | Package #resources
@@ -935,7 +935,11 @@ devtools::test()
     - | 21       | Package #resources
     \ | 22       | Package #resources
     | | 23       | Package #resources
-    v | 23       | Package #resources [2.7 s]
+    v | 23       | Package #resources [1.4 s]
+    ## 
+    / |  0       | Package #save
+    - |  1       | Package #save
+    v |  1       | Package #save
     ## 
     / |  0       | Package #commit
     - |  1       | Package #commit
@@ -944,7 +948,7 @@ devtools::test()
     / |  4       | Package #commit
     - |  5       | Package #commit
     \ |  6       | Package #commit
-    v |  6       | Package #commit [0.4 s]
+    v |  6       | Package #commit [0.3 s]
     ## 
     / |  0       | Package #foreignKeys
     - |  1       | Package #foreignKeys
@@ -954,7 +958,7 @@ devtools::test()
     - |  5       | Package #foreignKeys
     \ |  6       | Package #foreignKeys
     | |  7       | Package #foreignKeys
-    v |  7       | Package #foreignKeys [4.4 s]
+    v |  7       | Package #foreignKeys [2.8 s]
     ## 
     / |  0       | Profile
     v |  0       | Profile
@@ -969,31 +973,31 @@ devtools::test()
     | |  7       | Profile #load
     / |  8       | Profile #load
     - |  9       | Profile #load
-    v |  9       | Profile #load [0.5 s]
+    v |  9       | Profile #load [0.3 s]
     ## 
     / |  0       | Profile #validate
     - |  1       | Profile #validate
     \ |  2       | Profile #validate
-    v |  2       | Profile #validate [0.1 s]
+    v |  2       | Profile #validate
     ## 
     / |  0       | Profile #up-to-date
     v |  0       | Profile #up-to-date
     ## 
     / |  0       | Profile #up-to-date - data-package
     - |  1       | Profile #up-to-date - data-package
-    v |  1       | Profile #up-to-date - data-package [0.5 s]
+    v |  1       | Profile #up-to-date - data-package [0.4 s]
     ## 
     / |  0       | Profile #up-to-date - tabular-data-package
     - |  1       | Profile #up-to-date - tabular-data-package
-    v |  1       | Profile #up-to-date - tabular-data-package [0.7 s]
+    v |  1       | Profile #up-to-date - tabular-data-package [0.6 s]
     ## 
     / |  0       | Profile #up-to-date - fiscal-data-package
     - |  1       | Profile #up-to-date - fiscal-data-package
-    v |  1       | Profile #up-to-date - fiscal-data-package [0.7 s]
+    v |  1       | Profile #up-to-date - fiscal-data-package [0.8 s]
     ## 
     / |  0       | Profile #up-to-date - data-resource
     - |  1       | Profile #up-to-date - data-resource
-    v |  1       | Profile #up-to-date - data-resource [0.3 s]
+    v |  1       | Profile #up-to-date - data-resource [0.4 s]
     ## 
     / |  0       | Profile #up-to-date - tabular-data-resource
     - |  1       | Profile #up-to-date - tabular-data-resource
@@ -1055,7 +1059,7 @@ devtools::test()
     - | 57       | Profile #up-to-date - tabular-data-resource
     \ | 58       | Profile #up-to-date - tabular-data-resource
     | | 59       | Profile #up-to-date - tabular-data-resource
-    v | 59       | Profile #up-to-date - tabular-data-resource [4.0 s]
+    v | 59       | Profile #up-to-date - tabular-data-resource [2.6 s]
     ## 
     / |  0       | Resource
     v |  0       | Resource
@@ -1072,7 +1076,8 @@ devtools::test()
     - |  9       | Resource #load
     \ | 10       | Resource #load
     | | 11       | Resource #load
-    v | 11       | Resource #load [0.2 s]
+    / | 12       | Resource #load
+    v | 12       | Resource #load [0.2 s]
     ## 
     / |  0       | Resource #descriptor (retrieve)
     - |  1       | Resource #descriptor (retrieve)
@@ -1080,7 +1085,7 @@ devtools::test()
     | |  3       | Resource #descriptor (retrieve)
     / |  4       | Resource #descriptor (retrieve)
     - |  5       | Resource #descriptor (retrieve)
-    v |  5       | Resource #descriptor (retrieve) [0.2 s]
+    v |  5       | Resource #descriptor (retrieve) [0.1 s]
     ## 
     / |  0       | Resource #descriptor (dereference)
     - |  1       | Resource #descriptor (dereference)
@@ -1091,13 +1096,13 @@ devtools::test()
     \ |  6       | Resource #descriptor (dereference)
     | |  7       | Resource #descriptor (dereference)
     / |  8       | Resource #descriptor (dereference)
-    v |  8       | Resource #descriptor (dereference) [0.8 s]
+    v |  8       | Resource #descriptor (dereference) [0.3 s]
     ## 
     / |  0       | Resource #descriptor (expand)
     - |  1       | Resource #descriptor (expand)
     \ |  2       | Resource #descriptor (expand)
     | |  3       | Resource #descriptor (expand)
-    v |  3       | Resource #descriptor (expand) [0.6 s]
+    v |  3       | Resource #descriptor (expand) [0.4 s]
     ## 
     / |  0       | Resource #source/sourceType
     - |  1       | Resource #source/sourceType
@@ -1128,7 +1133,7 @@ devtools::test()
     \ | 26       | Resource #source/sourceType
     | | 27       | Resource #source/sourceType
     / | 28       | Resource #source/sourceType
-    v | 28       | Resource #source/sourceType [0.5 s]
+    v | 28       | Resource #source/sourceType [0.3 s]
     ## 
     / |  0       | Resource #rawRead
     - |  1       | Resource #rawRead
@@ -1140,27 +1145,36 @@ devtools::test()
     | |  3       | Resource #table
     / |  4       | Resource #table
     - |  5       | Resource #table
-    v |  5       | Resource #table [3.8 s]
+    v |  5       | Resource #table [3.2 s]
     ## 
     / |  0       | Resource #infer
     - |  1       | Resource #infer
-    v |  1       | Resource #infer [4.4 s]
+    v |  1       | Resource #infer [3.8 s]
     ## 
     / |  0       | Resource #dialect
     - |  1       | Resource #dialect
-    v |  1       | Resource #dialect [3.1 s]
+    \ |  2       | Resource #dialect
+    v |  2       | Resource #dialect [6.1 s]
+    ## 
+    / |  0       | Resource #commit
+    - |  1       | Resource #commit
+    \ |  2       | Resource #commit
+    | |  3       | Resource #commit
+    / |  4       | Resource #commit
+    - |  5       | Resource #commit
+    v |  5       | Resource #commit [0.1 s]
     ## 
     / |  0       | validate
     - |  1       | validate
     \ |  2       | validate
     | |  3       | validate
     / |  4       | validate
-    v |  4       | validate [0.5 s]
+    v |  4       | validate [0.2 s]
     ## 
-    ## == Results ======================================================================================================================================
-    ## Duration: 50.1 s
+    ## == Results ================================================================================================================================================
+    ## Duration: 42.3 s
     ## 
-    ## OK:       232
+    ## OK:       240
     ## Failed:   0
     ## Warnings: 0
     ## Skipped:  2
