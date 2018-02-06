@@ -22,7 +22,7 @@ test_that('works with base descriptor', {
   expect_equal(resource$name, 'name')
   expect_false(resource$tabular)
   expect_equal(resource$descriptor, 
-               expandResourceDescriptor(helpers.from.json.to.list( descriptor)))
+               expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
   expect_true(resource$inline)
   expect_equal(resource$source, list("data"))
   expect_null(resource$table)
@@ -110,7 +110,19 @@ testthat::context('Resource #descriptor (dereference)')
 
 test_that('general', {
   descriptor = system.file('extdata/data-resource-dereference.json', package = "datapackage.r")
-  resource = Resource.load(descriptor)
+  resource = Resource.load(descriptor,strict = TRUE)
+  
+  expect_equal(resource$descriptor,
+               expandResourceDescriptor(
+                 helpers.from.json.to.list(
+                   '{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'
+                 )
+               ))
+})
+
+test_that('general strict', {
+  descriptor = system.file('extdata/data-resource-dereference.json', package = "datapackage.r")
+  resource = Resource.load(descriptor,strict = TRUE)
   
   expect_equal(resource$descriptor,
                expandResourceDescriptor(
@@ -637,4 +649,16 @@ test_that('commit', {
   resource$commit()
   expect_true(resource$tabular)
   expect_equal(resource$profile$name, "tabular-data-resource")
+})
+
+###################################################
+testthat::context("Package #save")
+###################################################
+
+test_that("general", {
+  descriptor = '{"resources": [{"name": "name", "data": ["data"]}]}'
+  dataResource = Resource.load(descriptor)
+  dataResource$save("inst/extdata")
+  
+  expect_true(file.exists("inst/extdata/resource.json"))
 })

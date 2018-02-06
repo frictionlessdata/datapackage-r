@@ -167,10 +167,9 @@ Resource <- R6Class(
     },
     
     save = function(target) {
-      
-      write(private$currentDescriptor_, file = stringr::str_c(target,"package.txt", sep = "/"))
+      write_json(private$currentDescriptor_,
+                 file = stringr::str_c(target, "resource.json", sep = "/"))
       save = stringr::str_interp('Package saved at: "${target}"')
-      
       return(save)
     }
     

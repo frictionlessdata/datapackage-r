@@ -348,7 +348,8 @@ isRemotePath = function(path) {
     path = as.character(path)
     #if (!is.character(path)) FALSE else
     isTRUE(startsWith("http", unlist(strsplit(path, ":")))[1] |
-             startsWith("https", unlist(strsplit(path, ":")))[1])
+             startsWith("https", unlist(strsplit(path, ":")))[1] | 
+             isTRUE(is.git(path)))
     
   }
 }

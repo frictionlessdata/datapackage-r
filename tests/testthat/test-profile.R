@@ -35,6 +35,14 @@ foreach(name = 1:length(PROFILES) ) %do% {
   })
 }
 
+test_that('load remote profile 1', {
+  url = 'https://specs.frictionlessdata.io/schemas/data-package.json'
+  jsonschema = helpers.from.json.to.list('inst/profiles/data-package.json')
+  profile = Profile.load(url)
+  expect_equal(profile$name, "data-package")
+  expect_equal(profile$jsonschema, jsonschema)
+})
+
 test_that('load remote profile', {
   url = 'http://example.com/data-package.json'
   jsonschema = helpers.from.json.to.list('inst/profiles/data-package.json')
