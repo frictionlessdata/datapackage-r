@@ -38,6 +38,7 @@ test_that('works with tabular descriptor', {
   expect_equal(resource$descriptor,
                expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
   expect_true(resource$inline)
+  expect_true(resource$checkRelations())
   expect_equal(resource$source, list("data"))
 })
 
@@ -591,3 +592,49 @@ test_that('it supports dialect.delimiter', {
                                                    ]'))
 })
 
+test_that('it supports dialect.delimiter and true relations', {
+  descriptor =helpers.from.json.to.list('{
+                                           "profile": "tabular-data-resource",
+                                           "path": "inst/extdata/data.dialect.csv",
+                                           "schema": {
+                                             "fields": [{
+                                               "name": "name"
+                                             }, {
+                                               "name": "size"
+                                             }]
+                                           },
+                                           "dialect": {
+                                             "delimiter": ","
+                                           }
+                                         }')
+  resource = Resource.load(descriptor)
+  rows = resource$read(keyed = TRUE, relations = TRUE)
+  expect_equal(rows, helpers.from.json.to.list('[{
+                                                   "name": "gb",
+                                                   "size": "105"
+                                                 },
+                                                   {
+                                                     "name": "us",
+                                                     "size": "205"
+                                                   },
+                                                   {
+                                                     "name": "cn",
+                                                     "size": "305"
+                                                   }
+                                                   ]'))
+})
+#######################################################
+testthat::context('Resource #commit')
+#######################################################
+
+test_that('commit', {
+  descriptor = '{"name":"name","data":["data"],"profile":"data-resource"}' 
+  resource = Resource.load(descriptor)
+  expect_equal(resource$name, 'name')
+  expect_equal(resource$profile$name, "data-resource")
+  expect_false(resource$tabular)
+  resource$descriptor$profile = "tabular-data-resource"
+  resource$commit()
+  expect_true(resource$tabular)
+  expect_equal(resource$profile$name, "tabular-data-resource")
+})
