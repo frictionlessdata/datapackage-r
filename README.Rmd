@@ -78,7 +78,7 @@ library(datapackage.r)
 
 # Examples
 
-Code examples in this readme requires R 3.3 or higher, You could see even more [examples](https://github.com/okgreece/datapackage-r/tree/master/inst/examples) in examples directory (and vignettes will be soon available). 
+Code examples in this readme requires R 3.3 or higher, You could see even more [examples](https://github.com/frictionlessdata/datapackage-r/tree/master/vignettes) in vignettes directory. 
 
 ```{r eval=TRUE, include=TRUE, warning=FALSE}
 descriptor = '{
@@ -768,7 +768,7 @@ more detailed information about how to create and run tests you can find in [tes
 
 # Github 
 
-+ https://github.com/okgreece/datapackage-r
++ https://github.com/frictionlessdata/datapackage-r
 
 <img src="okgr.png" align="right" width=120px /><img src="oklabs.png" align="right" width=120px />
 
@@ -779,7 +779,7 @@ more detailed information about how to create and run tests you can find in [tes
 [Rstudiodown]: https://www.rstudio.com/products/rstudio/download/
 [coding_standards]: https://github.com/okfn/coding-standards
 [datapackage]: http://frictionlessdata.io/specs/data-package
-[news]: https://github.com/okgreece/datapackage-r/blob/master/NEWS.md
-[commits]: https://github.com/okgreece/datapackage-r/commits/master
+[news]: https://github.com/frictionlessdata/datapackage-r/blob/master/NEWS.md
+[commits]: https://github.com/frictionlessdata/datapackage-r/commits/master
 
 

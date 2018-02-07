@@ -70,7 +70,7 @@ library(datapackage.r)
 Examples
 ========
 
-Code examples in this readme requires R 3.3 or higher, You could see even more [examples](https://github.com/okgreece/datapackage-r/tree/master/inst/examples) in examples directory (and vignettes will be soon available).
+Code examples in this readme requires R 3.3 or higher, You could see even more [examples](https://github.com/frictionlessdata/datapackage-r/tree/master/vignettes) in vignettes directory.
 
 ``` r
 descriptor = '{
@@ -790,7 +790,7 @@ tryCatch({
 Changelog - News
 ----------------
 
-In [NEWS.md](https://github.com/okgreece/datapackage-r/blob/master/NEWS.md) described only breaking and the most important changes. The full changelog could be found in nicely formatted [commit](https://github.com/okgreece/datapackage-r/commits/master) history.
+In [NEWS.md](https://github.com/frictionlessdata/datapackage-r/blob/master/NEWS.md) described only breaking and the most important changes. The full changelog could be found in nicely formatted [commit](https://github.com/frictionlessdata/datapackage-r/commits/master) history.
 
 Contributing
 ============
@@ -834,14 +834,14 @@ devtools::test()
     / |  8       | DataPackageError
     - |  8     1 | DataPackageError
     \ |  8     2 | DataPackageError
-    v |  8     2 | DataPackageError
-    ## -----------------------------------------------------------------------------------------------------------------------------------------------------------
+    v |  8     2 | DataPackageError [0.2 s]
+    ## ------------------------------------------------------------------------------------------------------------------------------------------------------
     ## test-errors.R:31: skip: should be catchable as a normal error
     ## Empty test
     ## 
     ## test-errors.R:42: skip: should work with table schema error
     ## Empty test
-    ## -----------------------------------------------------------------------------------------------------------------------------------------------------------
+    ## ------------------------------------------------------------------------------------------------------------------------------------------------------
     ## 
     / |  0       | helpers
     - |  1       | helpers
@@ -881,7 +881,7 @@ devtools::test()
     - |  9       | Load
     \ | 10       | Load
     | | 11       | Load
-    v | 11       | Load [10.5 s]
+    v | 11       | Load [11.0 s]
     ## 
     / |  0       | Package #descriptor (retrieve)
     - |  1       | Package #descriptor (retrieve)
@@ -892,7 +892,7 @@ devtools::test()
     \ |  2       | Package #load
     | |  3       | Package #load
     / |  4       | Package #load
-    v |  4       | Package #load [0.2 s]
+    v |  4       | Package #load [0.5 s]
     ## 
     / |  0       | Package #descriptor (dereference)
     - |  1       | Package #descriptor (dereference)
@@ -909,7 +909,7 @@ devtools::test()
     - |  1       | Package #descriptor (expand)
     \ |  2       | Package #descriptor (expand)
     | |  3       | Package #descriptor (expand)
-    v |  3       | Package #descriptor (expand) [0.4 s]
+    v |  3       | Package #descriptor (expand) [0.6 s]
     ## 
     / |  0       | Package #resources
     - |  1       | Package #resources
@@ -920,26 +920,46 @@ devtools::test()
     \ |  6       | Package #resources
     | |  7       | Package #resources
     / |  8       | Package #resources
-    - |  9       | Package #resources
-    \ | 10       | Package #resources
-    | | 11       | Package #resources
-    / | 12       | Package #resources
-    - | 13       | Package #resources
-    \ | 14       | Package #resources
-    | | 15       | Package #resources
-    / | 16       | Package #resources
-    - | 17       | Package #resources
-    \ | 18       | Package #resources
-    | | 19       | Package #resources
-    / | 20       | Package #resources
-    - | 21       | Package #resources
-    \ | 22       | Package #resources
-    | | 23       | Package #resources
-    v | 23       | Package #resources [1.4 s]
+    - |  8 1     | Package #resources
+    \ |  9 1     | Package #resources
+    | | 10 1     | Package #resources
+    / | 11 1     | Package #resources
+    - | 12 1     | Package #resources
+    \ | 13 1     | Package #resources
+    | | 14 1     | Package #resources
+    / | 15 1     | Package #resources
+    - | 16 1     | Package #resources
+    \ | 17 1     | Package #resources
+    | | 18 1     | Package #resources
+    / | 19 1     | Package #resources
+    - | 20 1     | Package #resources
+    \ | 21 1     | Package #resources
+    | | 22 1     | Package #resources
+    x | 22 1     | Package #resources [1.3 s]
+    ## ------------------------------------------------------------------------------------------------------------------------------------------------------
+    ## test-package.R:489: error: add tabular - can read data
+    ## TypeCannot read property 'properties' of undefined
+    ## 1: (function () 
+    ##    {
+    ##        return(private$getTable_())
+    ##    })() at C:\Users\Kleanthis-Okf\Documents\datapackage-r/tests/testthat/test-package.R:489
+    ## 2: private$getTable_() at C:\Users\Kleanthis-Okf\Documents\datapackage-r/R/resource.R:254
+    ## 3: schema$value() at C:\Users\Kleanthis-Okf\Documents\datapackage-r/R/resource.R:328
+    ## 4: Schema$new(descriptor = descriptor, strict = strict, caseInsensitiveHeaders = caseInsensitiveHeaders) at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/schema.R:402
+    ## 5: .subset2(public_bind_env, "initialize")(...)
+    ## 6: private$build_() at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/schema.R:29
+    ## 7: private$profile_$validate(private$currentDescriptor_json) at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/schema.R:291
+    ## 8: is.valid(descriptor, private$profile_) at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/profile.R:57
+    ## 9: jsonvalidate::json_validator(paste(readLines(system.file("profiles/tableschema.json", package = "tableschema.r"), warn = FALSE, n = -1L), collapse = "")) at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/is.valid.R:14
+    ## 10: env$ct$eval(sprintf("%s = validator(%s)", name, get_string(schema)))
+    ## 11: get_str_output(context_eval(join(src), private$context))
+    ## 12: identical(str, "undefined")
+    ## 13: context_eval(join(src), private$context)
+    ## ------------------------------------------------------------------------------------------------------------------------------------------------------
     ## 
     / |  0       | Package #save
     - |  1       | Package #save
-    v |  1       | Package #save
+    v |  1       | Package #save [0.1 s]
     ## 
     / |  0       | Package #commit
     - |  1       | Package #commit
@@ -958,7 +978,7 @@ devtools::test()
     - |  5       | Package #foreignKeys
     \ |  6       | Package #foreignKeys
     | |  7       | Package #foreignKeys
-    v |  7       | Package #foreignKeys [2.8 s]
+    v |  7       | Package #foreignKeys [3.2 s]
     ## 
     / |  0       | Profile
     v |  0       | Profile
@@ -973,7 +993,9 @@ devtools::test()
     | |  7       | Profile #load
     / |  8       | Profile #load
     - |  9       | Profile #load
-    v |  9       | Profile #load [0.3 s]
+    \ | 10       | Profile #load
+    | | 11       | Profile #load
+    v | 11       | Profile #load [0.8 s]
     ## 
     / |  0       | Profile #validate
     - |  1       | Profile #validate
@@ -985,11 +1007,11 @@ devtools::test()
     ## 
     / |  0       | Profile #up-to-date - data-package
     - |  1       | Profile #up-to-date - data-package
-    v |  1       | Profile #up-to-date - data-package [0.4 s]
+    v |  1       | Profile #up-to-date - data-package [0.6 s]
     ## 
     / |  0       | Profile #up-to-date - tabular-data-package
     - |  1       | Profile #up-to-date - tabular-data-package
-    v |  1       | Profile #up-to-date - tabular-data-package [0.6 s]
+    v |  1       | Profile #up-to-date - tabular-data-package [0.7 s]
     ## 
     / |  0       | Profile #up-to-date - fiscal-data-package
     - |  1       | Profile #up-to-date - fiscal-data-package
@@ -1059,7 +1081,7 @@ devtools::test()
     - | 57       | Profile #up-to-date - tabular-data-resource
     \ | 58       | Profile #up-to-date - tabular-data-resource
     | | 59       | Profile #up-to-date - tabular-data-resource
-    v | 59       | Profile #up-to-date - tabular-data-resource [2.6 s]
+    v | 59       | Profile #up-to-date - tabular-data-resource [2.9 s]
     ## 
     / |  0       | Resource
     v |  0       | Resource
@@ -1077,7 +1099,7 @@ devtools::test()
     \ | 10       | Resource #load
     | | 11       | Resource #load
     / | 12       | Resource #load
-    v | 12       | Resource #load [0.2 s]
+    v | 12       | Resource #load [0.3 s]
     ## 
     / |  0       | Resource #descriptor (retrieve)
     - |  1       | Resource #descriptor (retrieve)
@@ -1085,7 +1107,7 @@ devtools::test()
     | |  3       | Resource #descriptor (retrieve)
     / |  4       | Resource #descriptor (retrieve)
     - |  5       | Resource #descriptor (retrieve)
-    v |  5       | Resource #descriptor (retrieve) [0.1 s]
+    v |  5       | Resource #descriptor (retrieve) [0.2 s]
     ## 
     / |  0       | Resource #descriptor (dereference)
     - |  1       | Resource #descriptor (dereference)
@@ -1096,13 +1118,14 @@ devtools::test()
     \ |  6       | Resource #descriptor (dereference)
     | |  7       | Resource #descriptor (dereference)
     / |  8       | Resource #descriptor (dereference)
-    v |  8       | Resource #descriptor (dereference) [0.3 s]
+    - |  9       | Resource #descriptor (dereference)
+    v |  9       | Resource #descriptor (dereference) [0.4 s]
     ## 
     / |  0       | Resource #descriptor (expand)
     - |  1       | Resource #descriptor (expand)
     \ |  2       | Resource #descriptor (expand)
     | |  3       | Resource #descriptor (expand)
-    v |  3       | Resource #descriptor (expand) [0.4 s]
+    v |  3       | Resource #descriptor (expand) [0.5 s]
     ## 
     / |  0       | Resource #source/sourceType
     - |  1       | Resource #source/sourceType
@@ -1133,7 +1156,7 @@ devtools::test()
     \ | 26       | Resource #source/sourceType
     | | 27       | Resource #source/sourceType
     / | 28       | Resource #source/sourceType
-    v | 28       | Resource #source/sourceType [0.3 s]
+    v | 28       | Resource #source/sourceType [0.4 s]
     ## 
     / |  0       | Resource #rawRead
     - |  1       | Resource #rawRead
@@ -1145,7 +1168,7 @@ devtools::test()
     | |  3       | Resource #table
     / |  4       | Resource #table
     - |  5       | Resource #table
-    v |  5       | Resource #table [3.2 s]
+    v |  5       | Resource #table [3.5 s]
     ## 
     / |  0       | Resource #infer
     - |  1       | Resource #infer
@@ -1154,7 +1177,7 @@ devtools::test()
     / |  0       | Resource #dialect
     - |  1       | Resource #dialect
     \ |  2       | Resource #dialect
-    v |  2       | Resource #dialect [6.1 s]
+    v |  2       | Resource #dialect [6.0 s]
     ## 
     / |  0       | Resource #commit
     - |  1       | Resource #commit
@@ -1164,6 +1187,10 @@ devtools::test()
     - |  5       | Resource #commit
     v |  5       | Resource #commit [0.1 s]
     ## 
+    / |  0       | Package #save
+    - |  1       | Package #save
+    v |  1       | Package #save
+    ## 
     / |  0       | validate
     - |  1       | validate
     \ |  2       | validate
@@ -1171,11 +1198,11 @@ devtools::test()
     / |  4       | validate
     v |  4       | validate [0.2 s]
     ## 
-    ## == Results ================================================================================================================================================
-    ## Duration: 42.3 s
+    ## == Results ===========================================================================================================================================
+    ## Duration: 45.6 s
     ## 
-    ## OK:       240
-    ## Failed:   0
+    ## OK:       243
+    ## Failed:   1
     ## Warnings: 0
     ## Skipped:  2
 
@@ -1184,6 +1211,6 @@ more detailed information about how to create and run tests you can find in [tes
 Github
 ======
 
--   <https://github.com/okgreece/datapackage-r>
+-   <https://github.com/frictionlessdata/datapackage-r>
 
 <img src="okgr.png" align="right" width=120px /><img src="oklabs.png" align="right" width=120px />
