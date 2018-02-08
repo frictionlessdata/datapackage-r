@@ -45,7 +45,7 @@ To install [RStudio](https://www.rstudio.com/), you can download [RStudio Deskto
 4.  Select the appropriate file for your system
 5.  Run installation file
 
-To install the `datapackage` library it is necessary to install first [`devtools` library](https://cran.r-project.org/package=devtools) to make installation of github libraries available.
+To install the `datapackage` library it is necessary to install first [devtools library](https://cran.r-project.org/package=devtools) to make installation of github libraries available.
 
 ``` r
 # Install devtools package if not already
@@ -56,7 +56,7 @@ Install `datapackage.r`
 
 ``` r
 # And then install the development version from github
-devtools::install_github("frictionlessdata/datapackage.r")
+devtools::install_github("frictionlessdata/datapackage-r")
 ```
 
 Load library
@@ -130,7 +130,7 @@ dataPackage
 
 ``` r
 resource = dataPackage$getResource('example')
-jsonlite::prettify(helpers.from.list.to.json(resource$read())) # convert to json and add indentation with jsonlite prettify function
+jsonlite::prettify(helpers.from.list.to.json(resource$read()))
 ```
 
     ## [
@@ -147,6 +147,10 @@ jsonlite::prettify(helpers.from.list.to.json(resource$read())) # convert to json
     ## ]
     ## 
 
+``` r
+# convert to json and add indentation with jsonlite prettify function
+```
+
 Documentation
 =============
 
@@ -159,7 +163,7 @@ A class for working with data packages. It provides various capabilities like lo
 
 Consider we have some local `csv` files in a `data` directory. Let's create a data package based on this data using a `Package` class:
 
-> inst/data/cities.csv
+> inst/extdata/readme\_example/cities.csv
 
 ``` csv
 city,location
@@ -168,7 +172,7 @@ paris,"48.85,2.30"
 rome,"41.89,12.51"
 ```
 
-> inst/data/population.csv
+> inst/extdata/readme\_example/population.csv
 
 ``` csv
 city,year,population
@@ -177,36 +181,82 @@ paris,2017,2240000
 rome,2017,2860000
 ```
 
-First we create a blank data package::
+First we create a blank data package:
 
 ``` r
 dataPackage = Package.load()
 ```
 
-Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `*.csv`:
+Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `csv`:
 
 ``` r
 dataPackage$infer('csv')
-dataPackage$descriptor
 ```
+
+``` r
+jsonlite::toJSON(dataPackage$descriptor, pretty = TRUE)
+```
+
+    ## {
+    ##   "profile": ["tabular-data-package"],
+    ##   "resources": [
+    ##     {
+    ##       "path": ["cities.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["cities"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"]
+    ##     },
+    ##     {
+    ##       "path": ["population.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["population"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"]
+    ##     }
+    ##   ]
+    ## }
 
 An `infer` method has found all our files and inspected it to extract useful metadata like profile, encoding, format, Table Schema etc. Let's tweak it a little bit:
 
 ``` r
 dataPackage$descriptor$resources[[2]]$schema$fields[[2]]$type = 'year'
 dataPackage$commit()
-dataPackage$valid # true
 ```
+
+    ## [1] TRUE
+
+``` r
+dataPackage$valid
+```
+
+    ## [1] TRUE
 
 Because our resources are tabular we could read it as a tabular data:
 
 ``` r
-dataPackage$getResource('population')$read( keyed = TRUE ) 
-
-# [ { city: 'london', year: 2017, population: 8780000 },
-#   { city: 'paris', year: 2017, population: 2240000 },
-#   { city: 'rome', year: 2017, population: 2860000 } ]
+jsonlite::toJSON(dataPackage$getResource("population")$read(keyed = TRUE),auto_unbox = FALSE,pretty = TRUE)
 ```
+
+    ## [
+    ##   {
+    ##     "city": ["london"],
+    ##     "year": ["2017"],
+    ##     "population": ["8780000"]
+    ##   },
+    ##   {
+    ##     "city": ["paris"],
+    ##     "year": ["2017"],
+    ##     "population": ["2240000"]
+    ##   },
+    ##   {
+    ##     "city": ["rome"],
+    ##     "year": ["2017"],
+    ##     "population": ["2860000"]
+    ##   }
+    ## ]
 
 Let's save our descriptor on the disk. After it we could update our `datapackage.json` as we want, make some changes etc:
 
@@ -296,13 +346,13 @@ Update data package instance if there are in-place changes in the descriptor.
 -   `(Boolean)` - returns true on success and false if not modified
 
 ``` r
-dataPackage = Package.load('{
-                                                            "name": "package",
-                                                            "resources": [{
-                                                                    "name": "resource",
-                                                                    "data": ["data"]
-                                                                }]
-                                                            }')
+dataPackage = Package.load('{ 
+ "name": "package",
+ "resources": [{
+  "name": "resource",
+  "data": ["data"]
+ }]
+ }')
 
 dataPackage$descriptor$name # package
 ```
@@ -336,7 +386,7 @@ Save data package to target destination.
 
 A class for working with data resources. You can read or iterate tabular resources using the `iter/read` methods and all resource as bytes using `rowIter/rowRead` methods.
 
-Consider we have some local csv file. It could be inline data or remote link - all supported by `Resource` class (except local files for in-brower usage of course). But say it's `data.csv` for now:
+Consider we have some local csv file. It could be inline data or remote link - all supported by `Resource` class (except local files for in-brower usage of course). But say it's `cities.csv` for now:
 
 ``` csv
 city,location
@@ -348,32 +398,96 @@ rome,N/A
 Let's create and read a resource. We use static `Resource$load` method instantiate a resource. Because resource is tabular we could use `resourceread` method with a `keyed` option to get an array of keyed rows:
 
 ``` r
-resource = Resource.load('{"path": "data.csv"}')
-resource$tabular # TRUE
-#resource$headers # ['city', 'location']
-#resource$read(keyed = TRUE)
-
-# [
-#   {city: 'london', location: '51.50,-0.11'},
-#   {city: 'paris', location: '48.85,2.30'},
-#   {city: 'rome', location: 'N/A'},
-# ]
+resource = Resource.load('{"profile":"tabular-data-resource","path": "cities.csv"}')
+resource$tabular
 ```
 
-As we could see our locations are just a strings. But it should be geopoints. Also Rome's location is not available but it's also just a `N/A` string instead of JavaScript `null`. First we have to infer resource metadata:
+    ## [1] TRUE
 
 ``` r
-resource$infer()
-resource$descriptor
-#{ path: 'data.csv',
-#  profile: 'tabular-data-resource',
-#  encoding: 'utf-8',
-#  name: 'data',
-#  format: 'csv',
-#  mediatype: 'text/csv',
-# schema: { fields: [ [Object], [Object] ], missingValues: [ '' ] } }
-resource$read( keyed = TRUE )
-# Fails with a data validation error
+jsonlite::toJSON(resource$read(keyed = TRUE), pretty = TRUE)
+```
+
+    ## [
+    ##   {
+    ##     "city": ["london"],
+    ##     "location": ["\"51.50 -0.11\""]
+    ##   },
+    ##   {
+    ##     "city": ["paris"],
+    ##     "location": ["\"48.85 2.30\""]
+    ##   },
+    ##   {
+    ##     "city": ["rome"],
+    ##     "location": ["\"41.89 12.51\""]
+    ##   }
+    ## ]
+
+As we could see our locations are just a strings. But it should be geopoints. Also Rome's location is not available but it's also just a `N/A` string instead of `null`. First we have to infer resource metadata:
+
+``` r
+jsonlite::toJSON(resource$infer(), pretty = TRUE)
+```
+
+    ## {
+    ##   "profile": ["tabular-data-resource"],
+    ##   "path": ["cities.csv"],
+    ##   "encoding": ["utf-8"],
+    ##   "name": ["cities"],
+    ##   "format": ["csv"],
+    ##   "mediatype": ["text/csv"],
+    ##   "schema": {
+    ##     "fields": [
+    ##       {
+    ##         "name": ["city"],
+    ##         "type": ["string"],
+    ##         "format": ["default"]
+    ##       },
+    ##       {
+    ##         "name": ["location"],
+    ##         "type": ["string"],
+    ##         "format": ["default"]
+    ##       }
+    ##     ],
+    ##     "missingValues": [
+    ##       [""]
+    ##     ]
+    ##   }
+    ## }
+
+``` r
+jsonlite::toJSON(resource$descriptor, pretty = TRUE)
+```
+
+    ## {
+    ##   "profile": ["tabular-data-resource"],
+    ##   "path": ["cities.csv"],
+    ##   "encoding": ["utf-8"],
+    ##   "name": ["cities"],
+    ##   "format": ["csv"],
+    ##   "mediatype": ["text/csv"],
+    ##   "schema": {
+    ##     "fields": [
+    ##       {
+    ##         "name": ["city"],
+    ##         "type": ["string"],
+    ##         "format": ["default"]
+    ##       },
+    ##       {
+    ##         "name": ["location"],
+    ##         "type": ["string"],
+    ##         "format": ["default"]
+    ##       }
+    ##     ],
+    ##     "missingValues": [
+    ##       [""]
+    ##     ]
+    ##   }
+    ## }
+
+``` r
+# resource$read( keyed = TRUE )
+# # Fails with a data validation error
 ```
 
 Let's fix not available location. There is a `missingValues` property in Table Schema specification. As a first try we set `missingValues` to `N/A` in `resource$descriptor.schema`. Resource descriptor could be changed in-place but all changes should be commited by `resource$commit()`:
@@ -381,8 +495,24 @@ Let's fix not available location. There is a `missingValues` property in Table S
 ``` r
 resource$descriptor$schema$missingValues = 'N/A'
 resource$commit()
+```
+
+    ## [1] TRUE
+
+``` r
 resource$valid # FALSE
+```
+
+    ## [1] FALSE
+
+``` r
 resource$errors
+```
+
+    ## [[1]]
+    ## [1] "Descriptor validation error:\n            data.schema.missingValues - is the wrong type"
+
+``` r
 # Error: Descriptor validation error:
 #   Invalid type: string (expected array)
 #    at "/missingValues" in descriptor and
@@ -394,19 +524,36 @@ As a good citiziens we've decided to check out recource descriptor validity. And
 ``` r
 resource$descriptor$schema[['missingValues']] = list('', 'N/A')
 resource$commit()
+```
+
+    ## [1] TRUE
+
+``` r
 resource$valid # TRUE
 ```
+
+    ## [1] TRUE
 
 All good. It looks like we're ready to read our data again:
 
 ``` r
-resource$read( keyed = TRUE )
-# [
-#   {city: 'london', location: [51.50,-0.11]},
-#   {city: 'paris', location: [48.85,2.30]},
-#   {city: 'rome', location: null},
-# ]
+jsonlite::toJSON(resource$read( keyed = TRUE ), pretty = TRUE)
 ```
+
+    ## [
+    ##   {
+    ##     "city": ["london"],
+    ##     "location": ["\"51.50 -0.11\""]
+    ##   },
+    ##   {
+    ##     "city": ["paris"],
+    ##     "location": ["\"48.85 2.30\""]
+    ##   },
+    ##   {
+    ##     "city": ["rome"],
+    ##     "location": ["\"41.89 12.51\""]
+    ##   }
+    ## ]
 
 Now we see that: - locations are arrays with numeric lattide and longitude - Rome's location is a native JavaScript `null`
 
@@ -539,9 +686,9 @@ Iter through the table data and emits rows cast based on table schema (async for
 -   `stream (Boolean)` - return Node Readable Stream of table rows
 -   `(errors.DataPackageError)` - raises any error occured in this process
 -   `(Iterator/Stream)` - iterator/stream of rows:
--   `[value1, value2]` - base
--   `{header1: value1, header2: value2}` - keyed
--   `[rowNumber, [header1, header2], [value1, value2]]` - extended
+    -   `[value1, value2]` - base
+    -   `{header1: value1, header2: value2}` - keyed
+    -   `[rowNumber, [header1, header2], [value1, value2]]` - extended
 
 #### `resource$read(keyed, extended, cast=TRUE, relations=FALSE, limit)`
 
@@ -566,7 +713,7 @@ It checks foreign keys and raises an exception if there are integrity issues.
 -   `(errors.DataPackageError)` - raises if there are integrity issues
 -   `(Boolean)` - returns True if no issues
 
-#### `resource$rawIter({stream=false})`
+#### `resource$rawIter(stream = FALSE)`
 
 Iterate over data chunks as bytes. If `stream` is true Node Stream will be returned.
 
@@ -609,7 +756,6 @@ A component to represent JSON Schema profile from [Profiles Registry](https://sp
 
 ``` r
 profile = Profile.load('data-package')
-
 profile$name # data-package
 ```
 
@@ -670,24 +816,31 @@ A standalone function to validate a data package descriptor:
 A standalone function to infer a data package descriptor.
 
 ``` r
-descriptor = infer('*.csv')
-#{ profile: 'tabular-data-resource',
-#  resources:
-#   [ { path: 'data/cities.csv',
-#       profile: 'tabular-data-resource',
-#       encoding: 'utf-8',
-#       name: 'cities',
-#       format: 'csv',
-#       mediatype: 'text/csv',
-#       schema: [Object] },
-#     { path: 'data/population.csv',
-#       profile: 'tabular-data-resource',
-#       encoding: 'utf-8',
-#       name: 'population',
-#       format: 'csv',
-#       mediatype: 'text/csv',
-#       schema: [Object] } ] }
+descriptor = infer("csv",basePath = '.')
+jsonlite::toJSON(descriptor, pretty = TRUE)
 ```
+
+    ## {
+    ##   "profile": ["data-package"],
+    ##   "resources": [
+    ##     {
+    ##       "path": ["cities.csv"],
+    ##       "profile": ["data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["cities"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"]
+    ##     },
+    ##     {
+    ##       "path": ["population.csv"],
+    ##       "profile": ["data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["population"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"]
+    ##     }
+    ##   ]
+    ## }
 
 #### `infer(pattern, basePath)`
 
@@ -742,29 +895,62 @@ Let's check relations for a `teams` resource:
 
 ``` r
 package = Package.load(DESCRIPTOR)
-# teams = package$getResource('teams')
-# teams$checkRelations()
+teams = package$getResource('teams')
+```
+
+``` r
+teams$checkRelations()
+```
+
+    ## Error: Foreign key 'city' violation in row '4'
+
+``` r
 # tableschema.exceptions.RelationError: Foreign key "['city']" violation in row "4"
 ```
 
 As we could see there is a foreign key violation. That's because our lookup table `cities` doesn't have a city of `Munich` but we have a team from there. We need to fix it in `cities` resource:
 
 ``` r
-package$descriptor[['resources']][1]['data']$push(['Munich', 'Germany'])
+package$descriptor$resources[[2]]$data = rlist::list.append(package$descriptor$resources[[2]]$data, list('Munich', 'Germany'))
 package$commit()
+```
+
+    ## [1] TRUE
+
+``` r
 teams = package$getResource('teams')
-await teams$checkRelations()
+teams$checkRelations()
+```
+
+    ## [1] TRUE
+
+``` r
 # TRUE
 ```
 
 Fixed! But not only a check operation is available. We could use `relations` argument for `resource$iter/read` methods to dereference a resource relations:
 
 ``` r
-teams$read('{"keyed": true, "relations": true}')
-#[{'id': 1, 'name': 'Arsenal', 'city': {'name': 'London', 'country': 'England}},
-# {'id': 2, 'name': 'Real', 'city': {'name': 'Madrid', 'country': 'Spain}},
-# {'id': 3, 'name': 'Bayern', 'city': {'name': 'Munich', 'country': 'Germany}}]
+jsonlite::toJSON(teams$read(keyed = TRUE, relations = FALSE), pretty =  TRUE)
 ```
+
+    ## [
+    ##   {
+    ##     "id": [1],
+    ##     "name": ["Arsenal"],
+    ##     "city": ["London"]
+    ##   },
+    ##   {
+    ##     "id": [2],
+    ##     "name": ["Real"],
+    ##     "city": ["Madrid"]
+    ##   },
+    ##   {
+    ##     "id": [3],
+    ##     "name": ["Bayern"],
+    ##     "city": ["Munich"]
+    ##   }
+    ## ]
 
 Instead of plain city name we've got a dictionary containing a city data. These `resource$iter/read` methods will fail with the same as `resource$check_relations` error if there is an integrity issue. But only if `relations = TRUE` flag is passed.
 
@@ -814,397 +1000,6 @@ To run tests:
 ``` r
 devtools::test()
 ```
-
-    ## Loading datapackage.r
-
-    ## Loading required package: testthat
-
-    ## Testing datapackage.r
-
-    ## v | OK F W S | Context
-    ## 
-    / |  0       | DataPackageError
-    - |  1       | DataPackageError
-    \ |  2       | DataPackageError
-    | |  3       | DataPackageError
-    / |  4       | DataPackageError
-    - |  5       | DataPackageError
-    \ |  6       | DataPackageError
-    | |  7       | DataPackageError
-    / |  8       | DataPackageError
-    - |  8     1 | DataPackageError
-    \ |  8     2 | DataPackageError
-    v |  8     2 | DataPackageError [0.2 s]
-    ## ------------------------------------------------------------------------------------------------------------------------------------------------------
-    ## test-errors.R:31: skip: should be catchable as a normal error
-    ## Empty test
-    ## 
-    ## test-errors.R:42: skip: should work with table schema error
-    ## Empty test
-    ## ------------------------------------------------------------------------------------------------------------------------------------------------------
-    ## 
-    / |  0       | helpers
-    - |  1       | helpers
-    \ |  2       | helpers
-    | |  3       | helpers
-    / |  4       | helpers
-    - |  5       | helpers
-    \ |  6       | helpers
-    | |  7       | helpers
-    / |  8       | helpers
-    - |  9       | helpers
-    \ | 10       | helpers
-    | | 11       | helpers
-    / | 12       | helpers
-    v | 12       | helpers [0.2 s]
-    ## 
-    / |  0       | infer
-    - |  1       | infer
-    \ |  2       | infer
-    | |  3       | infer
-    / |  4       | infer
-    - |  5       | infer
-    \ |  6       | infer
-    | |  7       | infer
-    / |  8       | infer
-    v |  8       | infer [5.0 s]
-    ## 
-    / |  0       | Load
-    - |  1       | Load
-    \ |  2       | Load
-    | |  3       | Load
-    / |  4       | Load
-    - |  5       | Load
-    \ |  6       | Load
-    | |  7       | Load
-    / |  8       | Load
-    - |  9       | Load
-    \ | 10       | Load
-    | | 11       | Load
-    v | 11       | Load [11.0 s]
-    ## 
-    / |  0       | Package #descriptor (retrieve)
-    - |  1       | Package #descriptor (retrieve)
-    v |  1       | Package #descriptor (retrieve)
-    ## 
-    / |  0       | Package #load
-    - |  1       | Package #load
-    \ |  2       | Package #load
-    | |  3       | Package #load
-    / |  4       | Package #load
-    v |  4       | Package #load [0.5 s]
-    ## 
-    / |  0       | Package #descriptor (dereference)
-    - |  1       | Package #descriptor (dereference)
-    \ |  2       | Package #descriptor (dereference)
-    | |  3       | Package #descriptor (dereference)
-    / |  4       | Package #descriptor (dereference)
-    - |  5       | Package #descriptor (dereference)
-    \ |  6       | Package #descriptor (dereference)
-    | |  7       | Package #descriptor (dereference)
-    / |  8       | Package #descriptor (dereference)
-    v |  8       | Package #descriptor (dereference) [1.0 s]
-    ## 
-    / |  0       | Package #descriptor (expand)
-    - |  1       | Package #descriptor (expand)
-    \ |  2       | Package #descriptor (expand)
-    | |  3       | Package #descriptor (expand)
-    v |  3       | Package #descriptor (expand) [0.6 s]
-    ## 
-    / |  0       | Package #resources
-    - |  1       | Package #resources
-    \ |  2       | Package #resources
-    | |  3       | Package #resources
-    / |  4       | Package #resources
-    - |  5       | Package #resources
-    \ |  6       | Package #resources
-    | |  7       | Package #resources
-    / |  8       | Package #resources
-    - |  8 1     | Package #resources
-    \ |  9 1     | Package #resources
-    | | 10 1     | Package #resources
-    / | 11 1     | Package #resources
-    - | 12 1     | Package #resources
-    \ | 13 1     | Package #resources
-    | | 14 1     | Package #resources
-    / | 15 1     | Package #resources
-    - | 16 1     | Package #resources
-    \ | 17 1     | Package #resources
-    | | 18 1     | Package #resources
-    / | 19 1     | Package #resources
-    - | 20 1     | Package #resources
-    \ | 21 1     | Package #resources
-    | | 22 1     | Package #resources
-    x | 22 1     | Package #resources [1.3 s]
-    ## ------------------------------------------------------------------------------------------------------------------------------------------------------
-    ## test-package.R:489: error: add tabular - can read data
-    ## TypeCannot read property 'properties' of undefined
-    ## 1: (function () 
-    ##    {
-    ##        return(private$getTable_())
-    ##    })() at C:\Users\Kleanthis-Okf\Documents\datapackage-r/tests/testthat/test-package.R:489
-    ## 2: private$getTable_() at C:\Users\Kleanthis-Okf\Documents\datapackage-r/R/resource.R:254
-    ## 3: schema$value() at C:\Users\Kleanthis-Okf\Documents\datapackage-r/R/resource.R:328
-    ## 4: Schema$new(descriptor = descriptor, strict = strict, caseInsensitiveHeaders = caseInsensitiveHeaders) at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/schema.R:402
-    ## 5: .subset2(public_bind_env, "initialize")(...)
-    ## 6: private$build_() at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/schema.R:29
-    ## 7: private$profile_$validate(private$currentDescriptor_json) at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/schema.R:291
-    ## 8: is.valid(descriptor, private$profile_) at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/profile.R:57
-    ## 9: jsonvalidate::json_validator(paste(readLines(system.file("profiles/tableschema.json", package = "tableschema.r"), warn = FALSE, n = -1L), collapse = "")) at C:/Users/Kleanthis-Okf/Documents/tableschema-r/R/is.valid.R:14
-    ## 10: env$ct$eval(sprintf("%s = validator(%s)", name, get_string(schema)))
-    ## 11: get_str_output(context_eval(join(src), private$context))
-    ## 12: identical(str, "undefined")
-    ## 13: context_eval(join(src), private$context)
-    ## ------------------------------------------------------------------------------------------------------------------------------------------------------
-    ## 
-    / |  0       | Package #save
-    - |  1       | Package #save
-    v |  1       | Package #save [0.1 s]
-    ## 
-    / |  0       | Package #commit
-    - |  1       | Package #commit
-    \ |  2       | Package #commit
-    | |  3       | Package #commit
-    / |  4       | Package #commit
-    - |  5       | Package #commit
-    \ |  6       | Package #commit
-    v |  6       | Package #commit [0.3 s]
-    ## 
-    / |  0       | Package #foreignKeys
-    - |  1       | Package #foreignKeys
-    \ |  2       | Package #foreignKeys
-    | |  3       | Package #foreignKeys
-    / |  4       | Package #foreignKeys
-    - |  5       | Package #foreignKeys
-    \ |  6       | Package #foreignKeys
-    | |  7       | Package #foreignKeys
-    v |  7       | Package #foreignKeys [3.2 s]
-    ## 
-    / |  0       | Profile
-    v |  0       | Profile
-    ## 
-    / |  0       | Profile #load
-    - |  1       | Profile #load
-    \ |  2       | Profile #load
-    | |  3       | Profile #load
-    / |  4       | Profile #load
-    - |  5       | Profile #load
-    \ |  6       | Profile #load
-    | |  7       | Profile #load
-    / |  8       | Profile #load
-    - |  9       | Profile #load
-    \ | 10       | Profile #load
-    | | 11       | Profile #load
-    v | 11       | Profile #load [0.8 s]
-    ## 
-    / |  0       | Profile #validate
-    - |  1       | Profile #validate
-    \ |  2       | Profile #validate
-    v |  2       | Profile #validate
-    ## 
-    / |  0       | Profile #up-to-date
-    v |  0       | Profile #up-to-date
-    ## 
-    / |  0       | Profile #up-to-date - data-package
-    - |  1       | Profile #up-to-date - data-package
-    v |  1       | Profile #up-to-date - data-package [0.6 s]
-    ## 
-    / |  0       | Profile #up-to-date - tabular-data-package
-    - |  1       | Profile #up-to-date - tabular-data-package
-    v |  1       | Profile #up-to-date - tabular-data-package [0.7 s]
-    ## 
-    / |  0       | Profile #up-to-date - fiscal-data-package
-    - |  1       | Profile #up-to-date - fiscal-data-package
-    v |  1       | Profile #up-to-date - fiscal-data-package [0.8 s]
-    ## 
-    / |  0       | Profile #up-to-date - data-resource
-    - |  1       | Profile #up-to-date - data-resource
-    v |  1       | Profile #up-to-date - data-resource [0.4 s]
-    ## 
-    / |  0       | Profile #up-to-date - tabular-data-resource
-    - |  1       | Profile #up-to-date - tabular-data-resource
-    \ |  2       | Profile #up-to-date - tabular-data-resource
-    | |  3       | Profile #up-to-date - tabular-data-resource
-    / |  4       | Profile #up-to-date - tabular-data-resource
-    - |  5       | Profile #up-to-date - tabular-data-resource
-    \ |  6       | Profile #up-to-date - tabular-data-resource
-    | |  7       | Profile #up-to-date - tabular-data-resource
-    / |  8       | Profile #up-to-date - tabular-data-resource
-    - |  9       | Profile #up-to-date - tabular-data-resource
-    \ | 10       | Profile #up-to-date - tabular-data-resource
-    | | 11       | Profile #up-to-date - tabular-data-resource
-    / | 12       | Profile #up-to-date - tabular-data-resource
-    - | 13       | Profile #up-to-date - tabular-data-resource
-    \ | 14       | Profile #up-to-date - tabular-data-resource
-    | | 15       | Profile #up-to-date - tabular-data-resource
-    / | 16       | Profile #up-to-date - tabular-data-resource
-    - | 17       | Profile #up-to-date - tabular-data-resource
-    \ | 18       | Profile #up-to-date - tabular-data-resource
-    | | 19       | Profile #up-to-date - tabular-data-resource
-    / | 20       | Profile #up-to-date - tabular-data-resource
-    - | 21       | Profile #up-to-date - tabular-data-resource
-    \ | 22       | Profile #up-to-date - tabular-data-resource
-    | | 23       | Profile #up-to-date - tabular-data-resource
-    / | 24       | Profile #up-to-date - tabular-data-resource
-    - | 25       | Profile #up-to-date - tabular-data-resource
-    \ | 26       | Profile #up-to-date - tabular-data-resource
-    | | 27       | Profile #up-to-date - tabular-data-resource
-    / | 28       | Profile #up-to-date - tabular-data-resource
-    - | 29       | Profile #up-to-date - tabular-data-resource
-    \ | 30       | Profile #up-to-date - tabular-data-resource
-    | | 31       | Profile #up-to-date - tabular-data-resource
-    / | 32       | Profile #up-to-date - tabular-data-resource
-    - | 33       | Profile #up-to-date - tabular-data-resource
-    \ | 34       | Profile #up-to-date - tabular-data-resource
-    | | 35       | Profile #up-to-date - tabular-data-resource
-    / | 36       | Profile #up-to-date - tabular-data-resource
-    - | 37       | Profile #up-to-date - tabular-data-resource
-    \ | 38       | Profile #up-to-date - tabular-data-resource
-    | | 39       | Profile #up-to-date - tabular-data-resource
-    / | 40       | Profile #up-to-date - tabular-data-resource
-    - | 41       | Profile #up-to-date - tabular-data-resource
-    \ | 42       | Profile #up-to-date - tabular-data-resource
-    | | 43       | Profile #up-to-date - tabular-data-resource
-    / | 44       | Profile #up-to-date - tabular-data-resource
-    - | 45       | Profile #up-to-date - tabular-data-resource
-    \ | 46       | Profile #up-to-date - tabular-data-resource
-    | | 47       | Profile #up-to-date - tabular-data-resource
-    / | 48       | Profile #up-to-date - tabular-data-resource
-    - | 49       | Profile #up-to-date - tabular-data-resource
-    \ | 50       | Profile #up-to-date - tabular-data-resource
-    | | 51       | Profile #up-to-date - tabular-data-resource
-    / | 52       | Profile #up-to-date - tabular-data-resource
-    - | 53       | Profile #up-to-date - tabular-data-resource
-    \ | 54       | Profile #up-to-date - tabular-data-resource
-    | | 55       | Profile #up-to-date - tabular-data-resource
-    / | 56       | Profile #up-to-date - tabular-data-resource
-    - | 57       | Profile #up-to-date - tabular-data-resource
-    \ | 58       | Profile #up-to-date - tabular-data-resource
-    | | 59       | Profile #up-to-date - tabular-data-resource
-    v | 59       | Profile #up-to-date - tabular-data-resource [2.9 s]
-    ## 
-    / |  0       | Resource
-    v |  0       | Resource
-    ## 
-    / |  0       | Resource #load
-    - |  1       | Resource #load
-    \ |  2       | Resource #load
-    | |  3       | Resource #load
-    / |  4       | Resource #load
-    - |  5       | Resource #load
-    \ |  6       | Resource #load
-    | |  7       | Resource #load
-    / |  8       | Resource #load
-    - |  9       | Resource #load
-    \ | 10       | Resource #load
-    | | 11       | Resource #load
-    / | 12       | Resource #load
-    v | 12       | Resource #load [0.3 s]
-    ## 
-    / |  0       | Resource #descriptor (retrieve)
-    - |  1       | Resource #descriptor (retrieve)
-    \ |  2       | Resource #descriptor (retrieve)
-    | |  3       | Resource #descriptor (retrieve)
-    / |  4       | Resource #descriptor (retrieve)
-    - |  5       | Resource #descriptor (retrieve)
-    v |  5       | Resource #descriptor (retrieve) [0.2 s]
-    ## 
-    / |  0       | Resource #descriptor (dereference)
-    - |  1       | Resource #descriptor (dereference)
-    \ |  2       | Resource #descriptor (dereference)
-    | |  3       | Resource #descriptor (dereference)
-    / |  4       | Resource #descriptor (dereference)
-    - |  5       | Resource #descriptor (dereference)
-    \ |  6       | Resource #descriptor (dereference)
-    | |  7       | Resource #descriptor (dereference)
-    / |  8       | Resource #descriptor (dereference)
-    - |  9       | Resource #descriptor (dereference)
-    v |  9       | Resource #descriptor (dereference) [0.4 s]
-    ## 
-    / |  0       | Resource #descriptor (expand)
-    - |  1       | Resource #descriptor (expand)
-    \ |  2       | Resource #descriptor (expand)
-    | |  3       | Resource #descriptor (expand)
-    v |  3       | Resource #descriptor (expand) [0.5 s]
-    ## 
-    / |  0       | Resource #source/sourceType
-    - |  1       | Resource #source/sourceType
-    \ |  2       | Resource #source/sourceType
-    | |  3       | Resource #source/sourceType
-    / |  4       | Resource #source/sourceType
-    - |  5       | Resource #source/sourceType
-    \ |  6       | Resource #source/sourceType
-    | |  7       | Resource #source/sourceType
-    / |  8       | Resource #source/sourceType
-    - |  9       | Resource #source/sourceType
-    \ | 10       | Resource #source/sourceType
-    | | 11       | Resource #source/sourceType
-    / | 12       | Resource #source/sourceType
-    - | 13       | Resource #source/sourceType
-    \ | 14       | Resource #source/sourceType
-    | | 15       | Resource #source/sourceType
-    / | 16       | Resource #source/sourceType
-    - | 17       | Resource #source/sourceType
-    \ | 18       | Resource #source/sourceType
-    | | 19       | Resource #source/sourceType
-    / | 20       | Resource #source/sourceType
-    - | 21       | Resource #source/sourceType
-    \ | 22       | Resource #source/sourceType
-    | | 23       | Resource #source/sourceType
-    / | 24       | Resource #source/sourceType
-    - | 25       | Resource #source/sourceType
-    \ | 26       | Resource #source/sourceType
-    | | 27       | Resource #source/sourceType
-    / | 28       | Resource #source/sourceType
-    v | 28       | Resource #source/sourceType [0.4 s]
-    ## 
-    / |  0       | Resource #rawRead
-    - |  1       | Resource #rawRead
-    v |  1       | Resource #rawRead
-    ## 
-    / |  0       | Resource #table
-    - |  1       | Resource #table
-    \ |  2       | Resource #table
-    | |  3       | Resource #table
-    / |  4       | Resource #table
-    - |  5       | Resource #table
-    v |  5       | Resource #table [3.5 s]
-    ## 
-    / |  0       | Resource #infer
-    - |  1       | Resource #infer
-    v |  1       | Resource #infer [3.8 s]
-    ## 
-    / |  0       | Resource #dialect
-    - |  1       | Resource #dialect
-    \ |  2       | Resource #dialect
-    v |  2       | Resource #dialect [6.0 s]
-    ## 
-    / |  0       | Resource #commit
-    - |  1       | Resource #commit
-    \ |  2       | Resource #commit
-    | |  3       | Resource #commit
-    / |  4       | Resource #commit
-    - |  5       | Resource #commit
-    v |  5       | Resource #commit [0.1 s]
-    ## 
-    / |  0       | Package #save
-    - |  1       | Package #save
-    v |  1       | Package #save
-    ## 
-    / |  0       | validate
-    - |  1       | validate
-    \ |  2       | validate
-    | |  3       | validate
-    / |  4       | validate
-    v |  4       | validate [0.2 s]
-    ## 
-    ## == Results ===========================================================================================================================================
-    ## Duration: 45.6 s
-    ## 
-    ## OK:       243
-    ## Failed:   1
-    ## Warnings: 0
-    ## Skipped:  2
 
 more detailed information about how to create and run tests you can find in [testthat package](https://github.com/hadley/testthat)
 
