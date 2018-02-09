@@ -130,6 +130,7 @@ dataPackage
 
 ``` r
 resource = dataPackage$getResource('example')
+# convert to json and add indentation with jsonlite prettify function
 jsonlite::prettify(helpers.from.list.to.json(resource$read()))
 ```
 
@@ -146,10 +147,6 @@ jsonlite::prettify(helpers.from.list.to.json(resource$read()))
     ##     ]
     ## ]
     ## 
-
-``` r
-# convert to json and add indentation with jsonlite prettify function
-```
 
 Documentation
 =============
@@ -190,8 +187,69 @@ dataPackage = Package.load()
 Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `csv`:
 
 ``` r
-dataPackage$infer('csv')
+jsonlite::toJSON(dataPackage$infer('csv'), pretty = TRUE)
 ```
+
+    ## {
+    ##   "profile": ["tabular-data-package"],
+    ##   "resources": [
+    ##     {
+    ##       "path": ["cities.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["cities"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["location"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
+    ##     },
+    ##     {
+    ##       "path": ["population.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["population"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["year"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["population"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
+    ##     }
+    ##   ]
+    ## }
 
 ``` r
 jsonlite::toJSON(dataPackage$descriptor, pretty = TRUE)
@@ -206,7 +264,24 @@ jsonlite::toJSON(dataPackage$descriptor, pretty = TRUE)
     ##       "encoding": ["utf-8"],
     ##       "name": ["cities"],
     ##       "format": ["csv"],
-    ##       "mediatype": ["text/csv"]
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["location"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
     ##     },
     ##     {
     ##       "path": ["population.csv"],
@@ -214,7 +289,29 @@ jsonlite::toJSON(dataPackage$descriptor, pretty = TRUE)
     ##       "encoding": ["utf-8"],
     ##       "name": ["population"],
     ##       "format": ["csv"],
-    ##       "mediatype": ["text/csv"]
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["year"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["population"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
     ##     }
     ##   ]
     ## }
@@ -243,18 +340,18 @@ jsonlite::toJSON(dataPackage$getResource("population")$read(keyed = TRUE),auto_u
     ## [
     ##   {
     ##     "city": ["london"],
-    ##     "year": ["2017"],
-    ##     "population": ["8780000"]
+    ##     "year": [2017],
+    ##     "population": [8780000]
     ##   },
     ##   {
     ##     "city": ["paris"],
-    ##     "year": ["2017"],
-    ##     "population": ["2240000"]
+    ##     "year": [2017],
+    ##     "population": [2240000]
     ##   },
     ##   {
     ##     "city": ["rome"],
-    ##     "year": ["2017"],
-    ##     "population": ["2860000"]
+    ##     "year": [2017],
+    ##     "population": [2860000]
     ##   }
     ## ]
 
@@ -398,7 +495,7 @@ rome,N/A
 Let's create and read a resource. We use static `Resource$load` method instantiate a resource. Because resource is tabular we could use `resourceread` method with a `keyed` option to get an array of keyed rows:
 
 ``` r
-resource = Resource.load('{"profile":"tabular-data-resource","path": "cities.csv"}')
+resource = Resource.load('{"path": "cities.csv"}')
 resource$tabular
 ```
 
@@ -430,8 +527,8 @@ jsonlite::toJSON(resource$infer(), pretty = TRUE)
 ```
 
     ## {
-    ##   "profile": ["tabular-data-resource"],
     ##   "path": ["cities.csv"],
+    ##   "profile": ["tabular-data-resource"],
     ##   "encoding": ["utf-8"],
     ##   "name": ["cities"],
     ##   "format": ["csv"],
@@ -460,8 +557,8 @@ jsonlite::toJSON(resource$descriptor, pretty = TRUE)
 ```
 
     ## {
-    ##   "profile": ["tabular-data-resource"],
     ##   "path": ["cities.csv"],
+    ##   "profile": ["tabular-data-resource"],
     ##   "encoding": ["utf-8"],
     ##   "name": ["cities"],
     ##   "format": ["csv"],
@@ -511,13 +608,6 @@ resource$errors
 
     ## [[1]]
     ## [1] "Descriptor validation error:\n            data.schema.missingValues - is the wrong type"
-
-``` r
-# Error: Descriptor validation error:
-#   Invalid type: string (expected array)
-#    at "/missingValues" in descriptor and
-#    at "/properties/missingValues/type" in profile
-```
 
 As a good citiziens we've decided to check out recource descriptor validity. And it's not valid! We should use an array for `missingValues` property. Also don't forget to have an empty string as a missing value:
 
@@ -821,23 +911,62 @@ jsonlite::toJSON(descriptor, pretty = TRUE)
 ```
 
     ## {
-    ##   "profile": ["data-package"],
+    ##   "profile": ["tabular-data-package"],
     ##   "resources": [
     ##     {
     ##       "path": ["cities.csv"],
-    ##       "profile": ["data-resource"],
+    ##       "profile": ["tabular-data-resource"],
     ##       "encoding": ["utf-8"],
     ##       "name": ["cities"],
     ##       "format": ["csv"],
-    ##       "mediatype": ["text/csv"]
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["location"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
     ##     },
     ##     {
     ##       "path": ["population.csv"],
-    ##       "profile": ["data-resource"],
+    ##       "profile": ["tabular-data-resource"],
     ##       "encoding": ["utf-8"],
     ##       "name": ["population"],
     ##       "format": ["csv"],
-    ##       "mediatype": ["text/csv"]
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["year"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["population"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
     ##     }
     ##   ]
     ## }

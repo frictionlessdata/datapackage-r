@@ -105,10 +105,11 @@ descriptor = '{
 dataPackage = Package.load(descriptor)
 dataPackage
 ```
+
 ```{r eval=TRUE, include=TRUE, warning=FALSE}
 resource = dataPackage$getResource('example')
-jsonlite::prettify(helpers.from.list.to.json(resource$read()))
 # convert to json and add indentation with jsonlite prettify function
+jsonlite::prettify(helpers.from.list.to.json(resource$read()))
 ```
 
 
@@ -153,16 +154,8 @@ dataPackage = Package.load()
 
 Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `csv`:
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
-dataPackage$infer('csv')
-dataPackage$descriptor$profile = "tabular-data-package"
-dataPackage$descriptor$resources[[1]]$profile = "tabular-data-resource"
-dataPackage$descriptor$resources[[2]]$profile = "tabular-data-resource"
-dataPackage$commit()
-```
-
-```{r eval=FALSE, include=TRUE, warning=FALSE, message=FALSE}
-dataPackage$infer('csv')
+```{r eval=TRUE, include=TRUE, warning=FALSE, message=FALSE}
+jsonlite::toJSON(dataPackage$infer('csv'), pretty = TRUE)
 ```
 
 ```{r eval=TRUE, include=TRUE, warning=FALSE, message=FALSE}
@@ -179,11 +172,6 @@ dataPackage$valid
 ```
 
 Because our resources are tabular we could read it as a tabular data:
-
-```{r include=FALSE}
-dataPackage = Package.load()
-dataPackage$infer('csv')
-```
 
 ```{r eval=TRUE, include=TRUE}
 jsonlite::toJSON(dataPackage$getResource("population")$read(keyed = TRUE),auto_unbox = FALSE,pretty = TRUE)
@@ -321,7 +309,7 @@ rome,N/A
 Let's create and read a resource. We use static `Resource$load` method instantiate a resource. Because resource is tabular we could use `resourceread` method with a `keyed` option to get an array of keyed rows:
 
 ```{r eval=TRUE, include=TRUE}
-resource = Resource.load('{"profile":"tabular-data-resource","path": "cities.csv"}')
+resource = Resource.load('{"path": "cities.csv"}')
 resource$tabular
 ```
 
@@ -346,12 +334,11 @@ Let's fix not available location. There is a `missingValues` property in Table S
 ```{r eval=TRUE, include=TRUE}
 resource$descriptor$schema$missingValues = 'N/A'
 resource$commit()
+```
+
+```{r eval=TRUE, include=TRUE}
 resource$valid # FALSE
 resource$errors
-# Error: Descriptor validation error:
-#   Invalid type: string (expected array)
-#    at "/missingValues" in descriptor and
-#    at "/properties/missingValues/type" in profile
 ```
 
 As a good citiziens we've decided to check out recource descriptor validity. And it's not valid! We should use an array for `missingValues` property. Also don't forget to have an empty string as a missing value:
