@@ -579,10 +579,11 @@ test_that('it supports encoding property', {
   }'
   resource = Resource.load(descriptor)
   rows = resource$read(keyed =TRUE )
-  expect_equal(rows, helpers.from.json.to.list('[
-    {"id": "1", "name": "english"},
-    {"id": "2", "name": "©"}
-    ]'))
+  expect_equal(rows, list(list(id="1",name="english"),list(id="2",name=iconv("©", "latin1", "UTF-8"))))
+# helpers.from.json.to.list('[
+#     {"id": "1", "name": "english"},
+#     {"id": "2", "name": "©"}
+#     ]'))
 })
 
 
@@ -593,7 +594,7 @@ test_that('it reads correctly if proper encoding is not set', {
 }'
   resource = Resource.load(descriptor)
   rows = resource$read(keyed =TRUE )
-  expect_error(rows, helpers.from.json.to.list('[
+  expect_equal(rows, helpers.from.json.to.list('[
     {"id": "1", "name": "english"},
     {"id": "2", "name": "©"}
     ]'))
