@@ -586,18 +586,21 @@ test_that('it supports encoding property', {
 })
 
 
-test_that('it reads correclty if proper encoding is not set', {
+test_that('it reads correctly if proper encoding is not set', {
   descriptor = '{
   "path": "inst/extdata/latin1.csv",
   "schema": {"fields": [{"name": "id"}, {"name": "name"}]}
 }'
   resource = Resource.load(descriptor)
   rows = resource$read(keyed =TRUE )
-  expect_equal(rows, helpers.from.json.to.list('[
-    {"id": "1", "name": "english"},
-    {"id": "2", "name": "©"}
-    ]'))
+  expect_equal(rows, list(list(id = "1", name = "english"),list(id = "2", name = "©")))
 })
+# 
+# helpers.from.json.to.list('[
+#     {"id": "1", "name": "english"},
+#     {"id": "2", "name": "©"}
+#     ]'))
+# })
 
 #######################################################
 testthat::context('Resource #dialect')
