@@ -593,14 +593,11 @@ test_that('it reads correctly if proper encoding is not set', {
 }'
   resource = Resource.load(descriptor)
   rows = resource$read(keyed =TRUE )
-  expect_equal(rows, list(list(id = "1", name = "english"),list(id = "2", name = "©")))
+  expect_error(rows, helpers.from.json.to.list('[
+    {"id": "1", "name": "english"},
+    {"id": "2", "name": "©"}
+    ]'))
 })
-# 
-# helpers.from.json.to.list('[
-#     {"id": "1", "name": "english"},
-#     {"id": "2", "name": "©"}
-#     ]'))
-# })
 
 #######################################################
 testthat::context('Resource #dialect')
