@@ -29,23 +29,27 @@ test_that('should work with multiple errors', {
 })
 
 test_that('should be catchable as a normal error', {
+  
   tryCatch({
     DataPackageError$new('message')
-  }, error = function(e) {
+    
+  }, error = function(error) {
+    
     expect_equivalent(error$message, 'message')
-    expect_equivalent(methods::is(error,"Error"), TRUE)
-    expect_equivalent(methods::is(error,"DataPackageError"), TRUE)
-    })
+    expect_true("DataPackageError" %in% class(error))
+    
   })
-
+})
 
 test_that('should work with table schema error', {
   tryCatch({
-   tableschema.r::TableSchemaError$new('message')
-  }, error = function(e) {
+    tableschema.r::TableSchemaError$new('message')
+    
+  }, error = function(error) {
+    
     expect_equivalent(error$message, 'message')
-    expect_equivalent(methods::is(error, "Error"), TRUE)
-    expect_equivalent(methods::is(error, "DataPackageError"), TRUE)
-    expect_equivalent(methods::is(error, "TableSchemaError"), TRUE)
+    expect_true("DataPackageError" %in% class(error))
+    expect_true("TableSchemaError" %in% class(error))
   })
+  
 })

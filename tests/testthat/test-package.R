@@ -99,9 +99,6 @@ test_that('object', {
   expect_equal(dataPackage$descriptor, expandPackageDescriptor(helpers.from.json.to.list(descriptor)))
 })
 
-###################################
-testthat::context("Package #load")
-###################################
 
 test_that('string remote path', {
   
