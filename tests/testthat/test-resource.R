@@ -569,38 +569,6 @@ test_that('preserve resource format from descriptor ', {
 })
 
 #######################################################
-testthat::context('Resource #encoding')
-#######################################################
-test_that('it supports encoding property', {
-  descriptor = '{
-    "path": "inst/extdata/latin1.csv",
-    "encoding": "latin1",
-    "schema": {"fields": [{"name": "id"}, {"name": "name"}]}
-  }'
-  resource = Resource.load(descriptor)
-  rows = resource$read(keyed =TRUE )
-  expect_equal(rows, list(list(id="1",name="english"),list(id="2",name=iconv("©", "latin1", "UTF-8"))))
-# helpers.from.json.to.list('[
-#     {"id": "1", "name": "english"},
-#     {"id": "2", "name": "©"}
-#     ]'))
-})
-
-
-test_that('it reads correctly if proper encoding is not set', {
-  descriptor = '{
-  "path": "inst/extdata/latin1.csv",
-  "schema": {"fields": [{"name": "id"}, {"name": "name"}]}
-}'
-  resource = Resource.load(descriptor)
-  rows = resource$read(keyed =TRUE )
-  expect_equal(rows, helpers.from.json.to.list('[
-    {"id": "1", "name": "english"},
-    {"id": "2", "name": "©"}
-    ]'))
-})
-
-#######################################################
 testthat::context('Resource #dialect')
 #######################################################
 
