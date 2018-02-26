@@ -9,8 +9,8 @@
 
 infer <- function(pattern = NULL, basePath = NULL) {
   
-  dataPackage = Package.load(list(), basePath=NULL)
+  dataPackage = Package.load("{}", basePath)
   descriptor = dataPackage$infer(pattern)
   
-  return (descriptor)
+  return(descriptor)
 }

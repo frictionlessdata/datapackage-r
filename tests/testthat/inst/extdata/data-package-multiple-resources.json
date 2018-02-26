@@ -2,11 +2,11 @@
     "resources": [
         {
           "name": "name1",
-          "data": ["data"]
+          "data": ["data1"]
         },
         {
           "name": "name2",
-          "data": ["data"]
+          "data": ["data2"]
         }
     ]
 }

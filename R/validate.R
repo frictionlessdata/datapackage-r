@@ -7,7 +7,7 @@
 # Module API
 
 
-# https://github.com/frictionlessdata/datapackage-js#validate
+# https://github.com/frictionlessdata/datapackage-r#validate
 
 validate = function(descriptor) {
 

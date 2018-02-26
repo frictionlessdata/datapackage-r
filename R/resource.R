@@ -11,7 +11,7 @@ Resource <- R6Class(
   "Resource",
   
   public = list(
-    initialize = function (descriptor, basePath, strict = FALSE, dataPackage = list()) {
+    initialize = function(descriptor, basePath, strict = FALSE, dataPackage = list()) {
       # Set attributes
       private$strict_ = strict
       private$errors_ = NULL
@@ -42,18 +42,19 @@ Resource <- R6Class(
       return(private$getTable_()$iter(relations, options))
     },
     
-    read = function(relations = FALSE, options = list()) {
+    read = function(relations = FALSE, ...) {
       
       # Error for non tabular
       if (!isTRUE(self$tabular)) {
         stop(DataPackageError$new('Methods iter/read are not supported for non tabular data')$message)
       }
-      
+   
       # Get relations
       if (isTRUE(relations)) {
         relations = private$getRelations_()
       }
-      return(private$getTable_()$read(relations, options))
+      
+      return(private$getTable_()$read(relations = relations, ...))
     },
     
     checkRelations = function() {
@@ -62,7 +63,6 @@ Resource <- R6Class(
     },
     
     rawIter = function(stream = FALSE){
-      
       # Error for inline
       if (isTRUE(self$inline)) {
         stop(DataPackageError$new('Methods iter/read are not supported for inline data')$message)
@@ -73,14 +73,32 @@ Resource <- R6Class(
     },
     
     rawRead = function() {
-      iterator = self$rawIter(stream = TRUE)
-      count = 0
+      readable = self$rawIter(stream = TRUE)
+      stream.on = list()
       repeat {
-        count = count + 1
-        stream.on =  iterators::nextElem(iterator)
-        if (count == length(iterator) ) {
+        
+        value = tryCatch({
+          readable$read()
+          
+        }, error = function(e){
+          if (e$message == "StopIteration") {
+            return(NA)
+          }
+          else {
+            stop(e$message)
+          }
+        })
+        
+        if (!isTRUE(is.na(value))) {
+          stream.on = append(stream.on, value) 
+          
+        }
+        else{
           break
         }
+        
+        
+        
       }
       return(stream.on)
     },
@@ -90,39 +108,31 @@ Resource <- R6Class(
       descriptor = private$currentDescriptor_
       
       # Blank -> Stop
-      if (isTRUE(is.null(private$sourceInspection_$blank))) return(descriptor)
+      if (isTRUE(private$sourceInspection_$blank)) return(descriptor)
       
       # Name 
-      if (!is.null(descriptor$name)) descriptor$name = private$sourceInspection_$name
+      if (is.null(descriptor$name) || stringr::str_length(descriptor$name) < 1) descriptor$name = private$sourceInspection_$name
       
       # Only for inline
-      if (!is.null(private$inline_)) {
+      if (!isTRUE(private$inline_)) {
         # Format 
-        if (isTRUE(!is.null(descriptor$format))) descriptor$format = private$sourceInspection_$format
+        if (isTRUE(is.null(descriptor$format)) || stringr::str_length(descriptor$format) < 1) descriptor$format = private$sourceInspection_$format
         
         # Mediatype
         
-        if (isTRUE(!is.null(descriptor$mediatype))) descriptor$mediatype = stringr::str_interp('text/${descriptor$format}')
+        if (isTRUE(is.null(descriptor$mediatype)) || stringr::str_length(descriptor$mediatype) < 1) descriptor$mediatype = stringr::str_interp('text/${descriptor$format}')
         
         # Encoding
-        if (isTRUE(descriptor$encoding == config::get("DEFAULT_RESOURCE_ENCODING",file = "config.yaml"))) {
-          iterator = self$rawIter()
-          count = 0
-          repeat {
-            count = count + 1
-            bytes =  iterators::nextElem(iterator)
-            if (count == length(iterator) ) {
-              break
-            }
-          }
+        if (isTRUE(tolower(descriptor$encoding) == config::get("DEFAULT_RESOURCE_ENCODING", file = "config.yaml"))) {
+        
+          encoding = stringr::str_to_lower(readr::guess_encoding(self$source)[[1]])
           
-          encoding = stringi::stri_enc_detect(bytes)[[1]]$Encoding[1] #Ruchardet::detectEncoding
-          descriptor$encoding = if (encoding == 'ascii') 'utf-8' else encoding
+          descriptor$encoding = if (tolower(encoding) == 'ascii') 'utf-8' else tolower(encoding)
         }
         
         # Schema
         
-        if (purrr::is_empty(descriptor$schema)) {
+        if (is.null(descriptor$schema)) {
           if (isTRUE(self$tabular)) {
             descriptor$schema = private$getTable_()$infer() # or $infer
           }
@@ -130,7 +140,8 @@ Resource <- R6Class(
         
         # Profile
         if (isTRUE(descriptor$profile == config::get("DEFAULT_RESOURCE_PROFILE",file = "config.yaml"))) {
-          if (isTRUE(self$tabular)) descriptor$profile = 'tabular-data-resource'
+          if (isTRUE(self$tabular)) 
+            descriptor$profile = 'tabular-data-resource'
         }
         
         # Save descriptor
@@ -141,10 +152,10 @@ Resource <- R6Class(
       }
       
       # Save descriptor
-      private$currentDescriptor_ = jsonlite::toJSON(descriptor,auto_unbox = TRUE)
+      private$currentDescriptor_ = helpers.from.list.to.json(descriptor)
       private$build_()
       
-      return(jsonlite::toJSON(descriptor,auto_unbox = TRUE))
+      return(helpers.from.list.to.json(descriptor))
     },
     
     commit = function(strict=NULL) {
@@ -157,11 +168,10 @@ Resource <- R6Class(
     },
     
     save = function(target) {
-      
-      write(private$currentDescriptor_, file = stringr::str_c(target,"package.txt", sep = "/"))
-      save=stringr::str_interp('Package saved at: "${target}"')
-      
-      return (save)
+      write_json(private$currentDescriptor_,
+                 file = stringr::str_c(target, "resource.json", sep = "/"))
+      save = stringr::str_interp('Package saved at: "${target}"')
+      return(save)
     }
     
   ),
@@ -169,19 +179,31 @@ Resource <- R6Class(
   active = list(
     
     valid = function() {
-      return(isTRUE(length(private$errors_)== 0))
+      return(isTRUE(length(private$errors_) == 0))
     },
     
     errors = function() {
       return(private$errors_)
     },
     
-    profile = function() {
-      return(private$profile_)
+    profile = function(value) {
+      if (missing(value)) {
+        return(private$profile_)
+      }
+      else {
+        private$profile <- value
+      }
     },
     
-    descriptor = function() {
-      return(private$nextDescriptor_)
+    descriptor = function(value) {
+      if (missing(value)) {
+        return(private$nextDescriptor_)
+      }
+      else {
+       # private$currentDescriptor_ = value
+        private$nextDescriptor_ = value
+      }
+
     }, # Never use self.descriptor inside self class (!!!)
     
     name = function() {
@@ -225,7 +247,7 @@ Resource <- R6Class(
       if (!isTRUE(self$tabular)) return(NULL) else{
         if (!missing(x)) private$getTable_()$schema = x
       }
-        return(private$getTable_()$schema)
+      return(private$getTable_()$schema)
     },
     # Deprecated
     
@@ -250,11 +272,11 @@ Resource <- R6Class(
     table_ = NULL,
     
     build_ = function() {
-      
+
       private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
       # Inspect source
-      
+
       private$sourceInspection_ = inspectSource( private$currentDescriptor_$data,
                                                  as.character(private$currentDescriptor_$path),
                                                  private$basePath_
@@ -269,8 +291,8 @@ Resource <- R6Class(
       private$errors_ = list()
       
       valid_errors = private$profile_$validate(helpers.from.list.to.json(private$currentDescriptor_))
-      
-      if (!isTRUE(valid_errors)) {
+
+      if (!isTRUE(valid_errors$valid)) {
         
         private$errors_ = valid_errors$errors
         
@@ -283,62 +305,68 @@ Resource <- R6Class(
           stop(error$message)
         }
       }
-      
+
     },
     
-    getTable_ = function () {
-      #if (isTRUE(is.character(private$currentDescriptor_))) private$currentDescriptor_ = jsonlite::fromJSON(private$currentDescriptor_)
-      if(isTRUE(is.null(private$table_))) {
-        
+    getTable_ = function() {
+      if (!isTRUE(!is.null(private$table_))) {        
         # Resource -> Regular
-        if (!isTRUE(private$sourceInspection_$tabular)) {
-          return (NULL)
+        if (!isTRUE(self$tabular)) {
+          return(NULL)
         }
         
         # Resource -> Multipart
-        if (isTRUE(private$sourceInspection_$multipart_)) {
+        if (isTRUE(self$multipart_)) {
           stop(DataPackageError$new('Resource$table does not support multipart resources')$message)
         }
-        
         # Resource -> Tabular
-        options = list()
-        schemaDescriptor = jsonlite::toJSON(private$currentDescriptor_$schema)
-        schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema$new(jsonlite::toJSON(schemaDescriptor)) else NULL
-        #schema = schema$value()
-        private$table_  = tableschema.r::Table$new(private$sourceInspection_$source, schema, options)
-        #private$table_ = table_$value()
+     
+        schemaDescriptor = private$currentDescriptor_$schema
+        
+        schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema.load(helpers.from.list.to.json(schemaDescriptor)) else NULL
+
+        if (!is.null(schema)) {
+          schema = schema$value()
+        }
+        
+        table_ = tableschema.r::Table.load( self$source, schema = schema)
+        private$table_ = table_$value()
       }
+      
       return(private$table_)
       
     },
     
     getRelations_ = function() {
-      if (isTRUE(private$relations_ == FALSE)) {
+
+      if (isTRUE(private$relations_ == FALSE) || is.null(private$relations_)) {
         # Prepare resources
         resources = list()
         if (isTRUE(!is.null(private$getTable_())) && isTRUE(!is.null((private$getTable_()$schema)))) {
-          
+
           for (fk in private$getTable_()$schema$foreignKeys) {
-            
-            resources[fk$reference$resource] = resources[fk$reference$resource]
+            #hack to implement JavaScript's array[""] = sth - instead of "" use "$"
+            actualKey = if (stringr::str_length(fk$reference$resource) < 1) "$" else fk$reference$resource     
+            resources[[actualKey]] = if (!is.null(resources[[actualKey]])) resources[[actualKey]] else list()
             
             for (field in fk$reference$fields) {
-              push(resources[fk$reference$resource], field)
+              resources[[actualKey]] = push(resources[[actualKey]], field)
             }
+           
           }
         }
         # Fill Relations
         private$relations_ = list()
         
-        for (resource in purrr::list_along(resources)) {
-          
-          #if (resource && !this._dataPackage) continue
-          
-          private$relations_[resource] = if (is.null(private$relations_[resource])) private$relations_[resource] else list()
-          data = if (!is.null(resource)) private$dataPackage_$get_resource(resource) else resource
-          
+        for (resource in names(resources)) {
+        
+          if (!is.null(resource) && is.null(private$dataPackage_)) next
+   
+          private$relations_[[resource]] = if (!is.null(private$relations_[[resource]])) private$relations_[[resource]] else list()
+          data = if (!is.null(resource) && stringr::str_length(resource) > 0 && resource != "$") private$dataPackage_$getResource(resource) else self
+         
           if (data$tabular) {
-            private$relations_[resource] = read(data, keyed = TRUE)
+            private$relations_[[resource]] = data$read(keyed = TRUE)
           }
         }
         
@@ -369,12 +397,11 @@ DIALECT_KEYS = c(
 #' @rdname Resource.load
 #' @export
 
-Resource.load = function(descriptor = list(), basePath=NULL, strict = FALSE, dataPackage = list() ) {
+Resource.load = function(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list() ) {
   
   
-  
-  # Get base path
-  if (is.null(basePath)) basePath = locateDescriptor(descriptor)
+    # Get base path
+  if (anyNA(basePath)) basePath = locateDescriptor(descriptor)
   
   # if (is.character(descriptor) && 
   #     (isSafePath(descriptor) | isRemotePath(descriptor)) ){
@@ -397,10 +424,13 @@ Resource.load = function(descriptor = list(), basePath=NULL, strict = FALSE, dat
 inspectSource = function(data, path, basePath) {
   inspection = list()
   # Normalize path
-  if (isTRUE(!is.null(path)) && !is.list(path) ) path = as.character(path) #normalizePath(basePath)
-  
+
+  if (isTRUE(!is.null(path)) && !is.list(path) && isTRUE(stringr::str_length(path) > 0)) {
+      path = list(path)
+  }
+
   # Blank
-  if (isTRUE(is.null(data)) && isTRUE(is.null(path))) {
+  if (isTRUE(is.null(data)) && isTRUE(is.null(path) || isTRUE(stringr::str_length(path) < 1))) {
     inspection$source = NULL
     inspection$blank = TRUE 
     
@@ -409,37 +439,37 @@ inspectSource = function(data, path, basePath) {
     
     inspection$source = data
     inspection$inline = TRUE
-    inspection$tabular = purrr::every(data, is.list)
+    inspection$tabular = is.list(data) && purrr::every(data, is.list)
     
     # Local/Remote
   } else if (length(path) == 1) {
     
     # Remote
-    if (isTRUE(isRemotePath(path[1]))) {
-      inspection$source = path[1]
+    if (isTRUE(isRemotePath(path[[1]]))) {
+      inspection$source = path[[1]]
       inspection$remote = TRUE
-    } else if (isTRUE(!is.null(basePath) && isRemotePath(basePath))) {
-      inspection$source = stringr::str_c(basePath, path[1], sep = "/")
+    } else if (isTRUE(!is.null(basePath) && isTRUE(stringr::str_length(basePath) > 0) && isRemotePath(basePath))) {
+      inspection$source = stringr::str_c(basePath, path[[1]], sep = "/")
       inspection$remote = TRUE
       
       # Local
     } else {
       # Path is not safe
-      if ( isTRUE(isSafePath(path[1] == FALSE)) |  isTRUE(isSafePath(as.character(path[1])) == FALSE) ) {
-        stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" is not safe'))$message)
+      if ( !isTRUE(isSafePath(path[[1]]) ) ) {
+        stop(DataPackageError$new(stringr::str_interp('Local path "${path[[1]]}" is not safe'))$message)
       }
       # Not base path
-      if (isTRUE(is.null(basePath))) {
-        stop(DataPackageError$new(stringr::str_interp('Local path "${path[1]}" requires base path'))$message)
+      if (isTRUE(is.null(basePath)) || isTRUE(stringr::str_length(basePath) < 1)) {
+        stop(DataPackageError$new(stringr::str_interp('Local path "${path[[1]]}" requires base path'))$message)
       }
       
-      inspection$source = stringr::str_c(basePath, path[1], sep = '/')
+      inspection$source = stringr::str_c(basePath, path[[1]], sep = '/')
       inspection$local = TRUE
     }
     
     # Inspect
-    inspection$format = tools::file_ext(path[1])[1]
-    inspection$name = basename(tools::list_files_with_exts(dir = path, exts = stringr::str_interp('.${inspection$format}') ))
+    inspection$format = tools::file_ext(path[[1]])[[1]]
+    inspection$name = file_basename(path[[1]])
     inspection$mediatype = stringr::str_interp('text/${inspection$format}')
     inspection$tabular = inspection$format %in% config::get("TABULAR_FORMATS",file = "config.yaml")
     
@@ -448,7 +478,12 @@ inspectSource = function(data, path, basePath) {
     # Multipart Local/Remote
   } else if (length(path) > 1) {
     inspections = purrr::map(path, function(item) inspectSource(NULL, item, basePath))
-    inspection = purrr::flatten(inspections[1])
+    if (length(names(inspection)) > 0) {
+      inspection = rlist::list.merge(inspection, inspections[[1]])
+    }
+    else {
+      inspection = inspections[[1]]
+    }
     inspection$source = unlist(purrr::map(inspections, function(item) item$source))
     inspection$multipart = TRUE
   }
@@ -469,7 +504,6 @@ createByteStream = function(source, remote) {
     connection = url(source) #await axios.get(source)
     
   } else {
-    
     connection = file(source)
   }
   stream = BinaryReadableConnection$new(list(source = connection))

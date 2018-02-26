@@ -2,16 +2,17 @@ library(datapackage.r)
 library(testthat)
 library(foreach)
 library(stringr)
+
 # Tests
 
 testthat::context("helpers")
 
-  testlist = list( 
+  testlist = list(
     list('data.csv', TRUE),
-    list('data/data.csv', TRUE),
-    list('data/country/data.csv', TRUE),
-    list('data\\data.csv', TRUE),
-    list('data\\country\\data.csv', TRUE),
+    list('extdata/data.csv', TRUE),
+    list('extdata/country/data.csv', TRUE),
+    list('extdata\\data.csv', TRUE),
+    list('extdata\\country\\data.csv', TRUE),
     list('../data.csv', FALSE),
     list('~/data.csv', FALSE),
     list('~invalid_user/data.csv', FALSE),

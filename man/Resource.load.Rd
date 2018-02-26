@@ -4,7 +4,7 @@
 \alias{Resource.load}
 \title{Resource.load}
 \usage{
-Resource.load(descriptor = list(), basePath = NULL, strict = FALSE,
+Resource.load(descriptor = list(), basePath = NA, strict = FALSE,
   dataPackage = list())
 }
 \arguments{

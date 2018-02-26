@@ -13,15 +13,9 @@ BinaryReadableConnection <- R6::R6Class(
   
   public = list(
     initialize = function(options = list()) {
-      
-    },
-    
-    
-    read = function(size = NULL) {
-      open(private$connection_)
-      return(iterators::iter(function(){
+      private$connection_ = options$source
+      private$iterable_ = iterators::iter(function(){
         if (length(value <- readBin(private$connection_, integer(), size = 1)) > 0) {
-          
           private$index_ = private$index_ + 1
           
           return(value)
@@ -33,7 +27,16 @@ BinaryReadableConnection <- R6::R6Class(
           stop('StopIteration')
         }
         
-      }))
+      })
+    },
+    
+    
+    read = function(size = NULL) {
+      if (!isTRUE(isOpen(private$connection_))) {
+        open(private$connection_, open = "rb")
+        
+      }
+      return(iterators::nextElem(private$iterable_))
     }
     
     
@@ -58,9 +61,11 @@ BinaryReadableConnection <- R6::R6Class(
     readable_ = TRUE,
     paused_ = TRUE,
     pipeDestination_ = list(),
-    flowing_ = FALSE
+    flowing_ = FALSE,
     
-    
+    connection_ = NULL,
+    iterable_ = NULL,
+    index_ = 0
     
     
     

@@ -45,7 +45,7 @@ To install [RStudio](https://www.rstudio.com/), you can download [RStudio Deskto
 4.  Select the appropriate file for your system
 5.  Run installation file
 
-To install the `datapackage` library it is necessary to install first `devtools` library to make installation of github libraries available.
+To install the `datapackage` library it is necessary to install first [devtools library](https://cran.r-project.org/package=devtools) to make installation of github libraries available.
 
 ``` r
 # Install devtools package if not already
@@ -56,7 +56,7 @@ Install `datapackage.r`
 
 ``` r
 # And then install the development version from github
-devtools::install_github("okgreece/datapackage.r")
+devtools::install_github("frictionlessdata/datapackage-r")
 ```
 
 Load library
@@ -70,7 +70,7 @@ library(datapackage.r)
 Examples
 ========
 
-Code examples in this readme requires R 3.3 or higher, You could see even more [examples](https://github.com/okgreece/datapackage-r/tree/master/inst/examples) in examples directory (and vignettes will be soon available).
+Code examples in this readme requires R 3.3 or higher, You could see even more [examples](https://github.com/frictionlessdata/datapackage-r/tree/master/vignettes) in vignettes directory.
 
 ``` r
 descriptor = '{
@@ -100,19 +100,22 @@ dataPackage
 
     ## <Package>
     ##   Public:
+    ##     addResource: function (descriptor) 
     ##     clone: function (deep = FALSE) 
     ##     commit: function (strict = NULL) 
     ##     descriptor: active binding
     ##     errors: active binding
+    ##     getResource: function (name) 
     ##     infer: function (pattern) 
-    ##     initialize: function (descriptor = list(), basePath = NULL, pattern = NULL, 
+    ##     initialize: function (descriptor = list(), basePath = NULL, strict = FALSE, 
     ##     profile: active binding
+    ##     removeResource: function (name) 
     ##     resourceNames: active binding
     ##     resources: active binding
     ##     save: function (target, type = "json") 
     ##     valid: active binding
     ##   Private:
-    ##     basePath_: NULL
+    ##     basePath_: C:/Users/Kleanthis-Okf/Documents/datapackage-r
     ##     build_: function () 
     ##     currentDescriptor_: list
     ##     currentDescriptor_json: NULL
@@ -120,20 +123,33 @@ dataPackage
     ##     errors_: list
     ##     nextDescriptor_: list
     ##     pattern_: NULL
-    ##     profile_: profile, R6
+    ##     profile_: Profile, R6
     ##     resources_: list
-    ##     resources_length: 0
+    ##     resources_length: NULL
     ##     strict_: FALSE
 
 ``` r
-#resource = dataPackage$getResource('example')
-#resource$read() # [[180, 18, 'Tony'], [192, 32, 'Jacob']]
+resource = dataPackage$getResource('example')
+# convert to json and add indentation with jsonlite prettify function
+jsonlite::prettify(helpers.from.list.to.json(resource$read()))
 ```
+
+    ## [
+    ##     [
+    ##         180,
+    ##         18,
+    ##         "Tony"
+    ##     ],
+    ##     [
+    ##         192,
+    ##         32,
+    ##         "Jacob"
+    ##     ]
+    ## ]
+    ## 
 
 Documentation
 =============
-
-The package is still under development and some properties may not be working properly.
 
 Json objects are not included in R base data types. [Jsonlite package](https://CRAN.R-project.org/package=jsonlite) is internally used to convert json data to list objects. The input parameters of functions could be json strings, files or lists and the outputs are in list format to easily further process your data in R environment and exported as desired. The examples below show how to use jsonlite package to convert the output back to json adding indentation whitespace. More details about handling json you can see jsonlite documentation or vignettes [here](https://CRAN.R-project.org/package=jsonlite).
 
@@ -144,7 +160,7 @@ A class for working with data packages. It provides various capabilities like lo
 
 Consider we have some local `csv` files in a `data` directory. Let's create a data package based on this data using a `Package` class:
 
-> inst/data/cities.csv
+> inst/extdata/readme\_example/cities.csv
 
 ``` csv
 city,location
@@ -153,7 +169,7 @@ paris,"48.85,2.30"
 rome,"41.89,12.51"
 ```
 
-> inst/data/population.csv
+> inst/extdata/readme\_example/population.csv
 
 ``` csv
 city,year,population
@@ -162,36 +178,182 @@ paris,2017,2240000
 rome,2017,2860000
 ```
 
-First we create a blank data package::
+First we create a blank data package:
 
 ``` r
 dataPackage = Package.load()
 ```
 
-Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `*.csv`:
+Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `csv`:
 
 ``` r
-dataPackage$infer('**.csv')
-dataPackage$descriptor
+jsonlite::toJSON(dataPackage$infer('csv'), pretty = TRUE)
 ```
+
+    ## {
+    ##   "profile": ["tabular-data-package"],
+    ##   "resources": [
+    ##     {
+    ##       "path": ["cities.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["cities"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["location"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
+    ##     },
+    ##     {
+    ##       "path": ["population.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["population"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["year"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["population"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
+    ##     }
+    ##   ]
+    ## }
+
+``` r
+jsonlite::toJSON(dataPackage$descriptor, pretty = TRUE)
+```
+
+    ## {
+    ##   "profile": ["tabular-data-package"],
+    ##   "resources": [
+    ##     {
+    ##       "path": ["cities.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["cities"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["location"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
+    ##     },
+    ##     {
+    ##       "path": ["population.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["population"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["year"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["population"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
+    ##     }
+    ##   ]
+    ## }
 
 An `infer` method has found all our files and inspected it to extract useful metadata like profile, encoding, format, Table Schema etc. Let's tweak it a little bit:
 
 ``` r
-#dataPackage$descriptor$resources[1]$schema$fields[1]$type = 'year'
+dataPackage$descriptor$resources[[2]]$schema$fields[[2]]$type = 'year'
 dataPackage$commit()
-dataPackage$valid # true
 ```
+
+    ## [1] TRUE
+
+``` r
+dataPackage$valid
+```
+
+    ## [1] TRUE
 
 Because our resources are tabular we could read it as a tabular data:
 
 ``` r
-dataPackage$getResource('population')$read( keyed = TRUE ) 
-
-# [ { city: 'london', year: 2017, population: 8780000 },
-#   { city: 'paris', year: 2017, population: 2240000 },
-#   { city: 'rome', year: 2017, population: 2860000 } ]
+jsonlite::toJSON(dataPackage$getResource("population")$read(keyed = TRUE),auto_unbox = FALSE,pretty = TRUE)
 ```
+
+    ## [
+    ##   {
+    ##     "city": ["london"],
+    ##     "year": [2017],
+    ##     "population": [8780000]
+    ##   },
+    ##   {
+    ##     "city": ["paris"],
+    ##     "year": [2017],
+    ##     "population": [2240000]
+    ##   },
+    ##   {
+    ##     "city": ["rome"],
+    ##     "year": [2017],
+    ##     "population": [2860000]
+    ##   }
+    ## ]
 
 Let's save our descriptor on the disk. After it we could update our `datapackage.json` as we want, make some changes etc:
 
@@ -281,10 +443,13 @@ Update data package instance if there are in-place changes in the descriptor.
 -   `(Boolean)` - returns true on success and false if not modified
 
 ``` r
-dataPackage = Package.load('{
-    "name": "package",
-    "resources": [{"name": "resource", "data": ["data"]}]
-}')
+dataPackage = Package.load('{ 
+ "name": "package",
+ "resources": [{
+  "name": "resource",
+  "data": ["data"]
+ }]
+ }')
 
 dataPackage$descriptor$name # package
 ```
@@ -293,7 +458,7 @@ dataPackage$descriptor$name # package
 
 ``` r
 dataPackage$descriptor$name = 'renamed-package'
-dataPackage$commit()
+dataPackage$commit() # TRUE
 ```
 
     ## [1] TRUE
@@ -318,7 +483,7 @@ Save data package to target destination.
 
 A class for working with data resources. You can read or iterate tabular resources using the `iter/read` methods and all resource as bytes using `rowIter/rowRead` methods.
 
-Consider we have some local csv file. It could be inline data or remote link - all supported by `Resource` class (except local files for in-brower usage of course). But say it's `data.csv` for now:
+Consider we have some local csv file. It could be inline data or remote link - all supported by `Resource` class (except local files for in-brower usage of course). But say it's `cities.csv` for now:
 
 ``` csv
 city,location
@@ -330,37 +495,96 @@ rome,N/A
 Let's create and read a resource. We use static `Resource$load` method instantiate a resource. Because resource is tabular we could use `resourceread` method with a `keyed` option to get an array of keyed rows:
 
 ``` r
-resource = Resource.load('{"path": "data.csv"}')
-resource$tabular# TRUE
+resource = Resource.load('{"path": "cities.csv"}')
+resource$tabular
 ```
 
     ## [1] TRUE
 
 ``` r
-#resource$headers # ['city', 'location']
-#resource$read(keyed = TRUE)
-
-# [
-#   {city: 'london', location: '51.50,-0.11'},
-#   {city: 'paris', location: '48.85,2.30'},
-#   {city: 'rome', location: 'N/A'},
-# ]
+jsonlite::toJSON(resource$read(keyed = TRUE), pretty = TRUE)
 ```
 
-As we could see our locations are just a strings. But it should be geopoints. Also Rome's location is not available but it's also just a `N/A` string instead of JavaScript `null`. First we have to infer resource metadata:
+    ## [
+    ##   {
+    ##     "city": ["london"],
+    ##     "location": ["\"51.50 -0.11\""]
+    ##   },
+    ##   {
+    ##     "city": ["paris"],
+    ##     "location": ["\"48.85 2.30\""]
+    ##   },
+    ##   {
+    ##     "city": ["rome"],
+    ##     "location": ["\"41.89 12.51\""]
+    ##   }
+    ## ]
+
+As we could see our locations are just a strings. But it should be geopoints. Also Rome's location is not available but it's also just a `N/A` string instead of `null`. First we have to infer resource metadata:
 
 ``` r
-resource$infer()
-resource$descriptor
-#{ path: 'data.csv',
-#  profile: 'tabular-data-resource',
-#  encoding: 'utf-8',
-#  name: 'data',
-#  format: 'csv',
-#  mediatype: 'text/csv',
-# schema: { fields: [ [Object], [Object] ], missingValues: [ '' ] } }
-resource$read( keyed = TRUE )
-# Fails with a data validation error
+jsonlite::toJSON(resource$infer(), pretty = TRUE)
+```
+
+    ## {
+    ##   "path": ["cities.csv"],
+    ##   "profile": ["tabular-data-resource"],
+    ##   "encoding": ["utf-8"],
+    ##   "name": ["cities"],
+    ##   "format": ["csv"],
+    ##   "mediatype": ["text/csv"],
+    ##   "schema": {
+    ##     "fields": [
+    ##       {
+    ##         "name": ["city"],
+    ##         "type": ["string"],
+    ##         "format": ["default"]
+    ##       },
+    ##       {
+    ##         "name": ["location"],
+    ##         "type": ["string"],
+    ##         "format": ["default"]
+    ##       }
+    ##     ],
+    ##     "missingValues": [
+    ##       [""]
+    ##     ]
+    ##   }
+    ## }
+
+``` r
+jsonlite::toJSON(resource$descriptor, pretty = TRUE)
+```
+
+    ## {
+    ##   "path": ["cities.csv"],
+    ##   "profile": ["tabular-data-resource"],
+    ##   "encoding": ["utf-8"],
+    ##   "name": ["cities"],
+    ##   "format": ["csv"],
+    ##   "mediatype": ["text/csv"],
+    ##   "schema": {
+    ##     "fields": [
+    ##       {
+    ##         "name": ["city"],
+    ##         "type": ["string"],
+    ##         "format": ["default"]
+    ##       },
+    ##       {
+    ##         "name": ["location"],
+    ##         "type": ["string"],
+    ##         "format": ["default"]
+    ##       }
+    ##     ],
+    ##     "missingValues": [
+    ##       [""]
+    ##     ]
+    ##   }
+    ## }
+
+``` r
+# resource$read( keyed = TRUE )
+# # Fails with a data validation error
 ```
 
 Let's fix not available location. There is a `missingValues` property in Table Schema specification. As a first try we set `missingValues` to `N/A` in `resource$descriptor.schema`. Resource descriptor could be changed in-place but all changes should be commited by `resource$commit()`:
@@ -368,32 +592,58 @@ Let's fix not available location. There is a `missingValues` property in Table S
 ``` r
 resource$descriptor$schema$missingValues = 'N/A'
 resource$commit()
-resource$valid # FALSE
-resource$errors
-# Error: Descriptor validation error:
-#   Invalid type: string (expected array)
-#    at "/missingValues" in descriptor and
-#    at "/properties/missingValues/type" in profile
 ```
+
+    ## [1] TRUE
+
+``` r
+resource$valid # FALSE
+```
+
+    ## [1] FALSE
+
+``` r
+resource$errors
+```
+
+    ## [[1]]
+    ## [1] "Descriptor validation error:\n            data.schema.missingValues - is the wrong type"
 
 As a good citiziens we've decided to check out recource descriptor validity. And it's not valid! We should use an array for `missingValues` property. Also don't forget to have an empty string as a missing value:
 
 ``` r
 resource$descriptor$schema[['missingValues']] = list('', 'N/A')
 resource$commit()
+```
+
+    ## [1] TRUE
+
+``` r
 resource$valid # TRUE
 ```
+
+    ## [1] TRUE
 
 All good. It looks like we're ready to read our data again:
 
 ``` r
-resource$read( keyed = TRUE )
-# [
-#   {city: 'london', location: [51.50,-0.11]},
-#   {city: 'paris', location: [48.85,2.30]},
-#   {city: 'rome', location: null},
-# ]
+jsonlite::toJSON(resource$read( keyed = TRUE ), pretty = TRUE)
 ```
+
+    ## [
+    ##   {
+    ##     "city": ["london"],
+    ##     "location": ["\"51.50 -0.11\""]
+    ##   },
+    ##   {
+    ##     "city": ["paris"],
+    ##     "location": ["\"48.85 2.30\""]
+    ##   },
+    ##   {
+    ##     "city": ["rome"],
+    ##     "location": ["\"41.89 12.51\""]
+    ##   }
+    ## ]
 
 Now we see that: - locations are arrays with numeric lattide and longitude - Rome's location is a native JavaScript `null`
 
@@ -526,9 +776,9 @@ Iter through the table data and emits rows cast based on table schema (async for
 -   `stream (Boolean)` - return Node Readable Stream of table rows
 -   `(errors.DataPackageError)` - raises any error occured in this process
 -   `(Iterator/Stream)` - iterator/stream of rows:
--   `[value1, value2]` - base
--   `{header1: value1, header2: value2}` - keyed
--   `[rowNumber, [header1, header2], [value1, value2]]` - extended
+    -   `[value1, value2]` - base
+    -   `{header1: value1, header2: value2}` - keyed
+    -   `[rowNumber, [header1, header2], [value1, value2]]` - extended
 
 #### `resource$read(keyed, extended, cast=TRUE, relations=FALSE, limit)`
 
@@ -553,7 +803,7 @@ It checks foreign keys and raises an exception if there are integrity issues.
 -   `(errors.DataPackageError)` - raises if there are integrity issues
 -   `(Boolean)` - returns True if no issues
 
-#### `resource$rawIter({stream=false})`
+#### `resource$rawIter(stream = FALSE)`
 
 Iterate over data chunks as bytes. If `stream` is true Node Stream will be returned.
 
@@ -596,7 +846,6 @@ A component to represent JSON Schema profile from [Profiles Registry](https://sp
 
 ``` r
 profile = Profile.load('data-package')
-
 profile$name # data-package
 ```
 
@@ -657,24 +906,70 @@ A standalone function to validate a data package descriptor:
 A standalone function to infer a data package descriptor.
 
 ``` r
-descriptor = infer('*.csv')
-#{ profile: 'tabular-data-resource',
-#  resources:
-#   [ { path: 'data/cities.csv',
-#       profile: 'tabular-data-resource',
-#       encoding: 'utf-8',
-#       name: 'cities',
-#       format: 'csv',
-#       mediatype: 'text/csv',
-#       schema: [Object] },
-#     { path: 'data/population.csv',
-#       profile: 'tabular-data-resource',
-#       encoding: 'utf-8',
-#       name: 'population',
-#       format: 'csv',
-#       mediatype: 'text/csv',
-#       schema: [Object] } ] }
+descriptor = infer("csv",basePath = '.')
+jsonlite::toJSON(descriptor, pretty = TRUE)
 ```
+
+    ## {
+    ##   "profile": ["tabular-data-package"],
+    ##   "resources": [
+    ##     {
+    ##       "path": ["cities.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["cities"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["location"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
+    ##     },
+    ##     {
+    ##       "path": ["population.csv"],
+    ##       "profile": ["tabular-data-resource"],
+    ##       "encoding": ["utf-8"],
+    ##       "name": ["population"],
+    ##       "format": ["csv"],
+    ##       "mediatype": ["text/csv"],
+    ##       "schema": {
+    ##         "fields": [
+    ##           {
+    ##             "name": ["city"],
+    ##             "type": ["string"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["year"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           },
+    ##           {
+    ##             "name": ["population"],
+    ##             "type": ["integer"],
+    ##             "format": ["default"]
+    ##           }
+    ##         ],
+    ##         "missingValues": [
+    ##           [""]
+    ##         ]
+    ##       }
+    ##     }
+    ##   ]
+    ## }
 
 #### `infer(pattern, basePath)`
 
@@ -729,29 +1024,62 @@ Let's check relations for a `teams` resource:
 
 ``` r
 package = Package.load(DESCRIPTOR)
-# teams = package$getResource('teams')
-# teams$checkRelations()
+teams = package$getResource('teams')
+```
+
+``` r
+teams$checkRelations()
+```
+
+    ## Error: Foreign key 'city' violation in row '4'
+
+``` r
 # tableschema.exceptions.RelationError: Foreign key "['city']" violation in row "4"
 ```
 
 As we could see there is a foreign key violation. That's because our lookup table `cities` doesn't have a city of `Munich` but we have a team from there. We need to fix it in `cities` resource:
 
 ``` r
-package$descriptor[['resources']][1]['data']$push(['Munich', 'Germany'])
+package$descriptor$resources[[2]]$data = rlist::list.append(package$descriptor$resources[[2]]$data, list('Munich', 'Germany'))
 package$commit()
+```
+
+    ## [1] TRUE
+
+``` r
 teams = package$getResource('teams')
-await teams$checkRelations()
+teams$checkRelations()
+```
+
+    ## [1] TRUE
+
+``` r
 # TRUE
 ```
 
 Fixed! But not only a check operation is available. We could use `relations` argument for `resource$iter/read` methods to dereference a resource relations:
 
 ``` r
-teams$read('{"keyed": true, "relations": true}')
-#[{'id': 1, 'name': 'Arsenal', 'city': {'name': 'London', 'country': 'England}},
-# {'id': 2, 'name': 'Real', 'city': {'name': 'Madrid', 'country': 'Spain}},
-# {'id': 3, 'name': 'Bayern', 'city': {'name': 'Munich', 'country': 'Germany}}]
+jsonlite::toJSON(teams$read(keyed = TRUE, relations = FALSE), pretty =  TRUE)
 ```
+
+    ## [
+    ##   {
+    ##     "id": [1],
+    ##     "name": ["Arsenal"],
+    ##     "city": ["London"]
+    ##   },
+    ##   {
+    ##     "id": [2],
+    ##     "name": ["Real"],
+    ##     "city": ["Madrid"]
+    ##   },
+    ##   {
+    ##     "id": [3],
+    ##     "name": ["Bayern"],
+    ##     "city": ["Munich"]
+    ##   }
+    ## ]
 
 Instead of plain city name we've got a dictionary containing a city data. These `resource$iter/read` methods will fail with the same as `resource$check_relations` error if there is an integrity issue. But only if `relations = TRUE` flag is passed.
 
@@ -777,7 +1105,7 @@ tryCatch({
 Changelog - News
 ----------------
 
-In [NEWS.md](https://github.com/okgreece/datapackage-r/blob/master/NEWS.md) described only breaking and the most important changes. The full changelog could be found in nicely formatted [commit](https://github.com/okgreece/datapackage-r/commits/master) history.
+In [NEWS.md](https://github.com/frictionlessdata/datapackage-r/blob/master/NEWS.md) described only breaking and the most important changes. The full changelog could be found in nicely formatted [commit](https://github.com/frictionlessdata/datapackage-r/commits/master) history.
 
 Contributing
 ============
@@ -785,7 +1113,7 @@ Contributing
 The project follows the [Open Knowledge International coding standards](https://github.com/okfn/coding-standards). There are common commands to work with the project.Recommended way to get started is to create, activate and load the library environment. To install package and development dependencies into active environment:
 
 ``` r
-devtools::install_github("okgreece/datapackage-r", dependencies=TRUE)
+devtools::install_github("frictionlessdata/datapackage-r", dependencies=TRUE)
 ```
 
 To make test:
@@ -807,6 +1135,6 @@ more detailed information about how to create and run tests you can find in [tes
 Github
 ======
 
--   <https://github.com/okgreece/datapackage-r>
+-   <https://github.com/frictionlessdata/datapackage-r>
 
 <img src="okgr.png" align="right" width=120px /><img src="oklabs.png" align="right" width=120px />

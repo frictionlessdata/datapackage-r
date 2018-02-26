@@ -11,12 +11,12 @@
 
 Profile <- R6::R6Class(
   
-  "profile",
+  "Profile",
   
   # Public
   
   # https://github.com/frictionlessdata/datapackage-r#profile
-  lock_object = FALSE,
+  lock_objects = FALSE,
   class = TRUE,
   public = list(
     
@@ -24,10 +24,10 @@ Profile <- R6::R6Class(
       
       private$profile_ = profile
       
-      if (is.character(private$profile_)) {
+      if (is.character(unlist(private$profile_))) {
         
-        private$profile_ = stringr::str_interp("inst/profiles/${private$profile_}.json")
-        # private$profile_ = system.file(stringr::str_interp("profiles/${private$profile_}.json"), package = "datapackage.r")
+        private$profile_ =system.file(stringr::str_interp("profiles/${private$profile_}.json"), package = "datapackage.r")
+        # private$profile_ =  stringr::str_interp("inst/profiles/${private$profile_}\.json")
         
         if(private$profile_ =="" | is.null(private$profile_)) {
           
@@ -38,7 +38,7 @@ Profile <- R6::R6Class(
         }
       }
       
-      private$jsonschema_ = helpers.from.json.to.list(readLines(private$profile_, warn=FALSE))
+      private$jsonschema_ = helpers.from.json.to.list(private$profile_)
       
     },
     
@@ -55,18 +55,25 @@ Profile <- R6::R6Class(
       private$validation_$valid = vld$valid
       
       private$validation_$errors = vld$errors
+
       
-      for (validationError in nrow(private$validation_$errors)) {
+      errors = list()
+      
+      for (i in rownames(private$validation_$errors)) {
         
-        private$validation_$errors = append(private$validation_$errors ,stringr::str_interp(
-          'Descriptor validation error:
-          "${private$validation_$errors$field[validationError]}" in descriptor
-          ${private$validation_$errors$message[validationError]}.')
-        )
+        errors = c(errors, stringr::str_interp(
+            'Descriptor validation error:
+            ${private$validation_$errors [i, "field"]} - ${private$validation_$errors [i, "message"]}'
+            
+          )
+          )
+          
+          
+       
+        
       }
       
-      return (private$validation_)
-      
+      return(list(valid = length(errors) < 1, errors = errors))      
       }
   ),
   
