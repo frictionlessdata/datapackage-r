@@ -30,8 +30,7 @@ Imports:
     urltools, 
     utils, 
     V8
-Remotes:
-    okgreece/tableschema-r
+Remotes: okgreece/tableschema-r
 Suggests:
     covr,
     crul,

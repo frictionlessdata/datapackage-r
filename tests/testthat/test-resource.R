@@ -1,8 +1,8 @@
 library(datapackage.r)
 library(testthat)
 library(httptest)
-library(httr)
-library(curl)
+library(httptest)
+library(httptest)
 library(jsonlite)
 
 

@@ -326,11 +326,11 @@ Resource <- R6Class(
         schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema.load(helpers.from.list.to.json(schemaDescriptor)) else NULL
 
         if (!is.null(schema)) {
-          schema = schema$value()
+          schema = future::value(schema)
         }
         
         table_ = tableschema.r::Table.load( self$source, schema = schema)
-        private$table_ = table_$value()
+        private$table_ = future::value(table_)
       }
       
       return(private$table_)

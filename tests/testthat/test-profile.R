@@ -98,7 +98,7 @@ testthat::context('Profile #up-to-date')
 ############################################
 
 ## method 1 readLines
-foreach(name = 1:length(PROFILES) ) %do% {
+foreach(name = 1:length(PROFILES)) %do% {
   testthat::context(c('Profile #up-to-date - ', PROFILES[[name]]))
   test_that(stringr::str_interp('profile ${PROFILES[[name]]} should be up-to-date'), {
     profile = Profile.load(PROFILES[[name]])
@@ -120,7 +120,7 @@ foreach(name = 1:length(PROFILES) ) %do% {
       lengths.target = lapply(helpers.from.json.to.list(response.data)[index],lengths)
       expect_true(identical(lengths.from.profile,lengths.target))
       
-      foreach(ind = 1:length(profile$jsonschema[index]))%do% {
+      foreach(ind = 1:length(profile$jsonschema[index])) %do% {
         
         lengths.from.profile = lapply(profile$jsonschema[index][ind],lengths)
         lengths.target = lapply(helpers.from.json.to.list(response.data)[index][ind],lengths)
