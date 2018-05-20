@@ -25,7 +25,6 @@ Imports:
     readr, 
     rlist, 
     stringr, 
-    tableschema.r, 
     tools, 
     urltools, 
     utils, 
