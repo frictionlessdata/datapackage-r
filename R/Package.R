@@ -98,7 +98,7 @@ Package <- R6::R6Class(
 
       # Profile
 
-      if (isTRUE(private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = "config.yaml"))) {
+      if (isTRUE(private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r")))) {
         if (length(private$resources_) >= 1 && rlist::list.all(private$resources_, r ~ isTRUE(r$tabular))) {
           
           private$currentDescriptor_$profile = 'tabular-data-package'
@@ -294,7 +294,6 @@ Package.load = function(descriptor = list(),
     basePath = locateDescriptor(descriptor)
   }
   
-  
 
   # Process descriptor
   descriptor = retrieveDescriptor(descriptor)
@@ -303,7 +302,7 @@ Package.load = function(descriptor = list(),
   # Get profile
 
   profile.to.load = if (is.null(descriptor$profile)) {
-    config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = "config.yaml")
+    config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r"))
   } else {
     descriptor$profile
   }
