@@ -233,7 +233,6 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
 }
 
 
-
 #' Expand descriptor
 #' @param descriptor descriptor
 #' @rdname expandPackageDescriptor
@@ -242,7 +241,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
 expandPackageDescriptor = function(descriptor) {
   
   descriptor$profile = if (is.empty(descriptor$profile)) {
-    config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = "config.yaml")
+    config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r"))
   } else {
     descriptor$profile
   }
@@ -266,13 +265,13 @@ expandResourceDescriptor = function(descriptor) {
   # set default for profile and encoding
   
   descriptor$profile = if (isTRUE(is.null(descriptor$profile))) {
-    config::get("DEFAULT_RESOURCE_PROFILE", file = "config.yaml")
+    config::get("DEFAULT_RESOURCE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r"))
   } else {
     descriptor$profile
   }
   
   descriptor$encoding = if (isTRUE(is.null(descriptor$encoding))) {
-    config::get("DEFAULT_RESOURCE_ENCODING", file = "config.yaml")
+    config::get("DEFAULT_RESOURCE_ENCODING", file = system.file("config/config.yaml", package = "datapackage.r"))
   } else {
     descriptor$encoding
   }
@@ -287,13 +286,14 @@ expandResourceDescriptor = function(descriptor) {
       for (i in 1:length(descriptor$schema$fields)) {
         
         
+        
         descriptor$schema$fields[[i]]$type = if (is.empty(descriptor$schema$fields[[i]]$type))
-          config::get("DEFAULT_FIELD_TYPE", file = "config.yaml")
+          config::get("DEFAULT_FIELD_TYPE", file = system.file("config/config.yaml", package = "datapackage.r"))
         else {
           descriptor$schema$fields[[i]]$type
         }
         descriptor$schema$fields[[i]]$format = if (is.empty(descriptor$schema$fields[[i]]$format)) {
-          config::get("DEFAULT_FIELD_FORMAT", file = "config.yaml")
+          config::get("DEFAULT_FIELD_FORMAT", file = system.file("config/config.yaml", package = "datapackage.r"))
         } else {
           descriptor$schema$fields[[i]]$format
         }
@@ -301,7 +301,7 @@ expandResourceDescriptor = function(descriptor) {
       }
       
       descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues)) {
-        as.list(config::get("DEFAULT_MISSING_VALUES", file = "config.yaml"))
+        as.list(config::get("DEFAULT_MISSING_VALUES", file = system.file("config/config.yaml", package = "datapackage.r")))
       } else {
         descriptor$schema$missingValues
       }
@@ -310,15 +310,15 @@ expandResourceDescriptor = function(descriptor) {
     # Dialect
     
     if (isTRUE(!is.null(descriptor$dialect))) {
-      #descriptor$dialect = config::get("DEFAULT_DIALECT",file = "config.yml")
+      #descriptor$dialect = config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))
       # descriptor$dialect$lineTerminator="\r\n"
       # descriptor$dialect$quoteChar="\""
       # descriptor$dialect$escapeChar="\\"
       
-      for (key in which(!names(config::get("DEFAULT_DIALECT", file = "config.yaml")) %in% names(descriptor$dialect))) {
-        # if (!names(config::get("DEFAULT_DIALECT",file = "config.yml"))[key] %in% names(descriptor$dialect)) {
+      for (key in which(!names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))) %in% names(descriptor$dialect))) {
+        # if (!names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r")))[key] %in% names(descriptor$dialect)) {
         
-        descriptor$dialect[[paste(names(config::get("DEFAULT_DIALECT", file = "config.yaml"))[key])]] = config::get("DEFAULT_DIALECT", file = "config.yaml")[key]
+        descriptor$dialect[[paste(names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r")))[key])]] = config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))[key]
       }
       descriptor$dialect = lapply(descriptor$dialect, unlist, use.names = FALSE)
       #}

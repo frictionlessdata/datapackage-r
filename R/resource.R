@@ -123,7 +123,7 @@ Resource <- R6Class(
         if (isTRUE(is.null(descriptor$mediatype)) || stringr::str_length(descriptor$mediatype) < 1) descriptor$mediatype = stringr::str_interp('text/${descriptor$format}')
         
         # Encoding
-        if (isTRUE(tolower(descriptor$encoding) == config::get("DEFAULT_RESOURCE_ENCODING", file = "config.yaml"))) {
+        if (isTRUE(tolower(descriptor$encoding) == config::get("DEFAULT_RESOURCE_ENCODING", file = system.file("config/config.yaml", package = "datapackage.r")))) {
         
           encoding = stringr::str_to_lower(readr::guess_encoding(self$source)[[1]])
           
@@ -139,7 +139,7 @@ Resource <- R6Class(
         }
         
         # Profile
-        if (isTRUE(descriptor$profile == config::get("DEFAULT_RESOURCE_PROFILE",file = "config.yaml"))) {
+        if (isTRUE(descriptor$profile == config::get("DEFAULT_RESOURCE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r")))) {
           if (isTRUE(self$tabular)) 
             descriptor$profile = 'tabular-data-resource'
         }
@@ -229,7 +229,7 @@ Resource <- R6Class(
     tabular = function() {
       if (isTRUE(private$currentDescriptor_$profile == 'tabular-data-resource')) return(TRUE)
       if (!isTRUE(private$strict_)) {
-        if (isTRUE(private$currentDescriptor_$format %in% config::get("TABULAR_FORMATS", file = "config.yaml"))) return(TRUE)
+        if (isTRUE(private$currentDescriptor_$format %in% config::get("TABULAR_FORMATS", file = system.file("config/config.yaml", package = "datapackage.r")))) return(TRUE)
         if (isTRUE(private$sourceInspection_$tabular)) return(TRUE)
       }
       return(FALSE)
@@ -471,7 +471,7 @@ inspectSource = function(data, path, basePath) {
     inspection$format = tools::file_ext(path[[1]])[[1]]
     inspection$name = file_basename(path[[1]])
     inspection$mediatype = stringr::str_interp('text/${inspection$format}')
-    inspection$tabular = inspection$format %in% config::get("TABULAR_FORMATS",file = "config.yaml")
+    inspection$tabular = inspection$format %in% config::get("TABULAR_FORMATS", file = system.file("config/config.yaml", package = "datapackage.r"))
     
     
     
