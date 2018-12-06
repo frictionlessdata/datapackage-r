@@ -1,29 +1,48 @@
-<img src="okgr.png" align="right" width=130px /><img src="oklabs.png" align="right" width=130px /><br><br/><img src="frictionlessdata.png" align="left" width=60 />rictionless Data - <br/> Data Package
+<img src="okgr.png" align="right" width=130px /><img src="oklabs.png" align="right" width=130px /><br><br/><img src="frictionlessdata.png" align="left" width=60 />rictionless
+Data - <br/> Data Package
 ================
 
-[![Build Status](https://travis-ci.org/okgreece/datapackage-r.svg?branch=master)](https://travis-ci.org/okgreece/datapackage-r) [![Coverage Status](https://coveralls.io/repos/github/okgreece/datapackage-r/badge.svg?branch=master)](https://coveralls.io/github/okgreece/datapackage-r?branch=master) <!-- [![Coverage Status](https://img.shields.io/codecov/c/github/okgreece/datapackage-r/master.svg)](https://codecov.io/github/okgreece/datapackage-r?branch=master) --> [![Github Issues](http://githubbadges.herokuapp.com/okgreece/datapackage-r/issues.svg)](https://github.com/okgreece/datapackage-r/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/okgreece/datapackage-r/pulls.svg)](https://github.com/okgreece/datapackage-r/pulls) [![Project Status: Active – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.1-6666ff.svg)](https://cran.r-project.org/) [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/frictionlessdata/chat)
+[![Build
+Status](https://travis-ci.org/frictionlessdata/datapackage-r.svg?branch=master)](https://travis-ci.org/frictionlessdata/datapackage-r)
+[![Coverage
+Status](https://coveralls.io/repos/github/frictionlessdata/datapackage-r/badge.svg?branch=master)](https://coveralls.io/github/frictionlessdata/datapackage-r?branch=master)
+<!-- [![Coverage Status](https://img.shields.io/codecov/c/github/frictionlessdata/datapackage-r/master.svg)](https://codecov.io/github/frictionlessdata/datapackage-r?branch=master) -->
+[![Github
+Issues](http://githubbadges.herokuapp.com/frictionlessdata/datapackage-r/issues.svg)](https://github.com/frictionlessdata/datapackage-r/issues)
+[![Pending
+Pull-Requests](http://githubbadges.herokuapp.com/frictionlessdata/datapackage-r/pulls.svg)](https://github.com/frictionlessdata/datapackage-r/pulls)
+[![Project Status: Active – The project has reached a stable, usable
+state but is no longer being actively developed; support/maintenance
+will be provided as time
+allows.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
+[![minimal R
+version](https://img.shields.io/badge/R%3E%3D-3.1-6666ff.svg)](https://cran.r-project.org/)
+[![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/frictionlessdata/chat)
 
-Description
-===========
+# Description
 
-R library for working with [Data Package](http://frictionlessdata.io/specs/data-package).
+R library for working with [Data
+Package](http://frictionlessdata.io/specs/data-package).
 
-Features
---------
+## Features
 
--   `Package` class for working with data packages
--   `Resource` class for working with data resources
--   `Profile` class for working with profiles
--   `validate` function for validating data package descriptors
--   `infer` function for inferring data package descriptors
+  - `Package` class for working with data packages
+  - `Resource` class for working with data resources
+  - `Profile` class for working with profiles
+  - `validate` function for validating data package descriptors
+  - `infer` function for inferring data package descriptors
 
-Getting started
-===============
+# Getting started
 
-Installation
-------------
+## Installation
 
-In order to install the latest distribution of [R software](https://www.r-project.org/) to your computer you have to select one of the mirror sites of the [Comprehensive R Archive Network](https://cloud.r-project.org/), select the appropriate link for your operating system and follow the wizard instructions.
+In order to install the latest distribution of [R
+software](https://www.r-project.org/) to your computer you have to
+select one of the mirror sites of the [Comprehensive R Archive
+Network](https://cloud.r-project.org/), select the appropriate link for
+your operating system and follow the wizard instructions.
 
 For windows users you can:
 
@@ -33,11 +52,17 @@ For windows users you can:
 4.  Download the latest R version
 5.  Run installation file and follow the instrustions of the installer.
 
-(Mac) OS X and Linux users may need to follow different steps depending on their system version to install R successfully and it is recommended to read the instructions on CRAN site carefully.
+(Mac) OS X and Linux users may need to follow different steps depending
+on their system version to install R successfully and it is recommended
+to read the instructions on CRAN site carefully.
 
-Even more detailed installation instructions can be found in [R Installation and Administration manual](https://cran.r-project.org/doc/manuals/R-admin.html).
+Even more detailed installation instructions can be found in [R
+Installation and Administration
+manual](https://cran.r-project.org/doc/manuals/R-admin.html).
 
-To install [RStudio](https://www.rstudio.com/), you can download [RStudio Desktop](https://www.rstudio.com/products/rstudio/download/) with Open Source License and follow the wizard instructions:
+To install [RStudio](https://www.rstudio.com/), you can download
+[RStudio Desktop](https://www.rstudio.com/products/rstudio/download/)
+with Open Source License and follow the wizard instructions:
 
 1.  Go to [RStudio](https://www.rstudio.com/products/rstudio/)
 2.  Click download on RStudio Desktop
@@ -45,7 +70,9 @@ To install [RStudio](https://www.rstudio.com/), you can download [RStudio Deskto
 4.  Select the appropriate file for your system
 5.  Run installation file
 
-To install the `datapackage` library it is necessary to install first [devtools library](https://cran.r-project.org/package=devtools) to make installation of github libraries available.
+To install the `datapackage` library it is necessary to install first
+[devtools library](https://cran.r-project.org/package=devtools) to make
+installation of github libraries available.
 
 ``` r
 # Install devtools package if not already
@@ -59,18 +86,19 @@ Install `datapackage.r`
 devtools::install_github("frictionlessdata/datapackage-r")
 ```
 
-Load library
-------------
+## Load library
 
 ``` r
 # load the library using
 library(datapackage.r)
 ```
 
-Examples
-========
+# Examples
 
-Code examples in this readme requires R 3.3 or higher, You could see even more [examples](https://github.com/frictionlessdata/datapackage-r/tree/master/vignettes) in vignettes directory.
+Code examples in this readme requires R 3.3 or higher, You could see
+even more
+[examples](https://github.com/frictionlessdata/datapackage-r/tree/master/vignettes)
+in vignettes directory.
 
 ``` r
 descriptor = '{
@@ -115,7 +143,7 @@ dataPackage
     ##     save: function (target, type = "json") 
     ##     valid: active binding
     ##   Private:
-    ##     basePath_: C:/Users/Kleanthis-Okf/Documents/datapackage-r
+    ##     basePath_: C:/Users/akis_/Documents/R_packages/frictionlessdata/dat ...
     ##     build_: function () 
     ##     currentDescriptor_: list
     ##     currentDescriptor_json: NULL
@@ -148,17 +176,26 @@ jsonlite::prettify(helpers.from.list.to.json(resource$read()))
     ## ]
     ## 
 
-Documentation
-=============
+# Documentation
 
-Json objects are not included in R base data types. [Jsonlite package](https://CRAN.R-project.org/package=jsonlite) is internally used to convert json data to list objects. The input parameters of functions could be json strings, files or lists and the outputs are in list format to easily further process your data in R environment and exported as desired. The examples below show how to use jsonlite package to convert the output back to json adding indentation whitespace. More details about handling json you can see jsonlite documentation or vignettes [here](https://CRAN.R-project.org/package=jsonlite).
+Json objects are not included in R base data types. [Jsonlite
+package](https://CRAN.R-project.org/package=jsonlite) is internally used
+to convert json data to list objects. The input parameters of functions
+could be json strings, files or lists and the outputs are in list format
+to easily further process your data in R environment and exported as
+desired. The examples below show how to use jsonlite package to convert
+the output back to json adding indentation whitespace. More details
+about handling json you can see jsonlite documentation or vignettes
+[here](https://CRAN.R-project.org/package=jsonlite).
 
-Package
--------
+## Package
 
-A class for working with data packages. It provides various capabilities like loading local or remote data package, inferring a data package descriptor, saving a data package descriptor and many more.
+A class for working with data packages. It provides various capabilities
+like loading local or remote data package, inferring a data package
+descriptor, saving a data package descriptor and many more.
 
-Consider we have some local `csv` files in a `data` directory. Let's create a data package based on this data using a `Package` class:
+Consider we have some local `csv` files in a `data` directory. Let’s
+create a data package based on this data using a `Package` class:
 
 > inst/extdata/readme\_example/cities.csv
 
@@ -184,7 +221,8 @@ First we create a blank data package:
 dataPackage = Package.load()
 ```
 
-Now we're ready to infer a data package descriptor based on data files we have. Because we have two csv files we use glob pattern `csv`:
+Now we’re ready to infer a data package descriptor based on data files
+we have. Because we have two csv files we use glob pattern `csv`:
 
 ``` r
 jsonlite::toJSON(dataPackage$infer('csv'), pretty = TRUE)
@@ -316,7 +354,9 @@ jsonlite::toJSON(dataPackage$descriptor, pretty = TRUE)
     ##   ]
     ## }
 
-An `infer` method has found all our files and inspected it to extract useful metadata like profile, encoding, format, Table Schema etc. Let's tweak it a little bit:
+An `infer` method has found all our files and inspected it to extract
+useful metadata like profile, encoding, format, Table Schema etc. Let’s
+tweak it a little bit:
 
 ``` r
 dataPackage$descriptor$resources[[2]]$schema$fields[[2]]$type = 'year'
@@ -331,7 +371,8 @@ dataPackage$valid
 
     ## [1] TRUE
 
-Because our resources are tabular we could read it as a tabular data:
+Because our resources are tabular we could read it as a tabular
+data:
 
 ``` r
 jsonlite::toJSON(dataPackage$getResource("population")$read(keyed = TRUE),auto_unbox = FALSE,pretty = TRUE)
@@ -355,92 +396,113 @@ jsonlite::toJSON(dataPackage$getResource("population")$read(keyed = TRUE),auto_u
     ##   }
     ## ]
 
-Let's save our descriptor on the disk. After it we could update our `datapackage.json` as we want, make some changes etc:
+Let’s save our descriptor on the disk. After it we could update our
+`datapackage.json` as we want, make some changes etc:
 
 ``` r
 dataPackage.save('datapackage.json')
 ```
 
-To continue the work with the data package we just load it again but this time using local `datapackage.json`:
+To continue the work with the data package we just load it again but
+this time using local `datapackage.json`:
 
 ``` r
 dataPackage = Package.load('datapackage.json')
 # Continue the work
 ```
 
-It was onle basic introduction to the `Package` class. To learn more let's take a look on `Package` class API reference.
+It was onle basic introduction to the `Package` class. To learn more
+let’s take a look on `Package` class API reference.
 
 #### `Package.load(descriptor, basePath, strict=FALSE)`
 
 Constructor to instantiate `Package` class.
 
--   `descriptor (String/Object)` - data package descriptor as local path, url or object
--   `basePath (String)` - base path for all relative paths
--   `strict (Boolean)` - strict flag to alter validation behavior. Setting it to `TRUE` leads to throwing errors on any operation with invalid descriptor
--   `(errors.DataPackageError)` - raises error if something goes wrong
--   `(Package)` - returns data package class instance
+  - `descriptor (String/Object)` - data package descriptor as local
+    path, url or object
+  - `basePath (String)` - base path for all relative paths
+  - `strict (Boolean)` - strict flag to alter validation behavior.
+    Setting it to `TRUE` leads to throwing errors on any operation with
+    invalid descriptor
+  - `(errors.DataPackageError)` - raises error if something goes wrong
+  - `(Package)` - returns data package class instance
 
 #### `package$valid`
 
--   `(Boolean)` - returns validation status. It always true in strict mode.
+  - `(Boolean)` - returns validation status. It always true in strict
+    mode.
 
 #### `package$errors`
 
--   `(Error[])` - returns validation errors. It always empty in strict mode.
+  - `(Error[])` - returns validation errors. It always empty in strict
+    mode.
 
 #### `package$profile`
 
--   `(Profile)` - returns an instance of `Profile` class (see below).
+  - `(Profile)` - returns an instance of `Profile` class (see below).
 
 #### `package$descriptor`
 
--   `(Object)` - returns data package descriptor
+  - `(Object)` - returns data package descriptor
 
 #### `package$resources`
 
--   `(Resource[])` - returns an list of `Resource` instances (see below).
+  - `(Resource[])` - returns an list of `Resource` instances (see
+    below).
 
 #### `package$resourceNames`
 
--   `(String[])` - returns an list of resource names.
+  - `(String[])` - returns an list of resource names.
 
 #### `package$getResource(name)`
 
 Get data package resource by name.
 
--   `name (String)` - data resource name
--   `(Resource/null)` - returns `Resource` instances or null if not found
+  - `name (String)` - data resource name
+  - `(Resource/null)` - returns `Resource` instances or null if not
+    found
 
 #### `package$addResource(descriptor)`
 
-Add new resource to data package. The data package descriptor will be validated with newly added resource descriptor.
+Add new resource to data package. The data package descriptor will be
+validated with newly added resource descriptor.
 
--   `descriptor (Object)` - data resource descriptor
--   `(errors$DataPackageError)` - raises error if something goes wrong
--   `(Resource/null)` - returns added `Resource` instance or null if not added
+  - `descriptor (Object)` - data resource descriptor
+  - `(errors$DataPackageError)` - raises error if something goes wrong
+  - `(Resource/null)` - returns added `Resource` instance or null if not
+    added
 
 #### `package$removeResource(name)`
 
-Remove data package resource by name. The data package descriptor will be validated after resource descriptor removal.
+Remove data package resource by name. The data package descriptor will
+be validated after resource descriptor removal.
 
--   `name (String)` - data resource name
--   `(errors$DataPackageError)` - raises error if something goes wrong
--   `(Resource/null)` - returns removed `Resource` instances or null if not found
+  - `name (String)` - data resource name
+  - `(errors$DataPackageError)` - raises error if something goes wrong
+  - `(Resource/null)` - returns removed `Resource` instances or null if
+    not found
 
 #### `package$infer(pattern=FALSE)`
 
-Infer a data package metadata. If `pattern` is not provided only existent resources will be inferred (added metadata like encoding, profile etc). If `pattern` is provided new resoures with file names mathing the pattern will be added and inferred. It commits changes to data package instance.
+Infer a data package metadata. If `pattern` is not provided only
+existent resources will be inferred (added metadata like encoding,
+profile etc). If `pattern` is provided new resoures with file names
+mathing the pattern will be added and inferred. It commits changes to
+data package instance.
 
--   `pattern (String)` - glob pattern for new resources
--   `(Object)` - returns data package descriptor
+  - `pattern (String)` - glob pattern for new resources
+  - `(Object)` - returns data package descriptor
 
 #### `package$commit(strict)`
 
-Update data package instance if there are in-place changes in the descriptor.
+Update data package instance if there are in-place changes in the
+descriptor.
 
--   `strict (Boolean)` - alter `strict` mode for further work
--   `(errors$DataPackageError)` - raises error if something goes wrong
--   `(Boolean)` - returns true on success and false if not modified
+  - `strict (Boolean)` - alter `strict` mode for further work
+  - `(errors$DataPackageError)` - raises error if something goes wrong
+  - `(Boolean)` - returns true on success and false if not modified
+
+<!-- end list -->
 
 ``` r
 dataPackage = Package.load('{ 
@@ -475,15 +537,19 @@ dataPackage$descriptor$name # renamed-package
 
 Save data package to target destination.
 
--   `target (String)` - path where to save a data package
--   `(errors$DataPackageError)` - raises error if something goes wrong
--   `(Boolean)` - returns true on success
+  - `target (String)` - path where to save a data package
+  - `(errors$DataPackageError)` - raises error if something goes wrong
+  - `(Boolean)` - returns true on success
 
 ### Resource
 
-A class for working with data resources. You can read or iterate tabular resources using the `iter/read` methods and all resource as bytes using `rowIter/rowRead` methods.
+A class for working with data resources. You can read or iterate tabular
+resources using the `iter/read` methods and all resource as bytes using
+`rowIter/rowRead` methods.
 
-Consider we have some local csv file. It could be inline data or remote link - all supported by `Resource` class (except local files for in-brower usage of course). But say it's `cities.csv` for now:
+Consider we have some local csv file. It could be inline data or remote
+link - all supported by `Resource` class (except local files for
+in-brower usage of course). But say it’s `cities.csv` for now:
 
 ``` csv
 city,location
@@ -492,7 +558,10 @@ paris,"48.85,2.30"
 rome,N/A
 ```
 
-Let's create and read a resource. We use static `Resource$load` method instantiate a resource. Because resource is tabular we could use `resourceread` method with a `keyed` option to get an array of keyed rows:
+Let’s create and read a resource. We use static `Resource$load` method
+instantiate a resource. Because resource is tabular we could use
+`resourceread` method with a `keyed` option to get an array of keyed
+rows:
 
 ``` r
 resource = Resource.load('{"path": "cities.csv"}')
@@ -520,7 +589,10 @@ jsonlite::toJSON(resource$read(keyed = TRUE), pretty = TRUE)
     ##   }
     ## ]
 
-As we could see our locations are just a strings. But it should be geopoints. Also Rome's location is not available but it's also just a `N/A` string instead of `null`. First we have to infer resource metadata:
+As we could see our locations are just a strings. But it should be
+geopoints. Also Rome’s location is not available but it’s also just a
+`N/A` string instead of `null`. First we have to infer resource
+metadata:
 
 ``` r
 jsonlite::toJSON(resource$infer(), pretty = TRUE)
@@ -587,7 +659,11 @@ jsonlite::toJSON(resource$descriptor, pretty = TRUE)
 # # Fails with a data validation error
 ```
 
-Let's fix not available location. There is a `missingValues` property in Table Schema specification. As a first try we set `missingValues` to `N/A` in `resource$descriptor.schema`. Resource descriptor could be changed in-place but all changes should be commited by `resource$commit()`:
+Let’s fix not available location. There is a `missingValues` property in
+Table Schema specification. As a first try we set `missingValues` to
+`N/A` in `resource$descriptor.schema`. Resource descriptor could be
+changed in-place but all changes should be commited by
+`resource$commit()`:
 
 ``` r
 resource$descriptor$schema$missingValues = 'N/A'
@@ -609,7 +685,10 @@ resource$errors
     ## [[1]]
     ## [1] "Descriptor validation error:\n            data.schema.missingValues - is the wrong type"
 
-As a good citiziens we've decided to check out recource descriptor validity. And it's not valid! We should use an array for `missingValues` property. Also don't forget to have an empty string as a missing value:
+As a good citiziens we’ve decided to check out recource descriptor
+validity. And it’s not valid\! We should use an array for
+`missingValues` property. Also don’t forget to have an empty string as a
+missing value:
 
 ``` r
 resource$descriptor$schema[['missingValues']] = list('', 'N/A')
@@ -624,7 +703,7 @@ resource$valid # TRUE
 
     ## [1] TRUE
 
-All good. It looks like we're ready to read our data again:
+All good. It looks like we’re ready to read our data again:
 
 ``` r
 jsonlite::toJSON(resource$read( keyed = TRUE ), pretty = TRUE)
@@ -645,15 +724,18 @@ jsonlite::toJSON(resource$read( keyed = TRUE ), pretty = TRUE)
     ##   }
     ## ]
 
-Now we see that: - locations are arrays with numeric lattide and longitude - Rome's location is a native JavaScript `null`
+Now we see that: - locations are arrays with numeric lattide and
+longitude - Rome’s location is a native JavaScript `null`
 
-And because there are no errors on data reading we could be sure that our data is valid againt our schema. Let's save our resource descriptor:
+And because there are no errors on data reading we could be sure that
+our data is valid againt our schema. Let’s save our resource descriptor:
 
 ``` r
 resource$save('dataresource.json')
 ```
 
-Let's check newly-crated `dataresource.json`. It contains path to our data file, inferred metadata and our `missingValues` tweak:
+Let’s check newly-crated `dataresource.json`. It contains path to our
+data file, inferred metadata and our `missingValues` tweak:
 
 ``` json
 {
@@ -684,151 +766,173 @@ Let's check newly-crated `dataresource.json`. It contains path to our data file,
 }
 ```
 
-If we decide to improve it even more we could update the `dataresource.json` file and then open it again using local file name:
+If we decide to improve it even more we could update the
+`dataresource.json` file and then open it again using local file name:
 
 ``` r
 resource = Resource.load('dataresource.json')
 # Continue the work
 ```
 
-It was onle basic introduction to the `Resource` class. To learn more let's take a look on `Resource` class API reference.
+It was onle basic introduction to the `Resource` class. To learn more
+let’s take a look on `Resource` class API reference.
 
 #### `Resource$load(descriptor, basePath, strict=FALSE)`
 
 Constructor to instantiate `Resource` class.
 
--   `descriptor (String/Object)` - data resource descriptor as local path, url or object
--   `basePath (String)` - base path for all relative paths
--   `strict (Boolean)` - strict flag to alter validation behavior. Setting it to `TRUE` leads to throwing errors on any operation with invalid descriptor
--   `(errors.DataPackageError)` - raises error if something goes wrong
--   `(Resource)` - returns resource class instance
+  - `descriptor (String/Object)` - data resource descriptor as local
+    path, url or object
+  - `basePath (String)` - base path for all relative paths
+  - `strict (Boolean)` - strict flag to alter validation behavior.
+    Setting it to `TRUE` leads to throwing errors on any operation with
+    invalid descriptor
+  - `(errors.DataPackageError)` - raises error if something goes wrong
+  - `(Resource)` - returns resource class instance
 
 #### `resource$valid`
 
--   `(Boolean)` - returns validation status. It always true in strict mode.
+  - `(Boolean)` - returns validation status. It always true in strict
+    mode.
 
 #### `resource$errors`
 
--   `(Error[])` - returns validation errors. It always empty in strict mode.
+  - `(Error[])` - returns validation errors. It always empty in strict
+    mode.
 
 #### `resource$profile`
 
--   `(Profile)` - returns an instance of `Profile` class (see below).
+  - `(Profile)` - returns an instance of `Profile` class (see below).
 
 #### `resource$descriptor`
 
--   (Object) - returns resource descriptor
+  - (Object) - returns resource descriptor
 
 #### `resource$name`
 
--   `(String)` - returns resource name
+  - `(String)` - returns resource name
 
 #### `resource$inline`
 
--   `(Boolean)` - returns true if resource is inline
+  - `(Boolean)` - returns true if resource is inline
 
 #### `resource$local`
 
--   `(Boolean)` - returns true if resource is local
+  - `(Boolean)` - returns true if resource is local
 
 #### `resource$remote`
 
--   `(Boolean)` - returns true if resource is remote
+  - `(Boolean)` - returns true if resource is remote
 
 #### `resource$multipart`
 
--   `(Boolean)` - returns true if resource is multipart
+  - `(Boolean)` - returns true if resource is multipart
 
 #### `resource$tabular`
 
--   `(Boolean)` - returns true if resource is tabular
+  - `(Boolean)` - returns true if resource is tabular
 
 #### `resource$source`
 
--   `(List/String)` - returns `data` or `path` property
+  - `(List/String)` - returns `data` or `path` property
 
-Combination of `resource$source` and `resource$inline/local/remote/multipart` provides predictable interface to work with resource data.
+Combination of `resource$source` and
+`resource$inline/local/remote/multipart` provides predictable interface
+to work with resource data.
 
 #### `resource$headers`
 
 > Only for tabular resources
 
--   `(String[])` - returns data source headers
+  - `(String[])` - returns data source headers
 
 #### `resource$schema`
 
 > Only for tabular resources
 
-It returns `Schema` instance to interact with data schema. Read API documentation - [tableschema.Schema](https://github.com/frictionlessdata/tableschema-js#schema).
+It returns `Schema` instance to interact with data schema. Read API
+documentation -
+[tableschema.Schema](https://github.com/frictionlessdata/tableschema-js#schema).
 
--   `(tableschema$Schema)` - returns schema class instance
+  - `(tableschema$Schema)` - returns schema class
+instance
 
 #### `resource$iter(keyed, extended, cast=TRUE, relations=FALSE, stream=FALSE)`
 
 > Only for tabular resources
 
-Iter through the table data and emits rows cast based on table schema (async for loop). Data casting could be disabled.
+Iter through the table data and emits rows cast based on table schema
+(async for loop). Data casting could be disabled.
 
--   `keyed (Boolean)` - iter keyed rows
--   `extended (Boolean)` - iter extended rows
--   `cast (Boolean)` - disable data casting if false
--   `relations (Boolean)` - if true foreign key fields will be checked and resolved to its references
--   `stream (Boolean)` - return Node Readable Stream of table rows
--   `(errors.DataPackageError)` - raises any error occured in this process
--   `(Iterator/Stream)` - iterator/stream of rows:
-    -   `[value1, value2]` - base
-    -   `{header1: value1, header2: value2}` - keyed
-    -   `[rowNumber, [header1, header2], [value1, value2]]` - extended
+  - `keyed (Boolean)` - iter keyed rows
+  - `extended (Boolean)` - iter extended rows
+  - `cast (Boolean)` - disable data casting if false
+  - `relations (Boolean)` - if true foreign key fields will be checked
+    and resolved to its references
+  - `stream (Boolean)` - return Node Readable Stream of table rows
+  - `(errors.DataPackageError)` - raises any error occured in this
+    process
+  - `(Iterator/Stream)` - iterator/stream of rows:
+      - `[value1, value2]` - base
+      - `{header1: value1, header2: value2}` - keyed
+      - `[rowNumber, [header1, header2], [value1, value2]]` - extended
 
 #### `resource$read(keyed, extended, cast=TRUE, relations=FALSE, limit)`
 
 > Only for tabular resources
 
-Read the whole table and returns as array of rows. Count of rows could be limited.
+Read the whole table and returns as array of rows. Count of rows could
+be limited.
 
--   `keyed (Boolean)` - flag to emit keyed rows
--   `extended (Boolean)` - flag to emit extended rows
--   `cast (Boolean)` - flag to disable data casting if false
--   `relations (Boolean)` - if true foreign key fields will be checked and resolved to its references
--   `limit (Number)` - integer limit of rows to return
--   `(errors.DataPackageError)` - raises any error occured in this process
--   `(Array[])` - returns array of rows (see `table.iter`)
+  - `keyed (Boolean)` - flag to emit keyed rows
+  - `extended (Boolean)` - flag to emit extended rows
+  - `cast (Boolean)` - flag to disable data casting if false
+  - `relations (Boolean)` - if true foreign key fields will be checked
+    and resolved to its references
+  - `limit (Number)` - integer limit of rows to return
+  - `(errors.DataPackageError)` - raises any error occured in this
+    process
+  - `(Array[])` - returns array of rows (see `table.iter`)
 
 #### `resource$checkRelations()`
 
 > Only for tabular resources
 
-It checks foreign keys and raises an exception if there are integrity issues.
+It checks foreign keys and raises an exception if there are integrity
+issues.
 
--   `(errors.DataPackageError)` - raises if there are integrity issues
--   `(Boolean)` - returns True if no issues
+  - `(errors.DataPackageError)` - raises if there are integrity issues
+  - `(Boolean)` - returns True if no issues
 
 #### `resource$rawIter(stream = FALSE)`
 
-Iterate over data chunks as bytes. If `stream` is true Node Stream will be returned.
+Iterate over data chunks as bytes. If `stream` is true Node Stream will
+be returned.
 
--   `stream (Boolean)` - Node Stream will be returned
--   `(Iterator/Stream)` - returns Iterator/Stream
+  - `stream (Boolean)` - Node Stream will be returned
+  - `(Iterator/Stream)` - returns Iterator/Stream
 
 #### `resource$rawRead()`
 
 Returns resource data as bytes.
 
--   (Buffer) - returns Buffer with resource data
+  - (Buffer) - returns Buffer with resource data
 
 #### `resource$infer()`
 
-Infer resource metadata like name, format, mediatype, encoding, schema and profile. It commits this changes into resource instance.
+Infer resource metadata like name, format, mediatype, encoding, schema
+and profile. It commits this changes into resource instance.
 
--   `(Object)` - returns resource descriptor
+  - `(Object)` - returns resource descriptor
 
 #### `resource$commit(strict)`
 
-Update resource instance if there are in-place changes in the descriptor.
+Update resource instance if there are in-place changes in the
+descriptor.
 
--   `strict (Boolean)` - alter `strict` mode for further work
--   `(errors.DataPackageError)` - raises error if something goes wrong
--   `(Boolean)` - returns true on success and false if not modified
+  - `strict (Boolean)` - alter `strict` mode for further work
+  - `(errors.DataPackageError)` - raises error if something goes wrong
+  - `(Boolean)` - returns true on success and false if not modified
 
 #### `resource$save(target)`
 
@@ -836,13 +940,14 @@ Update resource instance if there are in-place changes in the descriptor.
 
 Save resource to target destination.
 
--   `target (String)` - path where to save a resource
--   `(errors.DataPackageError)` - raises error if something goes wrong
--   `(Boolean)` - returns true on success
+  - `target (String)` - path where to save a resource
+  - `(errors.DataPackageError)` - raises error if something goes wrong
+  - `(Boolean)` - returns true on success
 
 ### Profile
 
-A component to represent JSON Schema profile from [Profiles Registry](https://specs.frictionlessdata.io/schemas/registry.json):
+A component to represent JSON Schema profile from [Profiles
+Registry](https://specs.frictionlessdata.io/schemas/registry.json):
 
 ``` r
 profile = Profile.load('data-package')
@@ -867,24 +972,25 @@ valid
 
 Constuctor to instantiate `Profile` class.
 
--   `profile (String)` - profile name in registry or URL to JSON Schema
--   `(errors$DataPackageError)` - raises error if something goes wrong
--   `(Profile)` - returns profile class instance
+  - `profile (String)` - profile name in registry or URL to JSON Schema
+  - `(errors$DataPackageError)` - raises error if something goes wrong
+  - `(Profile)` - returns profile class instance
 
 #### `Profile$name()`
 
--   `(String/null)` - returns profile name if available
+  - `(String/null)` - returns profile name if available
 
 #### `Profile$jsonschema()`
 
--   `(Object)` - returns profile JSON Schema contents
+  - `(Object)` - returns profile JSON Schema contents
 
 #### `Profile$validate(descriptor)`
 
 Validate a data package `descriptor` against the Profile$
 
--   `descriptor (Object)` - retrieved and dereferenced data package descriptor
--   `(Object)` - returns a `valid_errors` object
+  - `descriptor (Object)` - retrieved and dereferenced data package
+    descriptor
+  - `(Object)` - returns a `valid_errors` object
 
 ### Validate
 
@@ -898,8 +1004,9 @@ valid_errors = validate('{"name": "Invalid Datapackage"}')
 
 A standalone function to validate a data package descriptor:
 
--   `descriptor (String/Object)` - data package descriptor (local/remote path or object)
--   `(Object)` - returns a `valid_errors` object
+  - `descriptor (String/Object)` - data package descriptor (local/remote
+    path or object)
+  - `(Object)` - returns a `valid_errors` object
 
 ### Infer
 
@@ -975,12 +1082,16 @@ jsonlite::toJSON(descriptor, pretty = TRUE)
 
 Infer a data package descriptor.
 
--   `pattern (String)` - glob file pattern
--   `(Object)` - returns data package descriptor
+  - `pattern (String)` - glob file pattern
+  - `(Object)` - returns data package descriptor
 
 ### Foreign Keys
 
-The library supports foreign keys described in the [Table Schema](http://specs.frictionlessdata.io/table-schema/#foreign-keys) specification. It means if your data package descriptor use `resources[]$schema$foreignKeys` property for some resources a data integrity will be checked on reading operations.
+The library supports foreign keys described in the [Table
+Schema](http://specs.frictionlessdata.io/table-schema/#foreign-keys)
+specification. It means if your data package descriptor use
+`resources[]$schema$foreignKeys` property for some resources a data
+integrity will be checked on reading operations.
 
 Consider we have a data package:
 
@@ -1020,7 +1131,7 @@ DESCRIPTOR = '{
 }'
 ```
 
-Let's check relations for a `teams` resource:
+Let’s check relations for a `teams` resource:
 
 ``` r
 package = Package.load(DESCRIPTOR)
@@ -1037,7 +1148,10 @@ teams$checkRelations()
 # tableschema.exceptions.RelationError: Foreign key "['city']" violation in row "4"
 ```
 
-As we could see there is a foreign key violation. That's because our lookup table `cities` doesn't have a city of `Munich` but we have a team from there. We need to fix it in `cities` resource:
+As we could see there is a foreign key violation. That’s because our
+lookup table `cities` doesn’t have a city of `Munich` but we have a team
+from there. We need to fix it in `cities`
+resource:
 
 ``` r
 package$descriptor$resources[[2]]$data = rlist::list.append(package$descriptor$resources[[2]]$data, list('Munich', 'Germany'))
@@ -1057,7 +1171,10 @@ teams$checkRelations()
 # TRUE
 ```
 
-Fixed! But not only a check operation is available. We could use `relations` argument for `resource$iter/read` methods to dereference a resource relations:
+Fixed\! But not only a check operation is available. We could use
+`relations` argument for `resource$iter/read` methods to dereference a
+resource
+relations:
 
 ``` r
 jsonlite::toJSON(teams$read(keyed = TRUE, relations = FALSE), pretty =  TRUE)
@@ -1081,13 +1198,17 @@ jsonlite::toJSON(teams$read(keyed = TRUE, relations = FALSE), pretty =  TRUE)
     ##   }
     ## ]
 
-Instead of plain city name we've got a dictionary containing a city data. These `resource$iter/read` methods will fail with the same as `resource$check_relations` error if there is an integrity issue. But only if `relations = TRUE` flag is passed.
+Instead of plain city name we’ve got a dictionary containing a city
+data. These `resource$iter/read` methods will fail with the same as
+`resource$check_relations` error if there is an integrity issue. But
+only if `relations = TRUE` flag is passed.
 
 ### Errors
 
 #### `errors$DataPackageError`
 
-Base class for the all library errors. If there are more than one error you could get an additional information from the error object:
+Base class for the all library errors. If there are more than one error
+you could get an additional information from the error object:
 
 ``` r
 tryCatch({
@@ -1102,15 +1223,23 @@ tryCatch({
 })
 ```
 
-Changelog - News
-----------------
+## Changelog - News
 
-In [NEWS.md](https://github.com/frictionlessdata/datapackage-r/blob/master/NEWS.md) described only breaking and the most important changes. The full changelog could be found in nicely formatted [commit](https://github.com/frictionlessdata/datapackage-r/commits/master) history.
+In
+[NEWS.md](https://github.com/frictionlessdata/datapackage-r/blob/master/NEWS.md)
+described only breaking and the most important changes. The full
+changelog could be found in nicely formatted
+[commit](https://github.com/frictionlessdata/datapackage-r/commits/master)
+history.
 
-Contributing
-============
+# Contributing
 
-The project follows the [Open Knowledge International coding standards](https://github.com/okfn/coding-standards). There are common commands to work with the project.Recommended way to get started is to create, activate and load the library environment. To install package and development dependencies into active environment:
+The project follows the [Open Knowledge International coding
+standards](https://github.com/okfn/coding-standards). There are common
+commands to work with the project.Recommended way to get started is to
+create, activate and load the library environment. To install package
+and development dependencies into active
+environment:
 
 ``` r
 devtools::install_github("frictionlessdata/datapackage-r", dependencies=TRUE)
@@ -1130,11 +1259,12 @@ To run tests:
 devtools::test()
 ```
 
-more detailed information about how to create and run tests you can find in [testthat package](https://github.com/hadley/testthat)
+more detailed information about how to create and run tests you can find
+in [testthat
+package](https://github.com/hadley/testthat)
 
-Github
-======
+# Github
 
--   <https://github.com/frictionlessdata/datapackage-r>
+  - <https://github.com/frictionlessdata/datapackage-r>
 
 <img src="okgr.png" align="right" width=120px /><img src="oklabs.png" align="right" width=120px />
