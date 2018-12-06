@@ -1,22 +1,21 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
 language: r
+sudo: false
+cache: packages
 r:
   - oldrel
   - release
-  - devel
-sudo: false
-cache: packages
-warnings_are_errors: false
-
+  - devel  
 before_install:
   - tlmgr install index
+repos:
+  CRAN: http://cran.rstudio.com
 addons:
   apt:
     packages:
       - libxml2-dev
       - libv8-dev
-repos:
-  CRAN: http://cran.rstudio.com
-r_github_packages: okgreece/tableschema-r
-after_success:
- - Rscript -e 'covr::coveralls()'
+warnings_are_errors: false
+after_success: 
+  - Rscript -e 'covr::coveralls()'
