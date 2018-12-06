@@ -4,7 +4,8 @@
 \alias{dereferenceResourceDescriptor}
 \title{Dereference resource descriptor}
 \usage{
-dereferenceResourceDescriptor(descriptor, basePath, baseDescriptor = NULL)
+dereferenceResourceDescriptor(descriptor, basePath,
+  baseDescriptor = NULL)
 }
 \arguments{
 \item{descriptor}{descriptor}

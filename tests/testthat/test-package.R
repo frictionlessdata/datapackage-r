@@ -1,9 +1,9 @@
 library(datapackage.r)
 library(testthat)
-library(stringr)
-library(crul)
-library(webmockr)
+library(curl)
 library(httptest)
+library(purrr)
+library(httr)
 
 # Tests
 
@@ -118,7 +118,7 @@ test_that('string remote path bad', {
   expect_error(
     with_mock(
       `httr:::request_perform` = function()
-        httptest::fakeResponse(httr::GET(descriptor), status_code = 500) ,
+        httptest::fake_response(httr::GET(descriptor), status_code = 500) ,
       `httptest::request_happened` = expect_message,
       eval.parent(Package.load(descriptor)),
       "Can not retrieve remote"
@@ -222,14 +222,14 @@ test_that('remote', {
   dataPackage <-  with_mock(
     `curl::curl` = function(url, ...) {
       if (url == "http://example.com/schema") {
-        httptest::fakeResponse(
+        httptest::fake_response(
           httr::GET("http://example.com/schema"),
           status_code = 200,
           content = list(fields = list(list(name = "name")))
         )
       }
       else if (url == "http://example.com/dialect") {
-        httptest::fakeResponse(
+        httptest::fake_response(
           httr::GET("http://example.com/dialect"),
           status_code = 200,
           content = list(delimiter = ",")

@@ -32,17 +32,3 @@ foreach(j = 1:length(testlist) ) %do% {
     expect_equal(isSafePath(testlist[[j]]$path), testlist[[j]]$isSafe)
   })
 }
-
-# Helpers
-# 
-# catchError  = function (func, args) {
-#   #async
-#   future::future(
-#     tryCatch({
-#       eval(parse(text=paste(func,"(",args,")")))
-#     }, error =  function (exception) {
-#       error = exception
-#       error
-#     }))
-#   return (error)
-# }

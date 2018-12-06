@@ -498,10 +498,11 @@ findFiles = function(pattern, path = getwd()) {
 }
 
 
-#' is empty list
+#' Is empty
+#' @description Is empty list
 #' @param list list
 #' @rdname is.empty
-#' @return TRUE if list is empty (currently at depth 2)
+#' @return TRUE if list is empty
 #' @export
 #'
 
@@ -563,7 +564,7 @@ descriptor.pointer <- function(value, baseDescriptor) {
   return(property)
 }
 
-#' helpers from json to list
+#' Convert json to list
 #' @param lst list
 #' @rdname helpers.from.json.to.list
 #' @export
@@ -572,8 +573,8 @@ helpers.from.json.to.list = function(lst) {
   return(jsonlite::fromJSON(lst, simplifyVector = FALSE))
 }
 
-#' helpers from list to json
-#' @param json json
+#' Convert list to json
+#' @param json json string
 #' @rdname helpers.from.list.to.json
 #' @export
 #'
@@ -609,41 +610,15 @@ file_extension = function(path){
   } else tools::file_ext(basename(path))
 }
 
-#' save json
+#' Save json file
 #' @description save json
-#' @param x x
-#' @param file file
-#' @rdname write_json
+#' @param x list object
+#' @param file file path
+#' @rdname write.json
 #' @export
 #'
 
-write_json <- function(x, file){
+write.json <- function(x, file){
   x = jsonlite::prettify(helpers.from.list.to.json(x))
   x = writeLines(x, file)
 }
-
-# #' Catch Error
-# #' @param expr expr
-# #' @rdname catchError
-# #' @export
-# #'
-
-# catchError <- function(expr) {
-#
-#   warn <- err <- NULL
-#
-#   value <- withCallingHandlers(
-#
-#     tryCatch( expr,
-#
-#               error=function(e) {
-#                 err <<- e
-#                 NULL
-#              }),
-#     warning=function(w) {
-#       warn <<- w
-#       invokeRestart("muffleWarning")
-#     })
-#
-#   list(value = value, warnings = warn, errors = err)
-# }

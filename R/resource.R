@@ -1,11 +1,111 @@
 #' Resource class
 #' 
+#' @description A class for working with data resources. You can read or iterate tabular resources 
+#' using the \code{iter}/ \code{read} methods and all resource as bytes using 
+#' \code{rowIter}/ \code{rowRead} methods.
+#' 
+#' @usage # Resource.load(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list())
+#' 
+#' 
+#' @section Methods:
+#' 
+#' \describe{
+#' 
+#' \item{\code{Resource$new(descriptor = descriptor, strict = strict)}}{
+#' Use \code{\link{Resource.load}} to instantiate \code{Resource} class.}
+#' 
+#' 
+#' 
+#' \item{\code{iter(keyed, extended, cast=TRUE, relations=FALSE, stream=FALSE)}}{
+#'   Only for tabular resources - Iter through the table data and emits rows cast based on table schema. Data casting could be disabled.}
+#' \itemize{
+#'  \item{\code{keyed }}{Iter keyed rows - \code{TRUE}/ \code{FALSE}.}  
+#'  \item{\code{extended }}{Iter extended rows - \code{TRUE}/\code{FALSE}.}
+#'  \item{\code{cast }}{Disable data casting if \code{FALSE}.}
+#'  \item{\code{relations }}{If \code{TRUE} foreign key fields will be checked and resolved to its references.}
+#'  \item{\code{stream }}{Return Readable Stream of table rows if \code{TRUE}.}
+#'  }
+#' 
+#' 
+#' \item{\code{read(keyed, extended, cast=TRUE, relations=FALSE, limit)}}{
+#'   Only for tabular resources. Read the whole table and returns as list of rows. Count of rows could be limited.}
+#' \itemize{
+#'  \item{\code{keyed }}{Flag to emit keyed rows - \code{TRUE}/\code{FALSE}.}  
+#'  \item{\code{extended }}{Flag to emit extended rows - \code{TRUE}/\code{FALSE}.}
+#'  \item{\code{cast }}{Disable data casting if \code{FALSE}.}
+#'  \item{\code{relations }}{If \code{TRUE} foreign key fields will be checked and resolved to its references.}
+#'  \item{\code{limit }}{Integer limit of rows to return if specified.}
+#'  }
+#'  
+#' \item{\code{checkRelations()}}{Only for tabular resources. It checks foreign keys and raises an exception if there are integrity issues.
+#' Returns \code{TRUE} if no issues.}
+#'
+#' \item{\code{rawIter(stream = FALSE)}}{
+#' Iterate over data chunks as bytes. If stream is \code{TRUE} Iterator will be returned.}
+#' \itemize{
+#'  \item{\code{stream }}{Iterator will be returned.}
+#'  }
+#'
+#' \item{\code{rawRead()}}{Returns resource data as bytes.}
+#' 
+#' \item{\code{infer()}}{
+#' Infer resource metadata like name, format, mediatype, encoding, schema and profile. It commits this changes into resource instance.
+#' Returns resource descriptor.}
+#'  
+#' \item{\code{commit(strict)}}{
+#' Update resource instance if there are in-place changes in the descriptor. Returns \code{TRUE} on success and \code{FALSE} if not modified.}
+#' \itemize{
+#'  \item{\code{strict }}{Boolean - Alter strict mode for further work.}
+#'  }
+#'  
+#' \item{\code{save(target)}}{
+#' For now only descriptor will be saved. Save resource to target destination.}
+#' \itemize{
+#'  \item{\code{target }}{String path where to save a resource.}
+#'  }
+#' }
+#' 
+#' 
+#' @section Properties:
+#' \describe{
+#'   \item{\code{valid}}{Returns validation status. It always \code{TRUE} in strict mode.}
+#'   \item{\code{errors}}{Returns validation errors. It always empty in strict mode.}
+#'   \item{\code{profile}}{Returns an instance of \code{\link{Profile}} class.}
+#'   \item{\code{descriptor}}{Returns list of resource descriptor.}
+#'   \item{\code{name}}{Returns a string of resource name.}
+#'   \item{\code{inline}}{Returns \code{TRUE} if resource is inline.}
+#'   \item{\code{local}}{Returns \code{TRUE} if resource is local.}
+#'   \item{\code{remote}}{Returns \code{TRUE} if resource is remote.}
+#'   \item{\code{multipart}}{Returns \code{TRUE} if resource is multipart.}
+#'   \item{\code{tabular}}{Returns \code{TRUE} if resource is tabular.}
+#'   \item{\code{source}}{Returns a list/string of data/path property respectively.}
+#'   \item{\code{headers}}{Returns a string of data source headers.}
+#'   \item{\code{schema}}{Returns a \code{Schema} instance to interact with data schema. Read API documentation - \href{https://github.com/frictionlessdata/tableschema-r#schema}{tableschema.Schema} or \link[tableschema.r]{Schema}}
+#'  }
+#'
+#'  
+#' @section Details:
+#' The Data Resource format describes a data resource such as an individual file or table.
+#' The essence of a Data Resource is a locator for the data it describes.
+#' A range of other properties can be declared to provide a richer set of metadata.
+#' 
+#' Packaged data resources are described in the resources property of the package descriptor. 
+#' This property \code{MUST} be an array of objects. Each object \code{MUST} follow the \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource specification}.
+#'  
+#' @section Language:
+#' The key words \code{MUST}, \code{MUST NOT}, \code{REQUIRED}, \code{SHALL}, \code{SHALL NOT}, 
+#' \code{SHOULD}, \code{SHOULD NOT}, \code{RECOMMENDED}, \code{MAY}, and \code{OPTIONAL} 
+#' in this package documents are to be interpreted as described in \href{https://www.ietf.org/rfc/rfc2119.txt}{RFC 2119}.
+#' 
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
 #' @include helpers.R
 #' @return Object of \code{\link{R6Class}} .
 #' @format \code{\link{R6Class}} object.
+#' @seealso \code{\link{Resource.load}}, 
+#' \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource Specifications}
+#' 
 
 Resource <- R6Class(
   "Resource",
@@ -48,7 +148,7 @@ Resource <- R6Class(
       if (!isTRUE(self$tabular)) {
         stop(DataPackageError$new('Methods iter/read are not supported for non tabular data')$message)
       }
-   
+      
       # Get relations
       if (isTRUE(relations)) {
         relations = private$getRelations_()
@@ -124,7 +224,7 @@ Resource <- R6Class(
         
         # Encoding
         if (isTRUE(tolower(descriptor$encoding) == config::get("DEFAULT_RESOURCE_ENCODING", file = system.file("config/config.yaml", package = "datapackage.r")))) {
-        
+          
           encoding = stringr::str_to_lower(readr::guess_encoding(self$source)[[1]])
           
           descriptor$encoding = if (tolower(encoding) == 'ascii') 'utf-8' else tolower(encoding)
@@ -168,7 +268,7 @@ Resource <- R6Class(
     },
     
     save = function(target) {
-      write_json(private$currentDescriptor_,
+      write.json(private$currentDescriptor_,
                  file = stringr::str_c(target, "resource.json", sep = "/"))
       save = stringr::str_interp('Package saved at: "${target}"')
       return(save)
@@ -200,10 +300,10 @@ Resource <- R6Class(
         return(private$nextDescriptor_)
       }
       else {
-       # private$currentDescriptor_ = value
+        # private$currentDescriptor_ = value
         private$nextDescriptor_ = value
       }
-
+      
     }, # Never use self.descriptor inside self class (!!!)
     
     name = function() {
@@ -272,11 +372,11 @@ Resource <- R6Class(
     table_ = NULL,
     
     build_ = function() {
-
+      
       private$currentDescriptor_ = expandResourceDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
       # Inspect source
-
+      
       private$sourceInspection_ = inspectSource( private$currentDescriptor_$data,
                                                  as.character(private$currentDescriptor_$path),
                                                  private$basePath_
@@ -291,7 +391,7 @@ Resource <- R6Class(
       private$errors_ = list()
       
       valid_errors = private$profile_$validate(helpers.from.list.to.json(private$currentDescriptor_))
-
+      
       if (!isTRUE(valid_errors$valid)) {
         
         private$errors_ = valid_errors$errors
@@ -305,7 +405,7 @@ Resource <- R6Class(
           stop(error$message)
         }
       }
-
+      
     },
     
     getTable_ = function() {
@@ -320,11 +420,11 @@ Resource <- R6Class(
           stop(DataPackageError$new('Resource$table does not support multipart resources')$message)
         }
         # Resource -> Tabular
-     
+        
         schemaDescriptor = private$currentDescriptor_$schema
         
         schema = if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema.load(helpers.from.list.to.json(schemaDescriptor)) else NULL
-
+        
         if (!is.null(schema)) {
           schema = future::value(schema)
         }
@@ -338,12 +438,12 @@ Resource <- R6Class(
     },
     
     getRelations_ = function() {
-
+      
       if (isTRUE(private$relations_ == FALSE) || is.null(private$relations_)) {
         # Prepare resources
         resources = list()
         if (isTRUE(!is.null(private$getTable_())) && isTRUE(!is.null((private$getTable_()$schema)))) {
-
+          
           for (fk in private$getTable_()$schema$foreignKeys) {
             #hack to implement JavaScript's array[""] = sth - instead of "" use "$"
             actualKey = if (stringr::str_length(fk$reference$resource) < 1) "$" else fk$reference$resource     
@@ -352,19 +452,19 @@ Resource <- R6Class(
             for (field in fk$reference$fields) {
               resources[[actualKey]] = push(resources[[actualKey]], field)
             }
-           
+            
           }
         }
         # Fill Relations
         private$relations_ = list()
         
         for (resource in names(resources)) {
-        
+          
           if (!is.null(resource) && is.null(private$dataPackage_)) next
-   
+          
           private$relations_[[resource]] = if (!is.null(private$relations_[[resource]])) private$relations_[[resource]] else list()
           data = if (!is.null(resource) && stringr::str_length(resource) > 0 && resource != "$") private$dataPackage_$getResource(resource) else self
-         
+          
           if (data$tabular) {
             private$relations_[[resource]] = data$read(keyed = TRUE)
           }
@@ -389,18 +489,118 @@ DIALECT_KEYS = c(
   'skipInitialSpace'
 )
 
-#' Resource.load
-#' @param descriptor descriptor
-#' @param basePath basePath
-#' @param strict strict
-#' @param dataPackage dataPackage
-#' @rdname Resource.load
-#' @export
 
-Resource.load = function(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list() ) {
+#' Instantiate \code{Resource} class
+#' 
+#' @description Constructor to instantiate \code{Resource} class.
+#' 
+#' @usage Resource.load(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list())
+#' @param descriptor Data resource descriptor as local path, url or object
+#' @param basePath Base path for all relative paths
+#' @param strict  Strict flag to alter validation behavior. Setting it to \code{TRUE} leads to throwing errors on any operation with invalid descriptor.
+#' @param dataPackage data package list
+#' @rdname Resource.load
+#' @return \code{\link{Resource}} class object
+#' @seealso \code{\link{Resource}}, \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource Specifications}
+#' @export
+#' 
+#' @examples
+#' 
+#' # Resource Load - with base descriptor
+#' descriptor = '{"name":"name","data":["data"]}'
+#' resource = Resource.load(descriptor)
+#' resource$name
+#' resource$descriptor
+#' 
+#' 
+#' # Resource Load - with tabular descriptor
+#' descriptor2 = '{"name":"name","data":["data"],"profile":"tabular-data-resource"}' 
+#' resource2 = Resource.load(descriptor2)
+#' resource2$name
+#' resource2$descriptor
+#' 
+#' 
+#' # Retrieve Resource Descriptor
+#' descriptor3 = '{"name": "name","data": "data"}'
+#' resource3 = Resource.load(descriptor3)
+#' resource3$descriptor
+#' 
+#' 
+#' # Dereference Resource Descriptor
+#' descriptor4 = '{"name": "name","data": "data","schema": "table-schema.json"}'
+#' resource4 = Resource.load(descriptor4, basePath = 'inst/extdata')
+#' resource4$descriptor
+#' 
+#' 
+#' # Expand Resource Descriptor - General Resource
+#' descriptor5 = '{"name": "name","data": "data"}'
+#' resource5 = Resource.load(descriptor5)
+#' resource5$descriptor
+#' 
+#' # Expand Resource Descriptor - Tabular Resource Dialect
+#' descriptor6 = helpers.from.json.to.list('{
+#'                                         "name": "name",
+#'                                         "data": "data",
+#'                                         "profile": "tabular-data-resource",
+#'                                         "dialect": {"delimiter": "custom"}
+#'                                         }')
+#' resource6 = Resource.load(descriptor6)
+#' resource6$descriptor
+#' 
+#' 
+#' # Resource - Inline source/sourceType
+#' descriptor7 = '{"name": "name","data": "data","path": ["path"]}'
+#' resource7 = Resource.load(descriptor7)
+#' resource7$source
+#' 
+#' # Resource - Remote source/sourceType
+#' descriptor8 = '{"name": "name","path": ["http://example.com//table.csv"]}'
+#' resource8 = Resource.load(descriptor8)
+#' resource8$source 
+#' 
+#' # Resource - Multipart Remote source/sourceType
+#' descriptor9 = '{
+#'               "name": "name",
+#'               "path": ["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]
+#'               }'
+#' resource9 = Resource.load(descriptor9)
+#' resource9$source 
+#' 
+#' 
+#' # Inline Table Resource
+#' descriptor10 = '{
+#'                "name": "example",
+#'                "profile": "tabular-data-resource",
+#'                "data": [
+#'                   ["height", "age", "name"],
+#'                   ["180", "18", "Tony"],
+#'                   ["192", "32", "Jacob"]
+#'                  ],
+#'                "schema": {
+#'                  "fields": [{
+#'                    "name": "height",
+#'                    "type": "integer"
+#'                    },
+#'                  {
+#'                    "name": "age",
+#'                    "type": "integer"
+#'                  },
+#'                  {
+#'                    "name": "name",
+#'                    "type": "string"
+#'                  }
+#'                  ]
+#'                 }
+#'                }'
+#' resource10 = Resource.load(descriptor10)
+#' table = resource10$table$read()
+#' table
+#' 
+
+Resource.load = function(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list()) {
   
   
-    # Get base path
+  # Get base path
   if (anyNA(basePath)) basePath = locateDescriptor(descriptor)
   
   # if (is.character(descriptor) && 
@@ -424,11 +624,11 @@ Resource.load = function(descriptor = list(), basePath = NA, strict = FALSE, dat
 inspectSource = function(data, path, basePath) {
   inspection = list()
   # Normalize path
-
+  
   if (isTRUE(!is.null(path)) && !is.list(path) && isTRUE(stringr::str_length(path) > 0)) {
-      path = list(path)
+    path = list(path)
   }
-
+  
   # Blank
   if (isTRUE(is.null(data)) && isTRUE(is.null(path) || isTRUE(stringr::str_length(path) < 1))) {
     inspection$source = NULL
@@ -488,12 +688,11 @@ inspectSource = function(data, path, basePath) {
     inspection$multipart = TRUE
   }
   
-  
   return(inspection)
   
 }
 
-
+# internal use
 createByteStream = function(source, remote) {
   
   stream = list()
@@ -510,79 +709,3 @@ createByteStream = function(source, remote) {
   
   return(stream)
 }
-
-# #' MultipartSource class
-# #' 
-# #' @docType class
-# #' @importFrom R6 R6Class
-# #' @export
-# #' @include helpers.R
-# #' @return Object of \code{\link{R6Class}} .
-# #' @format \code{\link{R6Class}} object.
-# 
-# MultipartSource <- R6Class(
-#   "MultipartSource",
-#   public = list(
-#     
-#     source_ = NULL,
-#     remote = NULL,
-# 
-#     
-#     initialize = function(source,remote) {
-#       self$source_ = source
-#       self$remote_ = remote
-#       private$rows_ = private$iter_rows()
-#     },
-#     iter = function(){
-#       return(private$rows_)
-#     },
-#     read1 = function(size){
-#       return(self$read(size))
-#     },
-#     seek = function(offset){
-#       if (offset == 0) 
-#         private$rows_ = private$iter_rows() else stop("offset")
-#       return(private$rows_)
-#     },
-#     
-#     read = function(){
-#       
-#       res = b''
-#       
-#       while TRUE:
-#         try:
-#         res += iterators::nextElem (private$rows_)
-#         except StopIteration:
-#           break
-#         if (len(res) > size)
-#           break
-#         
-#       return(res)
-#     }
-#   ),
-#   active = list(
-#     
-#     closed = function(){
-#       return(FALSE)
-#     },
-#     readable = function(){
-#       return(TRUE)
-#     },
-#     seekable = function(){
-#       return(TRUE)
-#     },
-#     writable = function(){
-#       return(FALSE)
-#     },
-#     close = function(){
-#     },
-#     flush = function(){
-#     }
-#     
-#   ),
-#   private = list(
-#     rows_ = NULL,
-#     iter_rows = function(){}
-#   )
-# )
-#   

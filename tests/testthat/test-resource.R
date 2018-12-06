@@ -1,8 +1,8 @@
 library(datapackage.r)
 library(testthat)
 library(httptest)
-library(httptest)
-library(httptest)
+library(httr)
+library(curl)
 library(jsonlite)
 
 
@@ -80,7 +80,7 @@ test_that('string remote path bad', {
   expect_error(
     with_mock(
       `httr:::request_perform` = function()
-        httptest::fakeResponse(httr::GET(descriptor), status_code = 500) ,
+        httptest::fake_response(httr::GET(descriptor), status_code = 500) ,
       `httptest::request_happened` = expect_message,
       eval.parent(Resource.load(descriptor)),
       "Can not retrieve remote"
@@ -160,9 +160,9 @@ test_that('pointer bad', {
  test_that('remote', {
    descriptor = helpers.from.json.to.list('{"name": "name", "data": "data", "schema": "http://example.com/schema"}')
    
-   resource = with_mock(
+   resource = testthat::with_mock(
      `curl:::curl` = function(txt, handle) {
-       httptest::fakeResponse(
+       httptest::fake_response(
          httr::GET(descriptor$schema),
          status_code = 200,
          content = list(fields = list(list(name = "name")))

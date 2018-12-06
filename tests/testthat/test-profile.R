@@ -67,7 +67,7 @@ test_that('throw loading bad remote profile', {
   expect_error(
     with_mock(
       `httr:::request_perform` = function()
-        httptest::fakeResponse(httr::GET(name), status_code = 400) ,
+        httptest::fake_response(httr::GET(name), status_code = 400) ,
       `httptest::request_happened` = expect_message,
       eval.parent(Profile.load(name)),
       "Can not retrieve remote"

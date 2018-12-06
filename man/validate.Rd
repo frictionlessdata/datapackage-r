@@ -7,8 +7,27 @@
 validate(descriptor)
 }
 \arguments{
-\item{descriptor}{descriptor}
+\item{descriptor}{data package descriptor, one of:
+\itemize{
+\item string with the local CSV file (path)
+\item string with the remote CSV file (url)
+\item list object
+}}
+}
+\value{
+A list with:
+\itemize{
+ \item{\code{valid }}{ \code{TRUE} if valid}  
+ \item{\code{errors }}{a list with errors if valid \code{FALSE}}
+ }
 }
 \description{
-validate descriptor
+A standalone function to validate a data package descriptor.
+}
+\examples{
+validate(descriptor = '{"name": "Invalid Datapackage"}')
+
+}
+\seealso{
+\href{https://github.com/frictionlessdata/datapackage-r#validate}{https://github.com/frictionlessdata/datapackage-r#validate}
 }

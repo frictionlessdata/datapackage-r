@@ -2,17 +2,153 @@
 % Please edit documentation in R/Package.R
 \name{Package.load}
 \alias{Package.load}
-\title{Package.load}
+\title{Instantiate \code{Data Package} class}
 \usage{
 Package.load(descriptor = list(), basePath = NA, strict = FALSE)
 }
 \arguments{
-\item{descriptor}{descriptor}
+\item{descriptor}{Data package descriptor as local path, url or object.}
 
-\item{basePath}{basePath}
+\item{basePath}{Base path for all relative paths}
 
-\item{strict}{strict}
+\item{strict}{Strict flag to alter validation behavior. 
+Setting it to \code{TRUE} leads to throwing errors on any operation with invalid descriptor.}
 }
 \description{
-Package.load
+Constructor to instantiate \code{Package} class.
+}
+\examples{
+
+# Load URL descriptor
+descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
+dataPackage = Package.load(descriptor)
+dataPackage$descriptor
+
+# Load resource from absolute URL
+descriptor2 = 'https://dev.keitaro.info/dpkjs/datapackage.json'
+dataPackage2 = Package.load(descriptor2)
+dataPackage2$resources[[1]]$descriptor$profile = 'tabular-data-resource'
+table2 = dataPackage2$resources[[1]]$table
+data2 = table$read()
+data2
+
+# Retrieve Package Descriptor
+descriptor3 = '{"resources": [{"name": "name", "data": ["data"]}]}'
+dataPackage3 = Package.load(descriptor3)
+dataPackage3$descriptor
+
+# Expand Resource Descriptor
+descriptor4 = helpers.from.json.to.list('{"resources": 
+                                         [{
+                                          "name": "name",
+                                          "data": ["data"]
+                                          }]
+                                        }')
+
+dataPackage4 = Package.load(descriptor4)
+dataPackage4$descriptor
+
+
+# Expand Tabular Resource Schema
+descriptor5 = helpers.from.json.to.list('{
+                                      "resources": [{
+                                        "name": "name",
+                                        "data": ["data"],
+                                        "profile": "tabular-data-resource",
+                                        "schema": {
+                                          "fields": [{
+                                            "name": "name"
+                                          }]
+                                        }
+                                      }]
+                                      }')
+
+dataPackage5 = Package.load(descriptor5)
+dataPackage5$descriptor
+
+
+# Expand Tabular Resource Dialect
+descriptor6 = helpers.from.json.to.list('{
+                                         "resources": [{
+                                           "name": "name",
+                                           "data": ["data"],
+                                           "profile": "tabular-data-resource",
+                                           "dialect": {
+                                             "delimiter": "custom"
+                                             }
+                                           }]
+                                         }')
+
+dataPackage6 = Package.load(descriptor6)
+dataPackage6$descriptor
+
+
+
+# Package Resources - Names
+descriptor7 = helpers.from.json.to.list(system.file('extdata/data-package-multiple-resources.json', package = "datapackage.r"))
+dataPackage7 = Package.load(descriptor7)
+dataPackage7$resourceNames
+
+
+
+# Add Tabular Package Resources
+descriptor8 = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+dataPackage8 = Package.load(descriptor8)
+dataPackage8$addResource(helpers.from.json.to.list('{"name": "name",
+                                                 	 	"data": [
+                                                 	 		["id", "name"],
+                                                 	 		["1", "alex"],
+                                                 	 		["2", "john"]
+                                                 	 	],
+                                                 	 	"schema": {
+                                                 	 		"fields": [{
+                                                 	 				"name": "id",
+                                                 	 				"type": "integer"
+                                                 	 			},
+                                                 	 			{
+                                                 	 				"name": "name",
+                                                 	 				"type": "string"
+                                                 	 			}
+                                                 	 		]
+                                                 	 	}
+                                                 	 }'))
+rows = dataPackage8$resources[[2]]$table$read()
+rows
+
+
+# Add Package Resources
+descriptor9 = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+dataPackage9 = Package.load(descriptor9)
+resource9 = dataPackage9$addResource(helpers.from.json.to.list('{"name": "name", "data": ["test"]}'))
+dataPackage9$resources[[2]]$source
+
+
+# Get Existent Package Resource
+descriptor10 = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+dataPackage10 = Package.load(descriptor10)
+resource10 = dataPackage10$getResource('random')
+
+
+# Remove  Existent Package Resource
+descriptor11 = helpers.from.json.to.list(system.file('extdata/data-package-multiple-resources.json', package = "datapackage.r"))
+dataPackage11 = Package.load(descriptor11)
+dataPackage11$removeResource('name2')
+dataPackage11$getResource('name2')
+
+
+# Modify and Commit Data Package
+descriptor12 = helpers.from.json.to.list('{"resources": [{"name": "name", "data": ["data"]}]}')
+dataPackage12 = Package.load(descriptor12)
+dataPackage12$descriptor$resources[[1]]$name = 'modified'
+## Name did not modified.
+dataPackage12$resources[[1]]$name
+## Should commit the changes
+dataPackage12$commit() # TRUE - successful commit 
+
+dataPackage12$resources[[1]]$name
+
+}
+\seealso{
+\code{\link{Package}}, 
+\href{https://frictionlessdata.io/specs/data-package/#specification}{Data Package Specifications}
 }

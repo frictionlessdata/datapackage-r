@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{helpers.from.json.to.list}
 \alias{helpers.from.json.to.list}
-\title{helpers from json to list}
+\title{Convert json to list}
 \usage{
 helpers.from.json.to.list(lst)
 }
@@ -10,5 +10,5 @@ helpers.from.json.to.list(lst)
 \item{lst}{list}
 }
 \description{
-helpers from json to list
+Convert json to list
 }

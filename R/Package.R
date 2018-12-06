@@ -1,11 +1,120 @@
-#' Package class
+#' Data Package class
+#' 
+#' @description A class for working with data packages. 
+#' It provides various capabilities like loading local or 
+#' remote data package, inferring a data package descriptor, 
+#' saving a data package descriptor and many more.
+#' 
+#' @usage # Package.load(descriptor = list(),basePath = NA,strict = FALSE)
+#' 
+#' @section Methods:
+#' 
+#' \describe{
+#' 
+#' \item{\code{Package$new(descriptor = list(),basePath = NA,strict = FALSE)}}{
+#' Use \code{\link{Package.load}} to instantiate \code{Package} class.}
+#' 
+#' 
+#' \item{\code{getResource(name)}}{
+#'   Get data package resource by name or null if not found.}
+#' \itemize{
+#'  \item{\code{name }}{Data resource name.}  
+#'  }
+#' 
+#' \item{\code{addResource(descriptor)}}{
+#'   Add new resource to data package. The data package descriptor will be 
+#'   validated with newly added resource descriptor.}
+#' \itemize{
+#'  \item{\code{descriptor }}{Data resource descriptor.}  
+#'  }
+#' 
+#' \item{\code{removeResource(name)}}{
+#'   Remove data package resource by name. The data package descriptor will be 
+#'   validated after resource descriptor removal.}
+#' \itemize{
+#'  \item{\code{name }}{Data resource name.}  
+#'  }
+#'  
+#' \item{\code{infer(pattern=FALSE)}}{
+#'   Infer a data package metadata. If \code{pattern} is not provided only existent 
+#'   resources will be inferred (added metadata like encoding, profile etc). 
+#'   If \code{pattern} is provided new resoures with file names mathing the pattern 
+#'   will be added and inferred. It commits changes to data package instance.}
+#' \itemize{
+#'  \item{\code{pattern }}{Glob pattern for new resources.}  
+#'  }
+#'  
+#' \item{\code{commit(strict)}}{
+#' Update data package instance if there are in-place changes in the descriptor. Returns \code{TRUE} on success and \code{FALSE} if not modified.}
+#' \itemize{
+#'  \item{\code{strict }}{Boolean - Alter strict mode for further work.}
+#'  }
+#'  
+#' \item{\code{save(target)}}{
+#' For now only descriptor will be saved. Save descriptor to target destination.}
+#' \itemize{
+#'  \item{\code{target }}{String path where to save a data package.}
+#'  }
+#' }
+#'  
 #'
+#' 
+#' 
+#' @section Properties:
+#' \describe{
+#'   \item{\code{valid}}{Returns validation status. It always \code{TRUE} in strict mode.}
+#'   \item{\code{errors}}{Returns validation errors. It always empty in strict mode.}
+#'   \item{\code{profile}}{Returns an instance of \code{\link{Profile}} class.}
+#'   \item{\code{descriptor}}{Returns list of package descriptor.}
+#'   \item{\code{resources}}{Returns list of Resource instances.}
+#'   \item{\code{resourceNames}}{Returns list of resource names.}
+#'  }
+#' 
+#'  
+#'  
+#' @section Details:
+#' A Data Package consists of:
+#' \itemize{ 
+#' \item{Metadata that describes the structure and contents of the package.}
+#' \item{Resources such as data files that form the contents of the package.}
+#' }
+#' 
+#' The Data Package metadata is stored in a "descriptor". This descriptor is what 
+#' makes a collection of data a Data Package. The structure of this descriptor is 
+#' the main content of the specification below.
+#' 
+#' In addition to this descriptor a data package will include other resources such as 
+#' data files. The Data Package specification does NOT impose any requirements on their 
+#' form or structure and can therefore be used for packaging any kind of data.
+#' 
+#' The data included in the package may be provided as:
+#' \itemize{    
+#' \item{Files bundled locally with the package descriptor.}
+#' \item{Remote resources, referenced by URL.}
+#' \item{"Inline" data which is included directly in the descriptor.}
+#' }
+#'  
+#' \href{https://CRAN.R-project.org/package=jsonlite}{Jsolite package} is internally used to convert json data to list objects. The input parameters of functions could be json strings, 
+#' files or lists and the outputs are in list format to easily further process your data in R environment and exported as desired. 
+#' It is recommended to use \code{\link{helpers.from.json.to.list}} or \code{\link{helpers.from.list.to.json}} to convert json objects to lists and vice versa.
+#' More details about handling json you can see jsonlite documentation or vignettes \href{https://CRAN.R-project.org/package=jsonlite}{here}.
+#' 
+#' @section Language:
+#' The key words \code{MUST}, \code{MUST NOT}, \code{REQUIRED}, \code{SHALL}, \code{SHALL NOT}, 
+#' \code{SHOULD}, \code{SHOULD NOT}, \code{RECOMMENDED}, \code{MAY}, and \code{OPTIONAL} 
+#' in this package documents are to be interpreted as described in \href{https://www.ietf.org/rfc/rfc2119.txt}{RFC 2119}.
+#'
+#' @seealso \code{\link{Package.load}}, 
+#' \href{https://frictionlessdata.io/specs/data-package/}{Data Package Specifications}
+#' 
+#'  
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object
+#' 
 
 Package <- R6::R6Class(
   "Package",
@@ -129,7 +238,7 @@ Package <- R6::R6Class(
       # if(type == "zip"){
       # write.csv(private$currentDescriptor_, file=stringr::str_c(target, "package.txt",sep = "/"))
       # }
-      write_json(private$currentDescriptor_,
+      write.json(private$currentDescriptor_,
             file = stringr::str_c(target, "package.json", sep = "/"))
       save = stringr::str_interp('Package saved at: "${target}"')
       return(save)
@@ -278,12 +387,153 @@ Package <- R6::R6Class(
   )
 )
 
-#' Package.load
-#' @param descriptor descriptor
-#' @param basePath basePath
-#' @param strict strict
+#' Instantiate \code{Data Package} class
+#' 
+#' @description Constructor to instantiate \code{Package} class.
+#' 
+#' @usage Package.load(descriptor = list(), basePath = NA, strict = FALSE)
+#' 
+#' @param descriptor Data package descriptor as local path, url or object.
+#' @param basePath Base path for all relative paths
+#' @param strict  Strict flag to alter validation behavior. 
+#' Setting it to \code{TRUE} leads to throwing errors on any operation with invalid descriptor.
 #' @rdname Package.load
+#' @seealso \code{\link{Package}}, 
+#' \href{https://frictionlessdata.io/specs/data-package/#specification}{Data Package Specifications}
 #' @export
+#' 
+#' 
+#' @examples
+#' 
+#' # Load URL descriptor
+#' descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
+#' dataPackage = Package.load(descriptor)
+#' dataPackage$descriptor
+#' 
+#' # Load resource from absolute URL
+#' descriptor2 = 'https://dev.keitaro.info/dpkjs/datapackage.json'
+#' dataPackage2 = Package.load(descriptor2)
+#' dataPackage2$resources[[1]]$descriptor$profile = 'tabular-data-resource'
+#' table2 = dataPackage2$resources[[1]]$table
+#' data2 = table$read()
+#' data2
+#' 
+#' # Retrieve Package Descriptor
+#' descriptor3 = '{"resources": [{"name": "name", "data": ["data"]}]}'
+#' dataPackage3 = Package.load(descriptor3)
+#' dataPackage3$descriptor
+#' 
+#' # Expand Resource Descriptor
+#' descriptor4 = helpers.from.json.to.list('{"resources": 
+#'                                          [{
+#'                                           "name": "name",
+#'                                           "data": ["data"]
+#'                                           }]
+#'                                         }')
+#' 
+#' dataPackage4 = Package.load(descriptor4)
+#' dataPackage4$descriptor
+#' 
+#' 
+#' # Expand Tabular Resource Schema
+#' descriptor5 = helpers.from.json.to.list('{
+#'                                       "resources": [{
+#'                                         "name": "name",
+#'                                         "data": ["data"],
+#'                                         "profile": "tabular-data-resource",
+#'                                         "schema": {
+#'                                           "fields": [{
+#'                                             "name": "name"
+#'                                           }]
+#'                                         }
+#'                                       }]
+#'                                       }')
+#' 
+#' dataPackage5 = Package.load(descriptor5)
+#' dataPackage5$descriptor
+#' 
+#' 
+#' # Expand Tabular Resource Dialect
+#' descriptor6 = helpers.from.json.to.list('{
+#'                                          "resources": [{
+#'                                            "name": "name",
+#'                                            "data": ["data"],
+#'                                            "profile": "tabular-data-resource",
+#'                                            "dialect": {
+#'                                              "delimiter": "custom"
+#'                                              }
+#'                                            }]
+#'                                          }')
+#' 
+#' dataPackage6 = Package.load(descriptor6)
+#' dataPackage6$descriptor
+#' 
+#' 
+#' 
+#' # Package Resources - Names
+#' descriptor7 = helpers.from.json.to.list(system.file('extdata/data-package-multiple-resources.json', package = "datapackage.r"))
+#' dataPackage7 = Package.load(descriptor7)
+#' dataPackage7$resourceNames
+#' 
+#' 
+#' 
+#' # Add Tabular Package Resources
+#' descriptor8 = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+#' dataPackage8 = Package.load(descriptor8)
+#' dataPackage8$addResource(helpers.from.json.to.list('{"name": "name",
+#'                                                  	 	"data": [
+#'                                                  	 		["id", "name"],
+#'                                                  	 		["1", "alex"],
+#'                                                  	 		["2", "john"]
+#'                                                  	 	],
+#'                                                  	 	"schema": {
+#'                                                  	 		"fields": [{
+#'                                                  	 				"name": "id",
+#'                                                  	 				"type": "integer"
+#'                                                  	 			},
+#'                                                  	 			{
+#'                                                  	 				"name": "name",
+#'                                                  	 				"type": "string"
+#'                                                  	 			}
+#'                                                  	 		]
+#'                                                  	 	}
+#'                                                  	 }'))
+#' rows = dataPackage8$resources[[2]]$table$read()
+#' rows
+#' 
+#' 
+#' # Add Package Resources
+#' descriptor9 = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+#' dataPackage9 = Package.load(descriptor9)
+#' resource9 = dataPackage9$addResource(helpers.from.json.to.list('{"name": "name", "data": ["test"]}'))
+#' dataPackage9$resources[[2]]$source
+#' 
+#' 
+#' # Get Existent Package Resource
+#' descriptor10 = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
+#' dataPackage10 = Package.load(descriptor10)
+#' resource10 = dataPackage10$getResource('random')
+#' 
+#' 
+#' # Remove  Existent Package Resource
+#' descriptor11 = helpers.from.json.to.list(system.file('extdata/data-package-multiple-resources.json', package = "datapackage.r"))
+#' dataPackage11 = Package.load(descriptor11)
+#' dataPackage11$removeResource('name2')
+#' dataPackage11$getResource('name2')
+#' 
+#' 
+#' # Modify and Commit Data Package
+#' descriptor12 = helpers.from.json.to.list('{"resources": [{"name": "name", "data": ["data"]}]}')
+#' dataPackage12 = Package.load(descriptor12)
+#' dataPackage12$descriptor$resources[[1]]$name = 'modified'
+#' ## Name did not modified.
+#' dataPackage12$resources[[1]]$name
+#' ## Should commit the changes
+#' dataPackage12$commit() # TRUE - successful commit 
+#' 
+#' dataPackage12$resources[[1]]$name
+#' 
+
 Package.load = function(descriptor = list(),
                         basePath = NA,
                         strict = FALSE) {

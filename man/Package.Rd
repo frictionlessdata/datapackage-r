@@ -3,15 +3,122 @@
 \docType{class}
 \name{Package}
 \alias{Package}
-\title{Package class}
+\title{Data Package class}
 \format{\code{\link{R6Class}} object}
 \usage{
-Package
+# Package.load(descriptor = list(),basePath = NA,strict = FALSE)
 }
 \value{
 Object of \code{\link{R6Class}}
 }
 \description{
-Package class
+A class for working with data packages. 
+It provides various capabilities like loading local or 
+remote data package, inferring a data package descriptor, 
+saving a data package descriptor and many more.
+}
+\section{Methods}{
+
+
+\describe{
+
+\item{\code{Package$new(descriptor = list(),basePath = NA,strict = FALSE)}}{
+Use \code{\link{Package.load}} to instantiate \code{Package} class.}
+
+
+\item{\code{getResource(name)}}{
+  Get data package resource by name or null if not found.}
+\itemize{
+ \item{\code{name }}{Data resource name.}  
+ }
+
+\item{\code{addResource(descriptor)}}{
+  Add new resource to data package. The data package descriptor will be 
+  validated with newly added resource descriptor.}
+\itemize{
+ \item{\code{descriptor }}{Data resource descriptor.}  
+ }
+
+\item{\code{removeResource(name)}}{
+  Remove data package resource by name. The data package descriptor will be 
+  validated after resource descriptor removal.}
+\itemize{
+ \item{\code{name }}{Data resource name.}  
+ }
+ 
+\item{\code{infer(pattern=FALSE)}}{
+  Infer a data package metadata. If \code{pattern} is not provided only existent 
+  resources will be inferred (added metadata like encoding, profile etc). 
+  If \code{pattern} is provided new resoures with file names mathing the pattern 
+  will be added and inferred. It commits changes to data package instance.}
+\itemize{
+ \item{\code{pattern }}{Glob pattern for new resources.}  
+ }
+ 
+\item{\code{commit(strict)}}{
+Update data package instance if there are in-place changes in the descriptor. Returns \code{TRUE} on success and \code{FALSE} if not modified.}
+\itemize{
+ \item{\code{strict }}{Boolean - Alter strict mode for further work.}
+ }
+ 
+\item{\code{save(target)}}{
+For now only descriptor will be saved. Save descriptor to target destination.}
+\itemize{
+ \item{\code{target }}{String path where to save a data package.}
+ }
+}
+}
+
+\section{Properties}{
+
+\describe{
+  \item{\code{valid}}{Returns validation status. It always \code{TRUE} in strict mode.}
+  \item{\code{errors}}{Returns validation errors. It always empty in strict mode.}
+  \item{\code{profile}}{Returns an instance of \code{\link{Profile}} class.}
+  \item{\code{descriptor}}{Returns list of package descriptor.}
+  \item{\code{resources}}{Returns list of Resource instances.}
+  \item{\code{resourceNames}}{Returns list of resource names.}
+ }
+}
+
+\section{Details}{
+
+A Data Package consists of:
+\itemize{ 
+\item{Metadata that describes the structure and contents of the package.}
+\item{Resources such as data files that form the contents of the package.}
+}
+
+The Data Package metadata is stored in a "descriptor". This descriptor is what 
+makes a collection of data a Data Package. The structure of this descriptor is 
+the main content of the specification below.
+
+In addition to this descriptor a data package will include other resources such as 
+data files. The Data Package specification does NOT impose any requirements on their 
+form or structure and can therefore be used for packaging any kind of data.
+
+The data included in the package may be provided as:
+\itemize{    
+\item{Files bundled locally with the package descriptor.}
+\item{Remote resources, referenced by URL.}
+\item{"Inline" data which is included directly in the descriptor.}
+}
+ 
+\href{https://CRAN.R-project.org/package=jsonlite}{Jsolite package} is internally used to convert json data to list objects. The input parameters of functions could be json strings, 
+files or lists and the outputs are in list format to easily further process your data in R environment and exported as desired. 
+It is recommended to use \code{\link{helpers.from.json.to.list}} or \code{\link{helpers.from.list.to.json}} to convert json objects to lists and vice versa.
+More details about handling json you can see jsonlite documentation or vignettes \href{https://CRAN.R-project.org/package=jsonlite}{here}.
+}
+
+\section{Language}{
+
+The key words \code{MUST}, \code{MUST NOT}, \code{REQUIRED}, \code{SHALL}, \code{SHALL NOT}, 
+\code{SHOULD}, \code{SHOULD NOT}, \code{RECOMMENDED}, \code{MAY}, and \code{OPTIONAL} 
+in this package documents are to be interpreted as described in \href{https://www.ietf.org/rfc/rfc2119.txt}{RFC 2119}.
+}
+
+\seealso{
+\code{\link{Package.load}}, 
+\href{https://frictionlessdata.io/specs/data-package/}{Data Package Specifications}
 }
 \keyword{data}

@@ -2,15 +2,23 @@
 % Please edit documentation in R/infer.R
 \name{infer}
 \alias{infer}
-\title{infer}
+\title{Infer a data package descriptor}
 \usage{
 infer(pattern = NULL, basePath = NULL)
 }
 \arguments{
-\item{pattern}{pattern}
+\item{pattern}{string with file pattern}
 
-\item{basePath}{basePath}
+\item{basePath}{base path for all relative paths}
+}
+\value{
+Data Package Descriptor
 }
 \description{
-infer
+A standalone function to infer a data package descriptor.
+}
+\examples{
+descriptor = infer("csv",basePath = '.')
+descriptor
+
 }

@@ -2,20 +2,118 @@
 % Please edit documentation in R/resource.R
 \name{Resource.load}
 \alias{Resource.load}
-\title{Resource.load}
+\title{Instantiate \code{Resource} class}
 \usage{
-Resource.load(descriptor = list(), basePath = NA, strict = FALSE,
-  dataPackage = list())
+Resource.load(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list())
 }
 \arguments{
-\item{descriptor}{descriptor}
+\item{descriptor}{Data resource descriptor as local path, url or object}
 
-\item{basePath}{basePath}
+\item{basePath}{Base path for all relative paths}
 
-\item{strict}{strict}
+\item{strict}{Strict flag to alter validation behavior. Setting it to \code{TRUE} leads to throwing errors on any operation with invalid descriptor.}
 
-\item{dataPackage}{dataPackage}
+\item{dataPackage}{data package list}
+}
+\value{
+\code{\link{Resource}} class object
 }
 \description{
-Resource.load
+Constructor to instantiate \code{Resource} class.
+}
+\examples{
+
+# Resource Load - with base descriptor
+descriptor = '{"name":"name","data":["data"]}'
+resource = Resource.load(descriptor)
+resource$name
+resource$descriptor
+
+
+# Resource Load - with tabular descriptor
+descriptor2 = '{"name":"name","data":["data"],"profile":"tabular-data-resource"}' 
+resource2 = Resource.load(descriptor2)
+resource2$name
+resource2$descriptor
+
+
+# Retrieve Resource Descriptor
+descriptor3 = '{"name": "name","data": "data"}'
+resource3 = Resource.load(descriptor3)
+resource3$descriptor
+
+
+# Dereference Resource Descriptor
+descriptor4 = '{"name": "name","data": "data","schema": "table-schema.json"}'
+resource4 = Resource.load(descriptor4, basePath = 'inst/extdata')
+resource4$descriptor
+
+
+# Expand Resource Descriptor - General Resource
+descriptor5 = '{"name": "name","data": "data"}'
+resource5 = Resource.load(descriptor5)
+resource5$descriptor
+
+# Expand Resource Descriptor - Tabular Resource Dialect
+descriptor6 = helpers.from.json.to.list('{
+                                        "name": "name",
+                                        "data": "data",
+                                        "profile": "tabular-data-resource",
+                                        "dialect": {"delimiter": "custom"}
+                                        }')
+resource6 = Resource.load(descriptor6)
+resource6$descriptor
+
+
+# Resource - Inline source/sourceType
+descriptor7 = '{"name": "name","data": "data","path": ["path"]}'
+resource7 = Resource.load(descriptor7)
+resource7$source
+
+# Resource - Remote source/sourceType
+descriptor8 = '{"name": "name","path": ["http://example.com//table.csv"]}'
+resource8 = Resource.load(descriptor8)
+resource8$source 
+
+# Resource - Multipart Remote source/sourceType
+descriptor9 = '{
+              "name": "name",
+              "path": ["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]
+              }'
+resource9 = Resource.load(descriptor9)
+resource9$source 
+
+
+# Inline Table Resource
+descriptor10 = '{
+               "name": "example",
+               "profile": "tabular-data-resource",
+               "data": [
+                  ["height", "age", "name"],
+                  ["180", "18", "Tony"],
+                  ["192", "32", "Jacob"]
+                 ],
+               "schema": {
+                 "fields": [{
+                   "name": "height",
+                   "type": "integer"
+                   },
+                 {
+                   "name": "age",
+                   "type": "integer"
+                 },
+                 {
+                   "name": "name",
+                   "type": "string"
+                 }
+                 ]
+                }
+               }'
+resource10 = Resource.load(descriptor10)
+table = resource10$table$read()
+table
+
+}
+\seealso{
+\code{\link{Resource}}, \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource Specifications}
 }

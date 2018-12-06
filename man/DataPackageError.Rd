@@ -12,6 +12,6 @@ DataPackageError
 Object of \code{\link{R6Class}} .
 }
 \description{
-DataPackageError class
+Error class for Data Package
 }
 \keyword{data}

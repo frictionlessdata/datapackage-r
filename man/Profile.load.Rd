@@ -2,13 +2,16 @@
 % Please edit documentation in R/profile.R
 \name{Profile.load}
 \alias{Profile.load}
-\title{Profile.load}
+\title{Instantiate \code{Profile} class}
 \usage{
 Profile.load(profile)
 }
 \arguments{
-\item{profile}{profile}
+\item{profile}{string profile name in registry or URL to JSON Schema}
+}
+\value{
+\code{\link{Profile}} class object
 }
 \description{
-Profile.load
+Constuctor to instantiate \code{\link{Profile}} class.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{is.empty}
 \alias{is.empty}
-\title{is empty list}
+\title{Is empty}
 \usage{
 is.empty(list)
 }
@@ -10,8 +10,8 @@ is.empty(list)
 \item{list}{list}
 }
 \value{
-TRUE if list is empty (currently at depth 2)
+TRUE if list is empty
 }
 \description{
-is empty list
+Is empty list
 }

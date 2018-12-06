@@ -1,13 +1,40 @@
 #' Profile class
+#' @description Class to represent JSON Schema profile from \href{https://frictionlessdata.io/schemas/registry.json}{Profiles Registry}.
+#' 
+#' @usage # Profile.load(profile)
+#' @param profile string profile name in registry or URL to JSON Schema
+#' 
+#' 
+#' @section Methods:
+#' \describe{
+#' 
+#' \item{\code{Profile$new(descriptor = descriptor)}}{
+#' Use \code{\link{Profile.load}} to instantiate \code{Profile} class.}
+#' 
+#'   \item{\code{validate(descriptor)}}{
+#' Validate a tabular data package descriptor against the \code{Profile}.}
+#' \itemize{
+#'  \item{\code{descriptor }}{Retrieved and dereferenced tabular data package descriptor.}  
+#'  \item{\code{(Object) }}{Returns \code{TRUE} if descriptor is valid or \code{FALSE} with error message.}
+#'  }
 #'
+#' }
+#' 
+#' @section Properties:
+#' \describe{
+#'   \item{\code{name}}{Returns profile name if available.}
+#'   \item{\code{jsonschema}}{Returns profile JSON Schema contents.}
+#' }
+#' 
+#' @seealso \href{http://frictionlessdata.io/specs/profiles/}{Profile Specifications}
+#' 
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
 #' @include helpers.R
 #' @return Object of \code{\link{R6Class}} .
 #' @format \code{\link{R6Class}} object.
-
-# Module API
+#' 
 
 Profile <- R6::R6Class(
   
@@ -55,26 +82,26 @@ Profile <- R6::R6Class(
       private$validation_$valid = vld$valid
       
       private$validation_$errors = vld$errors
-
+      
       
       errors = list()
       
       for (i in rownames(private$validation_$errors)) {
         
         errors = c(errors, stringr::str_interp(
-            'Descriptor validation error:
+          'Descriptor validation error:
             ${private$validation_$errors [i, "field"]} - ${private$validation_$errors [i, "message"]}'
-            
-          )
-          )
           
-          
-       
+        )
+        )
+        
+        
+        
         
       }
       
       return(list(valid = length(errors) < 1, errors = errors))      
-      }
+    }
   ),
   
   active = list(
@@ -117,10 +144,18 @@ Profile <- R6::R6Class(
     
   ))
 
-#' Profile.load
-#' @param profile profile
+#' Instantiate \code{Profile} class
+#' 
+#' @description Constuctor to instantiate \code{\link{Profile}} class.
+#' @param profile string profile name in registry or URL to JSON Schema
+#' 
+#' @return \code{\link{Profile}} class object
+#' 
 #' @rdname Profile.load
+#' 
 #' @export
+#' 
+
 Profile.load = function (profile) {
   
   # Remote
@@ -148,6 +183,3 @@ Profile.load = function (profile) {
   return (Profile$new(profile))
   
 }
-# Internal
-
-cache_ = list()

@@ -6,12 +6,43 @@
 \title{Profile class}
 \format{\code{\link{R6Class}} object.}
 \usage{
-Profile
+# Profile.load(profile)
+}
+\arguments{
+\item{profile}{string profile name in registry or URL to JSON Schema}
 }
 \value{
 Object of \code{\link{R6Class}} .
 }
 \description{
-Profile class
+Class to represent JSON Schema profile from \href{https://frictionlessdata.io/schemas/registry.json}{Profiles Registry}.
+}
+\section{Methods}{
+
+\describe{
+
+\item{\code{Profile$new(descriptor = descriptor)}}{
+Use \code{\link{Profile.load}} to instantiate \code{Profile} class.}
+
+  \item{\code{validate(descriptor)}}{
+Validate a tabular data package descriptor against the \code{Profile}.}
+\itemize{
+ \item{\code{descriptor }}{Retrieved and dereferenced tabular data package descriptor.}  
+ \item{\code{(Object) }}{Returns \code{TRUE} if descriptor is valid or \code{FALSE} with error message.}
+ }
+
+}
+}
+
+\section{Properties}{
+
+\describe{
+  \item{\code{name}}{Returns profile name if available.}
+  \item{\code{jsonschema}}{Returns profile JSON Schema contents.}
+}
+}
+
+\seealso{
+\href{http://frictionlessdata.io/specs/profiles/}{Profile Specifications}
 }
 \keyword{datasets}

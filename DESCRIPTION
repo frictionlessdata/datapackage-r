@@ -1,14 +1,17 @@
 Package: datapackage.r
 Type: Package
-Title: 'R Data Package'
+Title: Data Package - Frictionless Data
 Version: 0.1.0
-Date: 2017-07-01
-Author: c(person("Kleanthis", "Koupidis", email = "koupidis.okfgr@gmail.com", role = c("aut", "cre"), 
-            person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role = "cre"))
-            person("Charalampos", "Bratsas", email = "charalampos.bratsas@okfn.org", role = "aut"))
-Maintainer: Open Knowledge Greece <info@okfn.gr>
-Description: A library for working with Data Package (<http://frictionlessdata.io/specs/data-package/>).
+Date: 2018-11-19
+Authors@R: c(person("Kleanthis", "Koupidis", email = "koupidis@okfn.gr", role = c("aut", "cre")), 
+            person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role = "aut"),
+            person("Charalampos", "Bratsas", email = "cbratsas@math.auth.gr", role = "aut"),
+            person("Open Knowledge International", email = "info@okfn.org", role = "cph"))
+Maintainer: Kleanthis Koupidis <koupidis@okfn.gr>
+Description: Work with 'Data Package' (<https://frictionlessdata.io/specs/data-package/>). Load and validate any descriptor for a Data Package Profile, allow the creation and modification of descriptors and expose methods for reading and streaming data in the package. When a descriptor is a 'Tabular Data Package', it uses the 'Table Schema' library(<https://CRAN.R-project.org/package=tableschema.r>) and exposes its functionality, for each resource object in the resources field.
+URL: https://github.com/frictionlessdata/datapackage-r
 License: MIT + file LICENSE
+BugReports: https://github.com/frictionlessdata/datapackage-r/issues
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -30,10 +33,9 @@ Imports:
     urltools, 
     utils, 
     V8
-Remotes: okgreece/tableschema-r
 Suggests:
     covr,
-    crul,
+    curl,
     data.table,
     DBI,
     foreach,
@@ -42,8 +44,7 @@ Suggests:
     mockery,
     rmarkdown,
     RSQLite,
-    testthat,
-    webmockr
+    testthat
 Collate: 
     'DataPackageError.R'
     'Package.R'
@@ -55,5 +56,5 @@ Collate:
     'is.valid.R'
     'resource.R'
     'validate.R'
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0.9000
 VignetteBuilder: knitr

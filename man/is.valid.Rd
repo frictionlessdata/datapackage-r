@@ -2,15 +2,23 @@
 % Please edit documentation in R/is.valid.R
 \name{is.valid}
 \alias{is.valid}
-\title{is.valid}
+\title{Is valid}
 \usage{
-is.valid(descriptor,schema=NULL)
+is.valid(descriptor, schema = NULL)
 }
 \arguments{
-\item{descriptor}{json dictionary}
+\item{descriptor}{descriptor, one of:
+\itemize{
+\item string with the local CSV file (path)
+\item string with the remote CSV file (url)
+\item list object
+}}
 
-\item{schema}{json schema}
+\item{schema}{Contents of the json schema, or a filename containing a schema}
+}
+\value{
+\code{TRUE} if valid
 }
 \description{
-is.valid
+Validate a descriptor over a schema
 }

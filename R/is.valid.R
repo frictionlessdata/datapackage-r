@@ -1,24 +1,21 @@
-#' @title is.valid 
-#'
-#' @description is.valid
-#' 
-#' @usage is.valid(descriptor,schema=NULL)
-#' 
-#' 
-#' @param descriptor json dictionary
-#' @param schema json schema
-#' 
+#' @title Is valid
+#' @description Validate a descriptor over a schema
+#' @param descriptor descriptor, one of:
+#' \itemize{
+#' \item string with the local CSV file (path)
+#' \item string with the remote CSV file (url)
+#' \item list object
+#' }
+#' @param schema Contents of the json schema, or a filename containing a schema
+#' @return \code{TRUE} if valid
 #' @rdname is.valid
-#' @import jsonvalidate
 #' @export
+#' 
 
 is.valid = function(descriptor,schema=NULL)  {
   #inherits(x, "descriptor")
   if(is.null(schema)){
-    
     v = jsonvalidate::json_validator(paste(readLines("https://schemas.frictionlessdata.io/data-package.json"), collapse=""))
-    
-    
   } else {
     #local
     v = jsonvalidate::json_validator(schema)
