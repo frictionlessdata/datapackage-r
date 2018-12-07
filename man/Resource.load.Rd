@@ -43,49 +43,43 @@ resource3 = Resource.load(descriptor3)
 resource3$descriptor
 
 
-# Dereference Resource Descriptor
-descriptor4 = '{"name": "name","data": "data","schema": "table-schema.json"}'
-resource4 = Resource.load(descriptor4, basePath = 'inst/extdata')
+# Expand Resource Descriptor - General Resource
+descriptor4 = '{"name": "name","data": "data"}'
+resource4 = Resource.load(descriptor4)
 resource4$descriptor
 
-
-# Expand Resource Descriptor - General Resource
-descriptor5 = '{"name": "name","data": "data"}'
-resource5 = Resource.load(descriptor5)
-resource5$descriptor
-
 # Expand Resource Descriptor - Tabular Resource Dialect
-descriptor6 = helpers.from.json.to.list('{
+descriptor5 = helpers.from.json.to.list('{
                                         "name": "name",
                                         "data": "data",
                                         "profile": "tabular-data-resource",
                                         "dialect": {"delimiter": "custom"}
                                         }')
-resource6 = Resource.load(descriptor6)
-resource6$descriptor
+resource5 = Resource.load(descriptor5)
+resource5$descriptor
 
 
 # Resource - Inline source/sourceType
-descriptor7 = '{"name": "name","data": "data","path": ["path"]}'
-resource7 = Resource.load(descriptor7)
-resource7$source
+descriptor6 = '{"name": "name","data": "data","path": ["path"]}'
+resource6 = Resource.load(descriptor6)
+resource6$source
 
 # Resource - Remote source/sourceType
-descriptor8 = '{"name": "name","path": ["http://example.com//table.csv"]}'
-resource8 = Resource.load(descriptor8)
-resource8$source 
+descriptor7 = '{"name": "name","path": ["http://example.com//table.csv"]}'
+resource7 = Resource.load(descriptor7)
+resource7$source 
 
 # Resource - Multipart Remote source/sourceType
-descriptor9 = '{
+descriptor8 = '{
               "name": "name",
               "path": ["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]
               }'
-resource9 = Resource.load(descriptor9)
-resource9$source 
+resource8 = Resource.load(descriptor8)
+resource8$source 
 
 
 # Inline Table Resource
-descriptor10 = '{
+descriptor9 = '{
                "name": "example",
                "profile": "tabular-data-resource",
                "data": [
@@ -109,8 +103,8 @@ descriptor10 = '{
                  ]
                 }
                }'
-resource10 = Resource.load(descriptor10)
-table = resource10$table$read()
+resource9 = Resource.load(descriptor9)
+table = resource9$table$read()
 table
 
 }

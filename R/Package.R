@@ -415,7 +415,7 @@ Package <- R6::R6Class(
 #' dataPackage2 = Package.load(descriptor2)
 #' dataPackage2$resources[[1]]$descriptor$profile = 'tabular-data-resource'
 #' table2 = dataPackage2$resources[[1]]$table
-#' data2 = table$read()
+#' data2 = table2$read()
 #' data2
 #' 
 #' # Retrieve Package Descriptor

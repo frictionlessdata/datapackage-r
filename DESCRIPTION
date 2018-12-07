@@ -16,7 +16,6 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     config, 
-    devtools, 
     future, 
     httr, 
     iterators, 
@@ -38,10 +37,10 @@ Suggests:
     curl,
     data.table,
     DBI,
+    devtools, 
     foreach,
     httptest,
     knitr,
-    mockery,
     rmarkdown,
     RSQLite,
     testthat
@@ -52,6 +51,7 @@ Collate:
     'profile.R'
     'binary.readable.connection.r'
     'binary.readable.r'
+    'datapackage.r.R'
     'infer.R'
     'is.valid.R'
     'resource.R'
