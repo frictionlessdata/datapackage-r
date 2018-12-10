@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{file_basename}
 \alias{file_basename}
-\title{file basename}
+\title{File basename}
 \usage{
 file_basename(path)
 }
@@ -10,5 +10,5 @@ file_basename(path)
 \item{path}{character vector with path names}
 }
 \description{
-file extension
+Removes all of the path up to and including the last path separator (if any)  without extensions.
 }

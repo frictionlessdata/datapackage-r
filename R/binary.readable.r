@@ -1,12 +1,13 @@
 #' Readable class
-#'
+#' @description Readable class
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
 #' @include profile.R
 #' @keywords data
-#' @return Object of \code{\link{R6Class}} .
+#' @return Object of \code{\link{R6Class}}.
 #' @format \code{\link{R6Class}} object.
+#' 
 
 BinaryReadable <- R6::R6Class(
   "BinaryReadable",
@@ -16,19 +17,13 @@ BinaryReadable <- R6::R6Class(
       
     },
     
-    
     read = function(size = NULL) {
-      
     }
-    
-    
-    
   ),
   active = list(
     destroyed = function(value) {
       
     }
-    
   ),
   private = list(
     encoding_ = NULL,
@@ -44,10 +39,5 @@ BinaryReadable <- R6::R6Class(
     paused_ = TRUE,
     pipeDestination_ = list(),
     flowing_ = FALSE
-    
-    
-    
-    
-    
   )
 )

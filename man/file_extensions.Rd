@@ -2,13 +2,13 @@
 % Please edit documentation in R/helpers.R
 \name{file_extension}
 \alias{file_extension}
-\title{file extension}
+\title{File extension}
 \usage{
 file_extension(path)
 }
 \arguments{
-\item{path}{character vector with path names}
+\item{path}{string with path names}
 }
 \description{
-file extension
+Returns the file extension without the leading dot.
 }

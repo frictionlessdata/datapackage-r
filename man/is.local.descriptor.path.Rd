@@ -12,5 +12,5 @@ is.local.descriptor.path(descriptor, directory = ".")
 \item{directory}{A character vector of full path name. The default corresponds to the working directory specified by \code{\link[base]{getwd}}}
 }
 \description{
-Is Local Descriptor Path
+Helper functoin to check if a descriptor is local
 }

@@ -9,7 +9,7 @@
 # Resource.load(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list())
 }
 \value{
-Object of \code{\link{R6Class}} .
+Object of \code{\link{R6Class}}.
 }
 \description{
 A class for working with data resources. You can read or iterate tabular resources 

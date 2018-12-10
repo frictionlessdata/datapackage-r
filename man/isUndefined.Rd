@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{isUndefined}
 \alias{isUndefined}
-\title{Determine if a variable is undefined or NULL}
+\title{Check if a variable is undefined or NULL}
 \usage{
 isUndefined(x)
 }
@@ -13,5 +13,5 @@ isUndefined(x)
 TRUE if variable is undefined
 }
 \description{
-Determine if a variable is undefined or NULL
+Helper function to check if a variable is undefined or NULL.
 }

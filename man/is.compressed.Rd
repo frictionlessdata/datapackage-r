@@ -7,11 +7,11 @@
 is.compressed(x)
 }
 \arguments{
-\item{x}{file}
+\item{x}{string with the file's path}
 }
 \value{
 TRUE if file is compressed
 }
 \description{
-is compressed
+Helper function to check if a file is compressed..
 }

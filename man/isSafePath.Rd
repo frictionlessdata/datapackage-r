@@ -7,11 +7,11 @@
 isSafePath(path)
 }
 \arguments{
-\item{path}{path}
+\item{path}{string path}
 }
 \value{
 TRUE if path is safe
 }
 \description{
-Is safe path
+Helper function to check if a path is safe.
 }

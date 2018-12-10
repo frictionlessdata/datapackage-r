@@ -7,10 +7,10 @@
 findFiles(pattern, path = getwd())
 }
 \arguments{
-\item{pattern}{pattern}
+\item{pattern}{string pattern}
 
-\item{path}{path}
+\item{path}{string path}
 }
 \description{
-findFiles
+Find a file pattern in a specified directory.
 }

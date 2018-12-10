@@ -1,12 +1,13 @@
-#' Readable class
-#'
+#' Binary Readable Connection class
+#' @description Binary Readable connection class
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
 #' @include profile.R
 #' @keywords data
-#' @return Object of \code{\link{R6Class}} .
+#' @return Object of \code{\link{R6Class}}.
 #' @format \code{\link{R6Class}} object.
+#' 
 
 BinaryReadableConnection <- R6::R6Class(
   "BinaryReadableConnection",
@@ -19,17 +20,14 @@ BinaryReadableConnection <- R6::R6Class(
           private$index_ = private$index_ + 1
           
           return(value)
-          
         }
         
         else {
           close(private$connection_)
           stop('StopIteration')
         }
-        
       })
     },
-    
     
     read = function(size = NULL) {
       if (!isTRUE(isOpen(private$connection_))) {
@@ -66,8 +64,5 @@ BinaryReadableConnection <- R6::R6Class(
     connection_ = NULL,
     iterable_ = NULL,
     index_ = 0
-    
-    
-    
   )
 )

@@ -15,5 +15,5 @@ dereferenceResourceDescriptor(descriptor, basePath,
 \item{baseDescriptor}{baseDescriptor}
 }
 \description{
-Dereference resource descriptor
+Helper function to dereference resource descriptor.
 }

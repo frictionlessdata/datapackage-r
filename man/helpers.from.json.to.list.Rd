@@ -7,8 +7,8 @@
 helpers.from.json.to.list(lst)
 }
 \arguments{
-\item{lst}{list}
+\item{lst}{list object}
 }
 \description{
-Convert json to list
+Helper function convert json to list.
 }

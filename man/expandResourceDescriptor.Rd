@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{expandResourceDescriptor}
 \alias{expandResourceDescriptor}
-\title{Expand descriptor}
+\title{Expand resource descriptor}
 \usage{
 expandResourceDescriptor(descriptor)
 }
@@ -10,5 +10,5 @@ expandResourceDescriptor(descriptor)
 \item{descriptor}{descriptor}
 }
 \description{
-Expand descriptor
+Helper function to expand resource descriptor.
 }

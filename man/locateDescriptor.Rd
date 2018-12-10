@@ -10,5 +10,5 @@ locateDescriptor(descriptor)
 \item{descriptor}{descriptor}
 }
 \description{
-Locate descriptor
+Helper function to locate descriptor.
 }

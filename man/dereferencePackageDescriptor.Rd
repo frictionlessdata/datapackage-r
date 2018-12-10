@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{dereferencePackageDescriptor}
 \alias{dereferencePackageDescriptor}
-\title{Dereference descriptor}
+\title{Dereference package descriptor}
 \usage{
 dereferencePackageDescriptor(descriptor, basePath)
 }
@@ -12,5 +12,5 @@ dereferencePackageDescriptor(descriptor, basePath)
 \item{basePath}{basePath}
 }
 \description{
-Dereference descriptor
+Helper function to dereference package descriptor.
 }

@@ -7,11 +7,11 @@
 is.json(object)
 }
 \arguments{
-\item{object}{object to test if json}
+\item{object}{object to test if it's json}
 }
 \value{
 TRUE if object is json
 }
 \description{
-Test if an object is json
+Check if an object is json.
 }

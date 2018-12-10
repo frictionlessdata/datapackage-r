@@ -13,5 +13,5 @@ is.git(x)
 TRUE if url is git
 }
 \description{
-is git
+Helper function to check if a link is from git.
 }

@@ -9,8 +9,8 @@ push(x, value)
 \arguments{
 \item{x}{list or vector}
 
-\item{value}{value to push in x}
+\item{value}{object to push in x}
 }
 \description{
-Push elements in a list or vector
+Helper function to add components in a list or vector.
 }

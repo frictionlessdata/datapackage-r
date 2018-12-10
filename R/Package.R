@@ -237,10 +237,18 @@ Package <- R6::R6Class(
       
       # if(type == "zip"){
       # write.csv(private$currentDescriptor_, file=stringr::str_c(target, "package.txt",sep = "/"))
-      # }
+      # }ifelse(!dir.exists("Data"), dir.create("Data"), "Folder exists already")
+      if (!dir.exists(target) & target != ".") {
+        create_folder = menu(c("Yes", "No"), title=
+               stringr::str_interp('Folder "${target}" does not exist in current directory: "${getwd()}".\n Do you want to create a new folder?'))
+        
+        ifelse(create_folder == 1, dir.create(target), return("Package descriptor wasn't saved."))
+        
+      }
       write.json(private$currentDescriptor_,
             file = stringr::str_c(target, "package.json", sep = "/"))
-      save = stringr::str_interp('Package saved at: "${target}"')
+      save = if (isTRUE(target == ".")) stringr::str_interp('Package saved at: "${getwd()}"') else 
+        stringr::str_interp('Package saved at: "${target}"')
       return(save)
       
       # if (!is.json(private$currentDescriptor_)) private$currentDescriptor_ = jsonlite::toJSON(private$currentDescriptor_, pretty = TRUE)

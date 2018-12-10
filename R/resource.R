@@ -101,7 +101,7 @@
 #' @importFrom R6 R6Class
 #' @export
 #' @include helpers.R
-#' @return Object of \code{\link{R6Class}} .
+#' @return Object of \code{\link{R6Class}}.
 #' @format \code{\link{R6Class}} object.
 #' @seealso \code{\link{Resource.load}}, 
 #' \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource Specifications}
@@ -345,7 +345,7 @@ Resource <- R6Class(
     
     schema = function(x) {
       if (!isTRUE(self$tabular)) return(NULL) else{
-        if (!missing(x)) private$getTable_()$schema = x
+        if (!missing(x)) assign("private$getTable_()$schema",x)
       }
       return(private$getTable_()$schema)
     },

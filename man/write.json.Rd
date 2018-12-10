@@ -12,5 +12,5 @@ write.json(x, file)
 \item{file}{file path}
 }
 \description{
-save json
+Save a list object in json file to disk
 }

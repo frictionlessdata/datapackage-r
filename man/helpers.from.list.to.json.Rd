@@ -10,5 +10,5 @@ helpers.from.list.to.json(json)
 \item{json}{json string}
 }
 \description{
-Convert list to json
+Helper function convert list to json.
 }

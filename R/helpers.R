@@ -1,9 +1,10 @@
 #' Locate descriptor
-#'
+#' @description Helper function to locate descriptor.
 #' @param descriptor descriptor
 #' @rdname locateDescriptor
 #' @export
 #'
+
 locateDescriptor = function(descriptor) {
   
   # Infer from path/url
@@ -20,9 +21,6 @@ locateDescriptor = function(descriptor) {
       basePath = path
     }
     
-    
-    
-    
   } else{
     basePath = getwd()
   }
@@ -30,11 +28,12 @@ locateDescriptor = function(descriptor) {
 }
 
 #' Retrieve descriptor
-#'
+#' @description Helper function to retrieve descriptor.
 #' @param descriptor descriptor
 #' @rdname retrieveDescriptor
 #' @export
 #'
+
 retrieveDescriptor = function(descriptor) {
   
   if (is.list(descriptor)) {
@@ -50,8 +49,6 @@ retrieveDescriptor = function(descriptor) {
     if (jsonlite::validate(descriptor)) {
       return(helpers.from.json.to.list(descriptor))
     }
-    
-    
     # Remote
     if (isRemotePath(descriptor)) {
       tryCatch({
@@ -63,9 +60,7 @@ retrieveDescriptor = function(descriptor) {
       
       error = function(e) {
         message = stringr::str_interp('Can not retrieve remote descriptor "${descriptor}"')
-        
         stop(message)
-        
       })
     }
     
@@ -86,14 +81,13 @@ retrieveDescriptor = function(descriptor) {
         stop(message)
       })
     }
-    
-    
   } else
     stop(message)
   # descriptor$resources = purrr::flatten(descriptor$resources)
 }
 
-#' Dereference descriptor
+#' Dereference package descriptor
+#' @description Helper function to dereference package descriptor.
 #' @param descriptor descriptor
 #' @param basePath basePath
 #' @rdname dereferencePackageDescriptor
@@ -105,19 +99,17 @@ dereferencePackageDescriptor = function(descriptor, basePath) {
   for (i in 1:length(descriptor$resources)) {
     descriptor$resources[[i]] = dereferenceResourceDescriptor(descriptor = descriptor$resources[[i]], basePath = basePath, baseDescriptor = descriptor)
   }
-  
-  
   return(descriptor)
 }
 
 #' Dereference resource descriptor
+#' @description Helper function to dereference resource descriptor.
 #' @param descriptor descriptor
 #' @param basePath basePath
 #' @param baseDescriptor baseDescriptor
 #' @rdname dereferenceResourceDescriptor
 #' @export
 #'
-
 
 dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = NULL) {
   #conditions
@@ -140,22 +132,18 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
       # URI -> Pointer
     } else if (isTRUE(startsWith(unlist(value), '#'))) {
       
-      descriptor[[property]]  = tryCatch({descriptor.pointer(value, baseDescriptor)},
-                                         error = function(e) {
-                                           stop(stringr::str_interp(
-                                             'Not resolved Pointer URI "${value}" for resource[[${property}]]'
-                                           ))},
-                                         warning = function(e){
-                                           stop(stringr::str_interp(
-                                             
-                                             'Not resolved Pointer URI "${value}" for resource[[${property}]]'
-                                           ))}
-                                         
+      descriptor[[property]]  = tryCatch({
+        descriptor.pointer(value, baseDescriptor)},
+        error = function(e) {
+          stop(stringr::str_interp(
+            'Not resolved Pointer URI "${value}" for resource[[${property}]]'
+          ))},
+        warning = function(e){
+          stop(stringr::str_interp(
+            
+            'Not resolved Pointer URI "${value}" for resource[[${property}]]'
+          ))}
       )
-      
-      
-      
-      
       # URI -> Remote
       # TODO: remote base path also will lead to remote case!
     } else if (isRemotePath(unlist(value))) {
@@ -163,16 +151,12 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
         # response = httr::GET(value)
         descriptor[[property]] = helpers.from.json.to.list(value)
         #httr::content(response, as = 'text')
-        
       },
       error = function(e) {
-        
-        
         message = DataPackageError$new(
           stringr::str_interp(
             'Not resolved Remote URI "${value}" for descriptor[[${property}]]'
-          )
-        )$message
+          ))$message
         
         stop(message)
       })
@@ -223,21 +207,20 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
           )
         )$message
         stop(message)
-        
       })
-      
     }
   }
-  
   return(descriptor)
 }
 
 
-#' Expand descriptor
+#' Expand package descriptor
+#' @description Helper function to expand package descriptor.
 #' @param descriptor descriptor
 #' @rdname expandPackageDescriptor
 #' @export
 #'
+
 expandPackageDescriptor = function(descriptor) {
   
   descriptor$profile = if (is.empty(descriptor$profile)) {
@@ -255,7 +238,8 @@ expandPackageDescriptor = function(descriptor) {
   return(descriptor)
 }
 
-#' Expand descriptor
+#' Expand resource descriptor
+#' @description Helper function to expand resource descriptor.
 #' @param descriptor descriptor
 #' @rdname expandResourceDescriptor
 #' @export
@@ -324,18 +308,14 @@ expandResourceDescriptor = function(descriptor) {
       #}
     }
   }
-  
   return(descriptor)
 }
 
-
 # Miscellaneous
 
-
 #' Is remote path
-#'
-#' @param path path
-#'
+#' @description Helper function to identify a remote path.
+#' @param path string path
 #' @return TRUE if path is remote
 #' @rdname isRemotePath
 #' @export
@@ -353,10 +333,10 @@ isRemotePath = function(path) {
     
   }
 }
+
 #' Is safe path
-#'
-#' @param path path
-#'
+#' @description Helper function to check if a path is safe.
+#' @param path string path
 #' @return TRUE if path is safe
 #' @rdname isSafePath
 #' @export
@@ -396,17 +376,16 @@ isSafePath = function(path) {
 }
 
 
-## Extra
+## Extras
 
-
-#' Determine if a variable is undefined or NULL
-#'
+#' Check if a variable is undefined or NULL
+#' @description Helper function to check if a variable is undefined or NULL.
 #' @param x variable
-#'
 #' @return TRUE if variable is undefined
 #' @rdname isUndefined
 #' @export
 #'
+
 isUndefined = function(x) {
   
   if (any(isTRUE(!exists(deparse(substitute(
@@ -418,13 +397,13 @@ isUndefined = function(x) {
 }
 
 #' Push elements in a list or vector
-#'
+#' @description Helper function to add components in a list or vector.
 #' @param x list or vector
-#' @param value value to push in x
-#'
+#' @param value object to push in x
 #' @rdname push
 #' @export
 #'
+
 push = function(x, value) {
   x = append(x, value) #append rlist::list.
   return(x)
@@ -432,6 +411,7 @@ push = function(x, value) {
 
 
 #' is git
+#' @description Helper function to check if a link is from git.
 #' @param x url
 #' @rdname is.git
 #' @return TRUE if url is git
@@ -443,7 +423,8 @@ is.git <- function(x) {
 }
 
 #' is compressed
-#' @param x file
+#' @description Helper function to check if a file is compressed..
+#' @param x string with the file's path
 #' @rdname is.compressed
 #' @return TRUE if file is compressed
 #' @export
@@ -457,8 +438,8 @@ is.compressed <- function(x) {
 }
 
 #' is json
-#' @description  Test if an object is json
-#' @param object object to test if json
+#' @description Check if an object is json.
+#' @param object object to test if it's json
 #' @rdname is.json
 #' @return TRUE if object is json
 #' @export
@@ -472,8 +453,9 @@ is.json = function(object) {
 }
 
 #' findFiles
-#' @param pattern pattern
-#' @param path path
+#' @description Find a file pattern in a specified directory.
+#' @param pattern string pattern
+#' @param path string path
 #' @rdname findFiles
 #' @export
 #'
@@ -515,7 +497,7 @@ is.empty = function(list) {
 
 
 #' Is Local Descriptor Path
-#'
+#' @description Helper functoin to check if a descriptor is local
 #' @param descriptor descriptor
 #' @param directory A character vector of full path name. The default corresponds to the working directory specified by \code{\link[base]{getwd}}
 #'
@@ -548,12 +530,14 @@ is.local.descriptor.path = function(descriptor, directory = ".") {
   }
 }
 
-#' descriptor pointer
-#' @param value value
-#' @param baseDescriptor baseDescriptor
+#' Descriptor pointer
+#' @description Helper function for specifying locations in a descriptor.
+#' @param value value  that specifies location in the descriptor
+#' @param baseDescriptor base descriptor
 #' @rdname descriptor.pointer
 #' @export
 #'
+
 descriptor.pointer <- function(value, baseDescriptor) {
   v8 = V8::v8()
   v8$source("inst/scripts/jsonpointer.js")
@@ -565,26 +549,30 @@ descriptor.pointer <- function(value, baseDescriptor) {
 }
 
 #' Convert json to list
-#' @param lst list
+#' @description Helper function convert json to list.
+#' @param lst list object
 #' @rdname helpers.from.json.to.list
 #' @export
 #'
+
 helpers.from.json.to.list = function(lst) {
   return(jsonlite::fromJSON(lst, simplifyVector = FALSE))
 }
 
 #' Convert list to json
+#' @description Helper function convert list to json.
 #' @param json json string
 #' @rdname helpers.from.list.to.json
 #' @export
 #'
+
 helpers.from.list.to.json = function(json) {
   return(jsonlite::toJSON(json, auto_unbox = TRUE))
 }
 
 
-#' file basename
-#' @description file extension
+#' File basename
+#' @description Removes all of the path up to and including the last path separator (if any)  without extensions.
 #' @param path character vector with path names
 #' @rdname file_basename
 #' @export
@@ -597,9 +585,9 @@ file_basename = function(path){
 }
 
 
-#' file extension
-#' @description file extension
-#' @param path character vector with path names
+#' File extension
+#' @description Returns the file extension without the leading dot.
+#' @param path string with path names
 #' @rdname file_extensions
 #' @export
 #'
@@ -611,7 +599,7 @@ file_extension = function(path){
 }
 
 #' Save json file
-#' @description save json
+#' @description Save a list object in json file to disk
 #' @param x list object
 #' @param file file path
 #' @rdname write.json

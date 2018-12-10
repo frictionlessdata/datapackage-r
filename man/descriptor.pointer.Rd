@@ -2,15 +2,15 @@
 % Please edit documentation in R/helpers.R
 \name{descriptor.pointer}
 \alias{descriptor.pointer}
-\title{descriptor pointer}
+\title{Descriptor pointer}
 \usage{
 descriptor.pointer(value, baseDescriptor)
 }
 \arguments{
-\item{value}{value}
+\item{value}{value  that specifies location in the descriptor}
 
-\item{baseDescriptor}{baseDescriptor}
+\item{baseDescriptor}{base descriptor}
 }
 \description{
-descriptor pointer
+Helper function for specifying locations in a descriptor.
 }

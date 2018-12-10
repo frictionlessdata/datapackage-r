@@ -7,11 +7,11 @@
 isRemotePath(path)
 }
 \arguments{
-\item{path}{path}
+\item{path}{string path}
 }
 \value{
 TRUE if path is remote
 }
 \description{
-Is remote path
+Helper function to identify a remote path.
 }

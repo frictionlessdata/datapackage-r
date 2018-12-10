@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{expandPackageDescriptor}
 \alias{expandPackageDescriptor}
-\title{Expand descriptor}
+\title{Expand package descriptor}
 \usage{
 expandPackageDescriptor(descriptor)
 }
@@ -10,5 +10,5 @@ expandPackageDescriptor(descriptor)
 \item{descriptor}{descriptor}
 }
 \description{
-Expand descriptor
+Helper function to expand package descriptor.
 }

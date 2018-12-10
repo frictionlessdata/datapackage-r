@@ -3,15 +3,15 @@
 \docType{class}
 \name{BinaryReadableConnection}
 \alias{BinaryReadableConnection}
-\title{Readable class}
+\title{Binary Readable Connection class}
 \format{\code{\link{R6Class}} object.}
 \usage{
 BinaryReadableConnection
 }
 \value{
-Object of \code{\link{R6Class}} .
+Object of \code{\link{R6Class}}.
 }
 \description{
-Readable class
+Binary Readable connection class
 }
 \keyword{data}
