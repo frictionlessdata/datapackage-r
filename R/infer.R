@@ -7,8 +7,10 @@
 #' @return Data Package Descriptor
 #' 
 #' @examples
+#' \dontrun{
 #' descriptor = infer("csv",basePath = '.')
 #' descriptor
+#' }
 #' 
 
 infer <- function(pattern = NULL, basePath = NULL) {

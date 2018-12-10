@@ -18,7 +18,9 @@ Data Package Descriptor
 A standalone function to infer a data package descriptor.
 }
 \examples{
+\dontrun{
 descriptor = infer("csv",basePath = '.')
 descriptor
+}
 
 }

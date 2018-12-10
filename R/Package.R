@@ -357,10 +357,6 @@ Package <- R6::R6Class(
         }
       }
       
-      
-      
-      
-      
       # Update resources
       length(private$resources_) <- if (is.null(private$currentDescriptor_$resources)) {
         length(list())
@@ -388,10 +384,7 @@ Package <- R6::R6Class(
           }
         }
       }
-
-      
     }
-    
   )
 )
 
@@ -413,8 +406,9 @@ Package <- R6::R6Class(
 #' 
 #' @examples
 #' 
-#' # Load URL descriptor
-#' descriptor = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-js/master/data/dp1/datapackage.json'
+#' # Load local descriptor
+#' descriptor = system.file('extdata/dp1/datapackage.json', 
+#'                          package = "datapackage.r")
 #' dataPackage = Package.load(descriptor)
 #' dataPackage$descriptor
 #' 
@@ -477,69 +471,33 @@ Package <- R6::R6Class(
 #' dataPackage6$descriptor
 #' 
 #' 
-#' 
-#' # Package Resources - Names
-#' descriptor7 = helpers.from.json.to.list(system.file('extdata/data-package-multiple-resources.json', package = "datapackage.r"))
+#' # Add, Get and Remove Package Resources
+#' descriptor7 = helpers.from.json.to.list(
+#'        system.file('extdata/dp1/datapackage.json', 
+#'                      package = "datapackage.r"))
 #' dataPackage7 = Package.load(descriptor7)
-#' dataPackage7$resourceNames
+#' resource7 = dataPackage7$addResource(
+#'         helpers.from.json.to.list('{"name": "name", "data": ["test"]}'))
+#' dataPackage7$resources[[2]]$source
+#' # Get resource
+#' dataPackage7$getResource('name')
+#' # Remove resource
+#' dataPackage7$removeResource('name')
+#' dataPackage7$getResource('name')
 #' 
-#' 
-#' 
-#' # Add Tabular Package Resources
-#' descriptor8 = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
-#' dataPackage8 = Package.load(descriptor8)
-#' dataPackage8$addResource(helpers.from.json.to.list('{"name": "name",
-#'                                                  	 	"data": [
-#'                                                  	 		["id", "name"],
-#'                                                  	 		["1", "alex"],
-#'                                                  	 		["2", "john"]
-#'                                                  	 	],
-#'                                                  	 	"schema": {
-#'                                                  	 		"fields": [{
-#'                                                  	 				"name": "id",
-#'                                                  	 				"type": "integer"
-#'                                                  	 			},
-#'                                                  	 			{
-#'                                                  	 				"name": "name",
-#'                                                  	 				"type": "string"
-#'                                                  	 			}
-#'                                                  	 		]
-#'                                                  	 	}
-#'                                                  	 }'))
-#' rows = dataPackage8$resources[[2]]$table$read()
-#' rows
-#' 
-#' 
-#' # Add Package Resources
-#' descriptor9 = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
-#' dataPackage9 = Package.load(descriptor9)
-#' resource9 = dataPackage9$addResource(helpers.from.json.to.list('{"name": "name", "data": ["test"]}'))
-#' dataPackage9$resources[[2]]$source
-#' 
-#' 
-#' # Get Existent Package Resource
-#' descriptor10 = helpers.from.json.to.list(system.file('extdata/dp1/datapackage.json', package = "datapackage.r"))
-#' dataPackage10 = Package.load(descriptor10)
-#' resource10 = dataPackage10$getResource('random')
-#' 
-#' 
-#' # Remove  Existent Package Resource
-#' descriptor11 = helpers.from.json.to.list(system.file('extdata/data-package-multiple-resources.json', package = "datapackage.r"))
-#' dataPackage11 = Package.load(descriptor11)
-#' dataPackage11$removeResource('name2')
-#' dataPackage11$getResource('name2')
 #' 
 #' 
 #' # Modify and Commit Data Package
-#' descriptor12 = helpers.from.json.to.list('{"resources": [{"name": "name", "data": ["data"]}]}')
-#' dataPackage12 = Package.load(descriptor12)
-#' dataPackage12$descriptor$resources[[1]]$name = 'modified'
+#' descriptor8 = helpers.from.json.to.list(
+#'         '{"resources": [{"name": "name", "data": ["data"]}]}')
+#' dataPackage8 = Package.load(descriptor8)
+#' dataPackage8$descriptor$resources[[1]]$name = 'modified'
 #' ## Name did not modified.
-#' dataPackage12$resources[[1]]$name
+#' dataPackage8$resources[[1]]$name
 #' ## Should commit the changes
-#' dataPackage12$commit() # TRUE - successful commit 
+#' dataPackage8$commit() # TRUE - successful commit 
 #' 
-#' dataPackage12$resources[[1]]$name
+#' dataPackage8$resources[[1]]$name
 #' 
 
 Package.load = function(descriptor = list(),

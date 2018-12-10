@@ -8,7 +8,7 @@ Authors@R: c(person("Kleanthis", "Koupidis", email = "koupidis@okfn.gr", role = 
             person("Charalampos", "Bratsas", email = "cbratsas@math.auth.gr", role = "aut"),
             person("Open Knowledge International", email = "info@okfn.org", role = "cph"))
 Maintainer: Kleanthis Koupidis <koupidis@okfn.gr>
-Description: Work with 'Data Package' (<https://frictionlessdata.io/specs/data-package/>). Load and validate any descriptor for a Data Package Profile, allow the creation and modification of descriptors and expose methods for reading and streaming data in the package. When a descriptor is a 'Tabular Data Package', it uses the 'Table Schema' library(<https://CRAN.R-project.org/package=tableschema.r>) and exposes its functionality, for each resource object in the resources field.
+Description: Work frictionless with 'Data Packages' (<https://frictionlessdata.io/specs/data-package/>). Allows to load and validate any descriptor for a data package profile, create and modify descriptors and provides expose methods for reading and streaming data in the package. When a descriptor is a 'Tabular Data Package', it uses the 'Table Schema' package (<https://CRAN.R-project.org/package=tableschema.r>) and exposes its functionality, for each resource object in the resources field.
 URL: https://github.com/frictionlessdata/datapackage-r
 License: MIT + file LICENSE
 BugReports: https://github.com/frictionlessdata/datapackage-r/issues

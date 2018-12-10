@@ -3,13 +3,13 @@
 \docType{package}
 \name{datapackage.r-package}
 \alias{datapackage.r-package}
-\title{Data Package}
+\title{Frictionless Data Package}
 \description{
-Work with 'Data Package' (<https://frictionlessdata.io/specs/data-package/>). 
-Load and validate any descriptor for a Data Package Profile, 
-allows the creation and modification of descriptors and expose methods for reading 
+Work frictionless with 'Data Packages' (<https://frictionlessdata.io/specs/data-package/>). 
+Allows to load and validate any descriptor for a data package profile, 
+create and modify descriptors and provides expose methods for reading 
 and streaming data in the package. When a descriptor is a 'Tabular Data Package', 
-it uses the 'Table Schema' library(<https://CRAN.R-project.org/package=tableschema.r>) 
+it uses the 'Table Schema' package (<https://CRAN.R-project.org/package=tableschema.r>) 
 and exposes its functionality, for each resource object in the resources field.
 }
 \section{Introduction}{
