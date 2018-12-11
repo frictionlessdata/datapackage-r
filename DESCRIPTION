@@ -2,7 +2,7 @@ Package: datapackage.r
 Type: Package
 Title: Data Package
 Version: 0.1.0
-Date: 2018-12-10
+Date: 2018-12-11
 Authors@R: c(person("Kleanthis", "Koupidis", email = "koupidis@okfn.gr", role = c("aut", "cre")), 
             person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role = "aut"),
             person("Charalampos", "Bratsas", email = "cbratsas@math.auth.gr", role = "aut"),

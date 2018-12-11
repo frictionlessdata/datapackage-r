@@ -48,7 +48,7 @@ dataPackage$commit()
 
 #Infer a CSV Schema
 
-We will use periodic-table data from remote path: <https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example%20data/data.csv>
+We will use periodic-table data from remote path: <https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/data.csv>
 
 ```{r, echo=FALSE, results='asis'}
 url = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/data.csv'
@@ -113,7 +113,7 @@ Now we are ready to write our `datapackage.json` file to the current working dir
 dataPackage$save('exampledata')
 ```
 
-The `datapackage.json` ([download](https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/exampledata/package.json)) is inlined below. Note that atomic number has been correctly inferred as an `integer` and atomic mass as a `number` (float) while every other column is a `string`.
+The `datapackage.json` ([download](https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/package.json)) is inlined below. Note that atomic number has been correctly inferred as an `integer` and atomic mass as a `number` (float) while every other column is a `string`.
 
 ```{r, eval=TRUE, include=TRUE}
 jsonlite::prettify(helpers.from.list.to.json(dataPackage$descriptor))
