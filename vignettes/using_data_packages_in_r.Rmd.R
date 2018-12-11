@@ -9,13 +9,13 @@
 library(datapackage.r)
 
 ## ---- echo=TRUE, results='asis'------------------------------------------
-url = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/example_data/data.csv'
-pt_data = read.csv2(url, sep = ',')
+path = 'exampledata/data.csv' # or through the url https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/data.csv
+pt_data = read.csv2(path, sep = ',')
 knitr::kable(head(pt_data, 5), align = 'c')
 
 ## ---- eval=TRUE, include=TRUE--------------------------------------------
-url = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/example_data/package.json'
-datapackage = Package.load(url)
+path = 'exampledata/package.json' # or through the url https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/package.json
+datapackage = Package.load(path)
 datapackage$resources[[1]]$descriptor$profile = 'tabular-data-resource' # tabular resource descriptor profile 
 datapackage$resources[[1]]$commit() # commit changes
 
