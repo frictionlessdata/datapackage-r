@@ -123,9 +123,9 @@ Package <- R6::R6Class(
     initialize = function(descriptor = list(),
                           basePath = NULL,
                           strict = FALSE,
-                         profile = NULL) {
+                          profile = NULL) {
       # Handle deprecated resource.path.url
-
+      
       if (length(descriptor$resources) > 0) {
         for (i in 1:length(descriptor$resources)) {
           if ("url" %in% names(descriptor$resources[[i]])) {
@@ -146,7 +146,7 @@ Package <- R6::R6Class(
       private$resources_ = list()
       private$errors_ = list()
       
-
+      
       # Build instance
       private$build_()
       
@@ -155,7 +155,7 @@ Package <- R6::R6Class(
     addResource = function(descriptor) {
       if (is.null(private$currentDescriptor_$resources)) private$currentDescriptor_$resources = list()
       private$currentDescriptor_$resources = rlist::list.append(private$currentDescriptor_$resources, descriptor)
-
+      
       private$build_()
       return(private$resources_[[length(private$resources_)]])
     },
@@ -164,7 +164,7 @@ Package <- R6::R6Class(
       resources = Filter(function(x) x$name == name, private$resources_)
       if (length(resources) > 0) return(resources[[1]])
       else return(NULL)
-
+      
     },
     
     removeResource = function(name) {
@@ -172,24 +172,24 @@ Package <- R6::R6Class(
       if (!is.null(resource)) {
         predicat = function(resource) { return(resource$name != name) }
         private$currentDescriptor_$resources = Filter(predicat, private$currentDescriptor_$resources)
-
+        
         private$build_()
       }
-     return(resource)
+      return(resource)
       
     },
     
     
     infer = function(pattern) {
-
+      
       if (isTRUE(!is.null(pattern)) && stringr::str_length(pattern) > 0) {
         # No base path
         if (is.null(private$basePath_) || stringr::str_length(private$basePath_) < 1) {
-         stop('Base path is required for pattern infer')
+          stop('Base path is required for pattern infer')
         }
         
         # Add resources
-
+        
         files = findFiles(pattern, private$basePath_)
         for (file in files) {
           self$addResource(list(path = file))
@@ -204,9 +204,9 @@ Package <- R6::R6Class(
           private$build_()
         }
       }
-
+      
       # Profile
-
+      
       if (isTRUE(private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r")))) {
         if (length(private$resources_) >= 1 && rlist::list.all(private$resources_, r ~ isTRUE(r$tabular))) {
           
@@ -221,13 +221,13 @@ Package <- R6::R6Class(
     },
     
     commit = function(strict = NULL) {
- 
+      
       if (is.logical(strict))
         private$strict_ = strict
       else if (identical(private$currentDescriptor_, private$nextDescriptor_))
         return(FALSE)
       private$currentDescriptor_ = private$nextDescriptor_
-
+      
       private$build_()
       return(TRUE)
     },
@@ -240,13 +240,13 @@ Package <- R6::R6Class(
       # }ifelse(!dir.exists("Data"), dir.create("Data"), "Folder exists already")
       if (!dir.exists(target) & target != ".") {
         create_folder = menu(c("Yes", "No"), title=
-               stringr::str_interp('Folder "${target}" does not exist in current directory: "${getwd()}".\n Do you want to create a new folder?'))
+                               stringr::str_interp('Folder "${target}" does not exist in current directory: "${getwd()}".\n Do you want to create a new folder?'))
         
         ifelse(create_folder == 1, dir.create(target), return("Package descriptor wasn't saved."))
         
       }
       write.json(private$currentDescriptor_,
-            file = stringr::str_c(target, "package.json", sep = "/"))
+                 file = stringr::str_c(target, "package.json", sep = "/"))
       save = if (isTRUE(target == ".")) stringr::str_interp('Package saved at: "${getwd()}"') else 
         stringr::str_interp('Package saved at: "${target}"')
       return(save)
@@ -293,29 +293,29 @@ Package <- R6::R6Class(
     errors = function() {
       errors = private$errors_
       if (length(private$resources_) > 0) {
-      for (index in 1:length(private$resources_)) {
-        if (!isTRUE(private$resources_[[index]]$valid)) {
-          errors = append(
-            errors,
-            DataPackageError$new(
-              'Resource "${private$resources_[[index]]$name || index}" validation error(s)'
-            )$message
-          )
+        for (index in 1:length(private$resources_)) {
+          if (!isTRUE(private$resources_[[index]]$valid)) {
+            errors = append(
+              errors,
+              DataPackageError$new(
+                'Resource "${private$resources_[[index]]$name || index}" validation error(s)'
+              )$message
+            )
+          }
         }
       }
-    }
       return(errors)
     },
     
     resources = function(value) {
       if (missing(value)) {
-              return(private$resources_)
+        return(private$resources_)
       }
       else {
         private$resources_ = value
         return(private$resources_)
       }
-
+      
     }
     
   ),
@@ -335,7 +335,7 @@ Package <- R6::R6Class(
     currentDescriptor_json = NULL,
     resources_length = NULL,
     build_ = function() {
-
+      
       private$currentDescriptor_ = expandPackageDescriptor(private$currentDescriptor_)
       private$nextDescriptor_ = private$currentDescriptor_
       
@@ -364,11 +364,11 @@ Package <- R6::R6Class(
         length(private$currentDescriptor_$resources)
       }
       
-
+      
       if ( length(private$resources_) > 0) {
         for (index in 1: length(private$resources_)) {
           descriptor = private$currentDescriptor_$resources[[index]]
-       
+          
           if (index > length(private$resources_) ||
               !identical(private$resources_[[index]], descriptor) ||
               (!is.null(private$resources_[[index]]$schema) &&
@@ -376,9 +376,9 @@ Package <- R6::R6Class(
             
             private$resources_[[index]] = Resource$new(
               descriptor,
-                strict = private$strict_,
-                basePath = private$basePath_,
-                dataPackage = self
+              strict = private$strict_,
+              basePath = private$basePath_,
+              dataPackage = self
               
             )
           }
@@ -510,13 +510,13 @@ Package.load = function(descriptor = list(),
     basePath = locateDescriptor(descriptor)
   }
   
-
+  
   # Process descriptor
   descriptor = retrieveDescriptor(descriptor)
-
+  
   descriptor = dereferencePackageDescriptor(descriptor, basePath)
   # Get profile
-
+  
   profile.to.load = if (is.null(descriptor$profile)) {
     config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r"))
   } else {

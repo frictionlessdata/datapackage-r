@@ -11,11 +11,11 @@ vignette: >
 
 This tutorial will show you how to install the R libraries for working with Tabular Data Packages and demonstrate a very simple example of loading a Tabular Data Package from the web and pushing it directly into a local SQL database and send query to retrieve results.
 
-#Setup
+# Setup
 
 For this tutorial, we will need the Data Package R library ([datapackage.r](https://github.com/frictionlessdata/datapackage-r)).
 
-[devtools library](https://cran.r-project.org/package=devtools) is required to install the datapackage.r library from github.
+[devtools library](https://cran.r-project.org/packageadevtools) is required to install the datapackage.r library from github.
 
 ```{r, eval=FALSE, include=TRUE}
 # Install devtools package if not already
@@ -25,10 +25,12 @@ install.packages("devtools")
 And then install the development version of [datapackage.r](https://github.com/frictionlessdata/datapackage-r) from github.
 
 ```{r, eval=FALSE, include=TRUE}
+install.packages("datapackage.r")
+# or install the development package
 devtools::install_github("frictionlessdata/datapackage.r")
 ```
 
-#Load
+# Load
 
 You can start using the library by loading `datapackage.r`.
 
@@ -36,23 +38,23 @@ You can start using the library by loading `datapackage.r`.
 library(datapackage.r)
 ```
 
-#Reading Basic Metadata
+# Reading Basic Metadata
 
 In this case, we are using an example Tabular Data Package containing the periodic table stored on [GitHub](https://github.com/frictionlessdata/example-data-packages/tree/master/periodic-table) ([datapackage.json](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/datapackage.json), [data.csv](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv)). This dataset includes the atomic number, symbol, element name, atomic mass, and the metallicity of the element. Here are the first five rows:
 
 
 ```{r, echo=TRUE, results='asis'}
-path = 'exampledata/data.csv' # or use url = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/data.csv'
-pt_data = read.csv2(path, sep = ',')
+path <- 'exampledata/data.csv' # or use url <- 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/data.csv'
+pt_data <- read.csv2(path, sep = ',')
 knitr::kable(head(pt_data, 5), align = 'c')
 ```
 
 Data Packages can be loaded either from a local path or directly from the web.
 
 ```{r, eval=TRUE, include=TRUE}
-path = 'exampledata/package.json' # or use url = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/package.json'
-datapackage = Package.load(path)
-datapackage$resources[[1]]$descriptor$profile = 'tabular-data-resource' # tabular resource descriptor profile 
+path <- 'exampledata/package.json' # or use url <- 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/package.json'
+datapackage <- Package.load(path)
+datapackage$resources[[1]]$descriptor$profile <- 'tabular-data-resource' # tabular resource descriptor profile 
 datapackage$resources[[1]]$commit() # commit changes
 ```
 
@@ -62,20 +64,20 @@ At the most basic level, Data Packages provide a standardized format for general
 datapackage$descriptor$title
 ```
 
-#Reading Data
+# Reading Data
 
 Now that you have loaded your Data Package, you can read its data. A Data Package can contain multiple files which are accessible via the `resources` attribute. The `resources` attribute is an array of objects containing information (e.g. path, schema, description) about each file in the package.
 
 You can access the data in a given resource in the `resources` array by reading the `data` attribute. 
 
 ```{r, eval=TRUE, include=TRUE}
-table = datapackage$resources[[1]]$table
-periodic_table_data = table$read()
+table <- datapackage$resources[[1]]$table
+periodic_table_data <- table$read()
 ```
 
 You can further manipulate list objects in R by using [purrr](https://cran.r-project.org/package=purrr), [rlist](https://cran.r-project.org/package=rlist) packages.
 
-#Loading into an SQL database
+# Loading into an SQL database
 
 [Tabular Data Packages](https://frictionlessdata.io/specs/tabular-data-package/) contains schema information about its data using [Table Schema](https://frictionlessdata.io/specs/table-schema/). This means you can easily import your Data Package into the SQL backend of your choice. In this case, we are creating an [SQLite](http://sqlite.org/) database.
 
@@ -95,7 +97,7 @@ library(RSQLite)
 To create a new SQLite database, you simply supply the filename to `dbConnect()`:
 
 ```{r, eval=TRUE, include=TRUE}
-dp.database = dbConnect(RSQLite::SQLite(), "") # temporary database
+dp.database <- dbConnect(RSQLite::SQLite(), "") # temporary database
 ```
 
 We will use data.table package to convert the list object with the data to a data frame in order to copy them to database table.
@@ -104,8 +106,8 @@ We will use data.table package to convert the list object with the data to a dat
 # install data.table package if not already
 # install.packages("data.table")
 
-periodic_table_sql = data.table::rbindlist(periodic_table_data)
-periodic_table_sql = setNames(periodic_table_sql,unlist(datapackage$resources[[1]]$headers))
+periodic_table_sql <- data.table::rbindlist(periodic_table_data)
+periodic_table_sql <- setNames(periodic_table_sql,unlist(datapackage$resources[[1]]$headers))
 ```
 
 You can easily copy an R data frame into a SQLite database with dbWriteTable():

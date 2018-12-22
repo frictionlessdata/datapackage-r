@@ -10,7 +10,7 @@ testthat::context("DataPackageError")
 
 
 test_that('should work with one error', {
-  error = DataPackageError$new('message')
+  error <- DataPackageError$new('message')
   
   expect_equivalent(error$message, 'message')
   expect_equivalent(error$multiple, FALSE)
@@ -18,8 +18,8 @@ test_that('should work with one error', {
 })
 
 test_that('should work with multiple errors', {
-  errors = list('error1', 'error2')
-  error = DataPackageError$new('message', errors)
+  errors <- list('error1', 'error2')
+  error <- DataPackageError$new('message', errors)
   
   expect_equivalent(error$message, 'message')
   expect_equivalent(error$multiple, TRUE)
@@ -30,7 +30,7 @@ test_that('should work with multiple errors', {
 
 test_that('should be catchable as a normal error', {
   
-  error = tryCatch({
+  error <- tryCatch({
     DataPackageError$new('message')
     
   }, error = function(error) {
@@ -41,7 +41,7 @@ test_that('should be catchable as a normal error', {
 })
 
 test_that('should work with table schema error', {
-  error = tryCatch({
+  error <- tryCatch({
     tableschema.r::TableSchemaError$new('message')
     
   }, error = function(error) {

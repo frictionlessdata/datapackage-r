@@ -19,11 +19,11 @@
 #' validate(descriptor = '{"name": "Invalid Datapackage"}')
 #' 
 
-validate = function(descriptor) {
+validate <- function(descriptor) {
 
-  valid_errors = Package.load(descriptor = descriptor )
+  valid_errors <- Package.load(descriptor = descriptor )
 
-  valid_errors = list(valid = valid_errors$valid, errors = valid_errors$errors)
+  valid_errors <- list(valid = valid_errors$valid, errors = valid_errors$errors)
   # valid_errors = jsonlite::validate(descriptor)
   return(valid_errors)
 }
