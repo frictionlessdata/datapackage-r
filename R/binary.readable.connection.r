@@ -14,10 +14,10 @@ BinaryReadableConnection <- R6::R6Class(
   
   public = list(
     initialize = function(options = list()) {
-      private$connection_ = options$source
-      private$iterable_ = iterators::iter(function(){
+      private$connection_ <- options$source
+      private$iterable_ <- iterators::iter(function(){
         if (length(value <- readBin(private$connection_, integer(), size = 1)) > 0) {
-          private$index_ = private$index_ + 1
+          private$index_ <- private$index_ + 1
           
           return(value)
         }

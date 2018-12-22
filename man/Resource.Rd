@@ -26,7 +26,7 @@ Use \code{\link{Resource.load}} to instantiate \code{Resource} class.}
 
 
 
-\item{\code{iter(keyed, extended, cast=TRUE, relations=FALSE, stream=FALSE)}}{
+\item{\code{iter(keyed, extended, cast = TRUE, relations = FALSE, stream = FALSE)}}{
   Only for tabular resources - Iter through the table data and emits rows cast based on table schema. Data casting could be disabled.}
 \itemize{
  \item{\code{keyed }}{Iter keyed rows - \code{TRUE}/ \code{FALSE}.}  
@@ -37,7 +37,7 @@ Use \code{\link{Resource.load}} to instantiate \code{Resource} class.}
  }
 
 
-\item{\code{read(keyed, extended, cast=TRUE, relations=FALSE, limit)}}{
+\item{\code{read(keyed, extended, cast = TRUE, relations = FALSE, limit)}}{
   Only for tabular resources. Read the whole table and returns as list of rows. Count of rows could be limited.}
 \itemize{
  \item{\code{keyed }}{Flag to emit keyed rows - \code{TRUE}/\code{FALSE}.}  

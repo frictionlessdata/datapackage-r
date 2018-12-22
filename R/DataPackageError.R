@@ -17,9 +17,9 @@ DataPackageError <- R6::R6Class(
   
   public = list(
     
-    message=NULL,
+    message = NULL,
     
-    error=NULL,
+    error = NULL,
     
     initialize = function (message, error=NULL){
       self$message <- message

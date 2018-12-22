@@ -5,24 +5,24 @@
 #' @export
 #'
 
-locateDescriptor = function(descriptor) {
+locateDescriptor <- function(descriptor) {
   
   # Infer from path/url
   if (is.character(descriptor) && !isTRUE(jsonlite::validate(descriptor))) {
     
-    path = strsplit(descriptor, '/')
-    path = path[[1]]
-    path = rlist::list.remove(path, length(path) )
-    path = paste(path, collapse = "/")
+    path <- strsplit(descriptor, '/')
+    path <- path[[1]]
+    path <- rlist::list.remove(path, length(path) )
+    path <- paste(path, collapse = "/")
     if (is.null(path)) {
-      basePath = getwd()
+      basePath <- getwd()
     }
     else{
-      basePath = path
+      basePath <- path
     }
     
   } else{
-    basePath = getwd()
+    basePath <- getwd()
   }
   return(basePath)
 }
@@ -34,14 +34,14 @@ locateDescriptor = function(descriptor) {
 #' @export
 #'
 
-retrieveDescriptor = function(descriptor) {
+retrieveDescriptor <- function(descriptor) {
   
   if (is.list(descriptor)) {
     return(descriptor)
   }
   
   if (is.json(descriptor)) {
-    descriptor = helpers.from.json.to.list(descriptor)
+    descriptor <- helpers.from.json.to.list(descriptor)
     return(descriptor)
   }
   
@@ -52,38 +52,38 @@ retrieveDescriptor = function(descriptor) {
     # Remote
     if (isRemotePath(descriptor)) {
       tryCatch({
-        response = httr::GET(descriptor)
-        descriptor = httr::content(response, as = 'text')
-        descriptor = helpers.from.json.to.list(descriptor)
+        response <- httr::GET(descriptor)
+        descriptor <- httr::content(response, as = 'text')
+        descriptor <- helpers.from.json.to.list(descriptor)
         return(descriptor)
       },
       
       error = function(e) {
-        message = stringr::str_interp('Can not retrieve remote descriptor "${descriptor}"')
+        message <- stringr::str_interp('Can not retrieve remote descriptor "${descriptor}"')
         stop(message)
       })
     }
     
     else {
       tryCatch({
-        if (endsWith(descriptor,"csv")) descriptor = as.list(utils::read.csv(descriptor,as.is = TRUE))
-        else descriptor = helpers.from.json.to.list(descriptor)
+        if (endsWith(descriptor,"csv")) descriptor <- as.list(utils::read.csv(descriptor,as.is = TRUE))
+        else descriptor <- helpers.from.json.to.list(descriptor)
         return(descriptor)
       },
       
       error = function(e) {
-        message = stringr::str_interp('Can not retrieve local descriptor "${descriptor}"')
+        message <- stringr::str_interp('Can not retrieve local descriptor "${descriptor}"')
         stop(message)
       },
       
       warning = function(e) {
-        message = stringr::str_interp('Can not retrieve local descriptor "${descriptor}"')
+        message <- stringr::str_interp('Can not retrieve local descriptor "${descriptor}"')
         stop(message)
       })
     }
   } else
     stop(message)
-  # descriptor$resources = purrr::flatten(descriptor$resources)
+  # descriptor$resources <- purrr::flatten(descriptor$resources)
 }
 
 #' Dereference package descriptor
@@ -94,10 +94,10 @@ retrieveDescriptor = function(descriptor) {
 #' @export
 #'
 
-dereferencePackageDescriptor = function(descriptor, basePath) {
+dereferencePackageDescriptor <- function(descriptor, basePath) {
   
   for (i in 1:length(descriptor$resources)) {
-    descriptor$resources[[i]] = dereferenceResourceDescriptor(descriptor = descriptor$resources[[i]], basePath = basePath, baseDescriptor = descriptor)
+    descriptor$resources[[i]] <- dereferenceResourceDescriptor(descriptor = descriptor$resources[[i]], basePath = basePath, baseDescriptor = descriptor)
   }
   return(descriptor)
 }
@@ -111,19 +111,19 @@ dereferencePackageDescriptor = function(descriptor, basePath) {
 #' @export
 #'
 
-dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = NULL) {
+dereferenceResourceDescriptor <- function(descriptor, basePath, baseDescriptor = NULL) {
   #conditions
   
   if (isTRUE(is.null(baseDescriptor))){
-    baseDescriptor = descriptor
+    baseDescriptor <- descriptor
   }
   
   #set list properties
-  PROPERTIES = list('dialect','schema')
+  PROPERTIES <- list('dialect','schema')
   
   
   for (property in PROPERTIES) {
-    value = descriptor[[property]]    
+    value <- descriptor[[property]]    
     # URI -> No
     if (!is.character(value)) {
       next
@@ -132,7 +132,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
       # URI -> Pointer
     } else if (isTRUE(startsWith(unlist(value), '#'))) {
       
-      descriptor[[property]]  = tryCatch({
+      descriptor[[property]]  <- tryCatch({
         descriptor.pointer(value, baseDescriptor)},
         error = function(e) {
           stop(stringr::str_interp(
@@ -148,12 +148,12 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
       # TODO: remote base path also will lead to remote case!
     } else if (isRemotePath(unlist(value))) {
       tryCatch({
-        # response = httr::GET(value)
-        descriptor[[property]] = helpers.from.json.to.list(value)
-        #httr::content(response, as = 'text')
+        # response <- httr::GET(value)
+        descriptor[[property]] <- helpers.from.json.to.list(value)
+        #httr::content(response, as <- 'text')
       },
       error = function(e) {
-        message = DataPackageError$new(
+        message <- DataPackageError$new(
           stringr::str_interp(
             'Not resolved Remote URI "${value}" for descriptor[[${property}]]'
           ))$message
@@ -165,7 +165,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
     } 
     else {
       if (isTRUE(!isSafePath(unlist(value)))) {
-        message = DataPackageError$new(
+        message <- DataPackageError$new(
           stringr::str_interp(
             'Not safe path in Local URI "${value}" for resource[[${property}]]'
           )
@@ -174,7 +174,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
         stop(message)
       }
       if (isTRUE(is.null(basePath) || basePath == "")) {
-        message = DataPackageError$new(
+        message <- DataPackageError$new(
           stringr::str_interp(
             'Local URI "${value}" requires base path for resource[[${property}]]'
           )
@@ -185,14 +185,14 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
       
       tryCatch({
         # TODO: support other that Unix OS
-        fullPath = stringr::str_c(basePath, value, sep = '/')
+        fullPath <- stringr::str_c(basePath, value, sep = '/')
         # TODO: rebase on promisified fs.readFile (async)
-        descriptor[[property]] = helpers.from.json.to.list(fullPath)
-        # contents = readLines(fullPath, 'utf-8')
-        # descriptor[[property]] = jsonlite::fromJSON(contents)
+        descriptor[[property]] <- helpers.from.json.to.list(fullPath)
+        # contents <- readLines(fullPath, 'utf-8')
+        # descriptor[[property]] <- jsonlite::fromJSON(contents)
       },
       error = function(e) {
-        message = DataPackageError$new(
+        message <- DataPackageError$new(
           stringr::str_interp(
             'Not resolved Local URI "${value}" for resource[[${property}]]'
           )
@@ -201,7 +201,7 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
       },  
       warning = function(e)
       {
-        message = DataPackageError$new(
+        message <- DataPackageError$new(
           stringr::str_interp(
             'Not resolved Local URI "${value}" for resource[[${property}]]'
           )
@@ -221,9 +221,9 @@ dereferenceResourceDescriptor = function(descriptor, basePath, baseDescriptor = 
 #' @export
 #'
 
-expandPackageDescriptor = function(descriptor) {
+expandPackageDescriptor <- function(descriptor) {
   
-  descriptor$profile = if (is.empty(descriptor$profile)) {
+  descriptor$profile <- if (is.empty(descriptor$profile)) {
     config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r"))
   } else {
     descriptor$profile
@@ -231,7 +231,7 @@ expandPackageDescriptor = function(descriptor) {
   if (length(descriptor$resources) > 0) {
     # if (length(descriptor$resources)==0) index = 1 else index = length(descriptor$resources)
     for (i in 1:length(descriptor$resources)) {
-      descriptor$resources[[i]] = expandResourceDescriptor(descriptor$resources[[i]])
+      descriptor$resources[[i]] <- expandResourceDescriptor(descriptor$resources[[i]])
     }
   }
   
@@ -244,17 +244,17 @@ expandPackageDescriptor = function(descriptor) {
 #' @rdname expandResourceDescriptor
 #' @export
 #'
-expandResourceDescriptor = function(descriptor) {
+expandResourceDescriptor <- function(descriptor) {
   
   # set default for profile and encoding
   
-  descriptor$profile = if (isTRUE(is.null(descriptor$profile))) {
+  descriptor$profile <- if (isTRUE(is.null(descriptor$profile))) {
     config::get("DEFAULT_RESOURCE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r"))
   } else {
     descriptor$profile
   }
   
-  descriptor$encoding = if (isTRUE(is.null(descriptor$encoding))) {
+  descriptor$encoding <- if (isTRUE(is.null(descriptor$encoding))) {
     config::get("DEFAULT_RESOURCE_ENCODING", file = system.file("config/config.yaml", package = "datapackage.r"))
   } else {
     descriptor$encoding
@@ -271,12 +271,12 @@ expandResourceDescriptor = function(descriptor) {
         
         
         
-        descriptor$schema$fields[[i]]$type = if (is.empty(descriptor$schema$fields[[i]]$type))
+        descriptor$schema$fields[[i]]$type <- if (is.empty(descriptor$schema$fields[[i]]$type))
           config::get("DEFAULT_FIELD_TYPE", file = system.file("config/config.yaml", package = "datapackage.r"))
         else {
           descriptor$schema$fields[[i]]$type
         }
-        descriptor$schema$fields[[i]]$format = if (is.empty(descriptor$schema$fields[[i]]$format)) {
+        descriptor$schema$fields[[i]]$format <- if (is.empty(descriptor$schema$fields[[i]]$format)) {
           config::get("DEFAULT_FIELD_FORMAT", file = system.file("config/config.yaml", package = "datapackage.r"))
         } else {
           descriptor$schema$fields[[i]]$format
@@ -284,7 +284,7 @@ expandResourceDescriptor = function(descriptor) {
         
       }
       
-      descriptor$schema$missingValues = if (is.empty(descriptor$schema$missingValues)) {
+      descriptor$schema$missingValues <- if (is.empty(descriptor$schema$missingValues)) {
         as.list(config::get("DEFAULT_MISSING_VALUES", file = system.file("config/config.yaml", package = "datapackage.r")))
       } else {
         descriptor$schema$missingValues
@@ -294,17 +294,17 @@ expandResourceDescriptor = function(descriptor) {
     # Dialect
     
     if (isTRUE(!is.null(descriptor$dialect))) {
-      #descriptor$dialect = config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))
-      # descriptor$dialect$lineTerminator="\r\n"
-      # descriptor$dialect$quoteChar="\""
-      # descriptor$dialect$escapeChar="\\"
+      #descriptor$dialect <- config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))
+      # descriptor$dialect$lineTerminator<-"\r\n"
+      # descriptor$dialect$quoteChar<-"\""
+      # descriptor$dialect$escapeChar<-"\\"
       
       for (key in which(!names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))) %in% names(descriptor$dialect))) {
         # if (!names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r")))[key] %in% names(descriptor$dialect)) {
         
-        descriptor$dialect[[paste(names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r")))[key])]] = config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))[key]
+        descriptor$dialect[[paste(names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r")))[key])]] <- config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))[key]
       }
-      descriptor$dialect = lapply(descriptor$dialect, unlist, use.names = FALSE)
+      descriptor$dialect <- lapply(descriptor$dialect, unlist, use.names = FALSE)
       #}
     }
   }
@@ -321,11 +321,11 @@ expandResourceDescriptor = function(descriptor) {
 #' @export
 #'
 
-isRemotePath = function(path) {
+isRemotePath <- function(path) {
   if (!is.character(path)) {
     FALSE
   } else {
-    path = as.character(path)
+    path <- as.character(path)
     #if (!is.character(path)) FALSE else
     isTRUE(startsWith("http", unlist(strsplit(path, ":")))[1] |
              startsWith("https", unlist(strsplit(path, ":")))[1] | 
@@ -342,18 +342,18 @@ isRemotePath = function(path) {
 #' @export
 #'
 
-isSafePath = function(path) {
+isSafePath <- function(path) {
   
   if (!isTRUE(is.character(path)))
     FALSE
   else {
-    containsWindowsVar = function(path){
+    containsWindowsVar <- function(path){
       if (isTRUE(grepl("%.+%", path)))
         TRUE
       else
         FALSE
     }
-    containsPosixVar = function(path){
+    containsPosixVar <- function(path){
       if (isTRUE(grepl("\\$.+", path)))
         TRUE
       else
@@ -361,7 +361,7 @@ isSafePath = function(path) {
     }
     
     # un Safety checks
-    unsafenessConditions = list(
+    unsafenessConditions <- list(
       R.utils::isAbsolutePath(path),
       grepl("\\|/", path),
       grepl('\\.\\.', path),
@@ -370,7 +370,7 @@ isSafePath = function(path) {
       containsWindowsVar(path),
       containsPosixVar(path)
     )
-    response = any(unlist(unsafenessConditions))
+    response <- any(unlist(unsafenessConditions))
     return(!response)
   }
 }
@@ -386,7 +386,7 @@ isSafePath = function(path) {
 #' @export
 #'
 
-isUndefined = function(x) {
+isUndefined <- function(x) {
   
   if (any(isTRUE(!exists(deparse(substitute(
     x
@@ -404,8 +404,8 @@ isUndefined = function(x) {
 #' @export
 #'
 
-push = function(x, value) {
-  x = append(x, value) #append rlist::list.
+push <- function(x, value) {
+  x <- append(x, value) #append rlist::list.
   return(x)
 }
 
@@ -444,7 +444,7 @@ is.compressed <- function(x) {
 #' @return TRUE if object is json
 #' @export
 #'
-is.json = function(object) {
+is.json <- function(object) {
   
   if (class(object) == "json")
     return(TRUE)
@@ -460,18 +460,18 @@ is.json = function(object) {
 #' @export
 #'
 
-findFiles = function(pattern, path = getwd()) {
+findFiles <- function(pattern, path = getwd()) {
   
-  files = list.files(path, recursive = TRUE)
+  files <- list.files(path, recursive = TRUE)
   #files=filepath(path)#, recursive = TRUE)
   # matched_files = files[grep(path, files, fixed = FALSE, ignore.case = FALSE)]
   
-  matched_files = files[grepl(pattern,
+  matched_files <- files[grepl(pattern,
                               files,
                               fixed = FALSE,
                               ignore.case = FALSE)]
   
-  matched_files = matched_files[grepl(stringr::str_c(".","csv"), 
+  matched_files <- matched_files[grepl(stringr::str_c(".","csv"), 
                                       matched_files, 
                                       fixed = TRUE, 
                                       ignore.case = FALSE)]
@@ -488,8 +488,8 @@ findFiles = function(pattern, path = getwd()) {
 #' @export
 #'
 
-is.empty = function(list) {
-  empty = purrr::every(list, function(x) {
+is.empty <- function(list) {
+  empty <- purrr::every(list, function(x) {
     purrr::is_empty(x)
   })
   return(empty)
@@ -506,8 +506,8 @@ is.empty = function(list) {
 #' @export
 #'
 
-is.local.descriptor.path = function(descriptor, directory = ".") {
-  #descriptor.path=path.expand(paste0(basePath,"/datapackage.json"))
+is.local.descriptor.path <- function(descriptor, directory = ".") {
+  #descriptor.path<-path.expand(paste0(basePath,"/datapackage.json"))
   if (!is.character(descriptor)) {
     return(FALSE)
   } else {
@@ -539,7 +539,7 @@ is.local.descriptor.path = function(descriptor, directory = ".") {
 #'
 
 descriptor.pointer <- function(value, baseDescriptor) {
-  v8 = V8::v8()
+  v8 <- V8::v8()
   v8$source("inst/scripts/jsonpointer.js")
   
   v8$call("function(x,y){output = jsonpointer.get(x,y)}", baseDescriptor, substring(value[[1]], 2, stringr::str_length(value[[1]])) )
@@ -555,7 +555,7 @@ descriptor.pointer <- function(value, baseDescriptor) {
 #' @export
 #'
 
-helpers.from.json.to.list = function(lst) {
+helpers.from.json.to.list <- function(lst) {
   return(jsonlite::fromJSON(lst, simplifyVector = FALSE))
 }
 
@@ -566,7 +566,7 @@ helpers.from.json.to.list = function(lst) {
 #' @export
 #'
 
-helpers.from.list.to.json = function(json) {
+helpers.from.list.to.json <- function(json) {
   return(jsonlite::toJSON(json, auto_unbox = TRUE))
 }
 
@@ -578,7 +578,7 @@ helpers.from.list.to.json = function(json) {
 #' @export
 #'
 
-file_basename = function(path){
+file_basename <- function(path){
   if (isTRUE(stringr::str_count(path,"[.]") == 2)) {
     tools::file_path_sans_ext(tools::file_path_sans_ext(basename(path)))
   } else tools::file_path_sans_ext(basename(path))
@@ -592,7 +592,7 @@ file_basename = function(path){
 #' @export
 #'
 
-file_extension = function(path){
+file_extension <- function(path){
   if (isTRUE(stringr::str_count(path,"[.]") == 2)) {
     tools::file_ext(tools::file_path_sans_ext(basename(path)))
   } else tools::file_ext(basename(path))
@@ -607,6 +607,6 @@ file_extension = function(path){
 #'
 
 write.json <- function(x, file){
-  x = jsonlite::prettify(helpers.from.list.to.json(x))
-  x = writeLines(x, file)
+  x <- jsonlite::prettify(helpers.from.list.to.json(x))
+  x <- writeLines(x, file)
 }

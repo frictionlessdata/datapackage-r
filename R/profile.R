@@ -49,46 +49,46 @@ Profile <- R6::R6Class(
     
     initialize = function(profile) {
       
-      private$profile_ = profile
+      private$profile_ <- profile
       
       if (is.character(unlist(private$profile_))) {
         
-        private$profile_ =system.file(stringr::str_interp("profiles/${private$profile_}.json"), package = "datapackage.r")
-        # private$profile_ =  stringr::str_interp("inst/profiles/${private$profile_}\.json")
+        private$profile_ <- system.file(stringr::str_interp("profiles/${private$profile_}.json"), package = "datapackage.r")
+        # private$profile_ <-  stringr::str_interp("inst/profiles/${private$profile_}\.json")
         
         if(private$profile_ =="" | is.null(private$profile_)) {
           
-          private$message.error_ = DataPackageError$new(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))$message
-          private$profile_ = private$message.error_
+          private$message.error_ <- DataPackageError$new(stringr::str_interp("Profiles registry hasn't profile '${profile}'"))$message
+          private$profile_ <- private$message.error_
           
           stop(DataPackageError$new(private$profile_)$message)
         }
       }
       
-      private$jsonschema_ = helpers.from.json.to.list(private$profile_)
+      private$jsonschema_ <- helpers.from.json.to.list(private$profile_)
       
     },
     
     validate = function(descriptor){
       
       if (is.character(descriptor) && isTRUE(jsonlite::validate(descriptor))){
-        descriptor2 = descriptor
+        descriptor2 <- descriptor
       } else {
-        descriptor2 = helpers.from.list.to.json(descriptor)
+        descriptor2 <- helpers.from.list.to.json(descriptor)
       }
       
-      vld = is.valid(descriptor2, helpers.from.list.to.json(private$jsonschema_))
+      vld <- is.valid(descriptor2, helpers.from.list.to.json(private$jsonschema_))
       
-      private$validation_$valid = vld$valid
+      private$validation_$valid <- vld$valid
       
-      private$validation_$errors = vld$errors
+      private$validation_$errors <- vld$errors
       
       
-      errors = list()
+      errors <- list()
       
       for (i in rownames(private$validation_$errors)) {
         
-        errors = c(errors, stringr::str_interp(
+        errors <- c(errors, stringr::str_interp(
           'Descriptor validation error:
             ${private$validation_$errors [i, "field"]} - ${private$validation_$errors [i, "message"]}'
           
@@ -106,29 +106,29 @@ Profile <- R6::R6Class(
   
   active = list(
     
-    name=function(x){
+    name = function(x){
       
-      profile_title = helpers.from.json.to.list(private$profile_)$title
+      profile_title <- helpers.from.json.to.list(private$profile_)$title
       
-      private$jsonschema_title = stringr::str_replace_all(profile_title," ","-")
+      private$jsonschema_title <- stringr::str_replace_all(profile_title," ","-")
       
       if (is.null(private$jsonschema_title)) return (NULL)
       
-      private$jsonschema_title = tolower(private$jsonschema_title)
-      if (!missing(x)) private$jsonschema_title = x
+      private$jsonschema_title <- tolower(private$jsonschema_title)
+      if (!missing(x)) private$jsonschema_title <- x
       return (private$jsonschema_title)
       
-      # profile_title = jsonlite::fromJSON(private$profile_)$title
-      # private$jsonschema_title = stringr::str_replace_all(profile_title," ","-")
+      # profile_title <- jsonlite::fromJSON(private$profile_)$title
+      # private$jsonschema_title <- stringr::str_replace_all(profile_title," ","-")
       # if (is.null(private$jsonschema_title)) return (NULL)
       # return (tolower(private$jsonschema_title))
     },
     
-    jsonschema=function(x){
-      #private$jsonschema_ = jsonlite::fromJSON(private$jsonschema_)
-      # if(is.character(private$jsonschema_) && jsonlite::validate(private$jsonschema_))private$jsonschema_ = helpers.from.json.to.list(private$profile_)
-      # private$jsonschema_ = jsonlite::toJSON(jsonlite::fromJSON(private$profile_))
-      if (!missing(x)) private$jsonschema_ = x
+    jsonschema = function(x){
+      #private$jsonschema_ <- jsonlite::fromJSON(private$jsonschema_)
+      # if(is.character(private$jsonschema_) && jsonlite::validate(private$jsonschema_))private$jsonschema_ <- helpers.from.json.to.list(private$profile_)
+      # private$jsonschema_ <- jsonlite::toJSON(jsonlite::fromJSON(private$profile_))
+      if (!missing(x)) private$jsonschema_ <- x
       return(private$jsonschema_)
     }
     
@@ -136,10 +136,10 @@ Profile <- R6::R6Class(
   
   private = list(
     
-    profile_=NULL,
-    jsonschema_=NULL,
+    profile_ = NULL,
+    jsonschema_ = NULL,
     jsonschema_title = NULL,
-    validation_=list(valid=TRUE,errors=list()),
+    validation_ = list(valid = TRUE,errors = list()),
     message.error_ = NULL
     
   ))
@@ -156,29 +156,29 @@ Profile <- R6::R6Class(
 #' @export
 #' 
 
-Profile.load = function (profile) {
+Profile.load <- function (profile) {
   
   # Remote
   
   if (is.character(profile) && isRemotePath(profile) ) {
     
-    jsonschema = profile
+    jsonschema <- profile
     
     if (is.null(jsonschema)) {
       
       tryCatch( {
-        response = httr::GET(profile)
+        response <- httr::GET(profile)
         
-        jsonschema = httr::content(response, as = 'text')
+        jsonschema <- httr::content(response, as = 'text')
       },
       
-      error= function(e) {
+      error = function(e) {
         DataPackageError$new(stringr::str_interp("Can not retrieve remote profile '${profile}'"))$message
       })
       
-      #cache_[profile] = jsonschema
-      profile = jsonschema
-    } else profile = urltools::host_extract(urltools::domain(basename(profile)))$host
+      #cache_[profile] <- jsonschema
+      profile <- jsonschema
+    } else profile <- urltools::host_extract(urltools::domain(basename(profile)))$host
   }
   return (Profile$new(profile))
   
