@@ -43,7 +43,8 @@ test_that('stores errors for invalid datapackage', {
 
 test_that('loads relative resource', {
   
-  descriptor <- 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/inst/extdata/dp1/datapackage.json'
+  descriptor <- 
+    'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/inst/extdata/dp1/datapackage.json'
   dataPackage <- Package.load(descriptor)
   dataPackage$resources[[1]]$descriptor$profile <- 'tabular-data-resource'
   data <- dataPackage$resources[[1]]$table$read()
@@ -54,7 +55,8 @@ test_that('loads relative resource', {
 
 test_that('loads resource from absolute URL',  {
   
-  descriptor <- 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/023915677aa3cdac717b4f6d4fb441961841b228/inst/extdata/dp1/datapackage.json'
+  descriptor <- 
+    'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/023915677aa3cdac717b4f6d4fb441961841b228/inst/extdata/dp1/datapackage.json'
   dataPackage <- Package.load(descriptor)
   dataPackage$resources[[1]]$descriptor$profile <- 'tabular-data-resource'
   table <- dataPackage$resources[[1]]$table
@@ -65,7 +67,8 @@ test_that('loads resource from absolute URL',  {
 
 test_that('loads resource from absolute URL disregarding basePath', {
   
-  descriptor <- 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/023915677aa3cdac717b4f6d4fb441961841b228/inst/extdata/dp1/datapackage.json'
+  descriptor <- 
+    'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/023915677aa3cdac717b4f6d4fb441961841b228/inst/extdata/dp1/datapackage.json'
   dataPackage <- Package.load(descriptor)
   dataPackage$resources[[1]]$descriptor$profile <- 'tabular-data-resource'
   table <- dataPackage$resources[[1]]$table
@@ -77,7 +80,8 @@ test_that('loads resource from absolute URL disregarding basePath', {
 
 test_that('loads remote resource with basePath',  {
   
-  descriptor <- 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/023915677aa3cdac717b4f6d4fb441961841b228/inst/extdata/dp1/datapackage.json'
+  descriptor <- 
+    'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/023915677aa3cdac717b4f6d4fb441961841b228/inst/extdata/dp1/datapackage.json'
   dataPackage <- Package.load(descriptor, basePath = 'inst/extdata/dp1')
   dataPackage$resources[[1]]$descriptor$profile <- 'tabular-data-resource'
   table <- dataPackage$resources[[1]]$table

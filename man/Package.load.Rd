@@ -20,38 +20,31 @@ Constructor to instantiate \code{Package} class.
 \examples{
 
 # Load local descriptor
-descriptor = system.file('extdata/dp1/datapackage.json', 
+descriptor <- system.file('extdata/dp1/datapackage.json', 
                          package = "datapackage.r")
-dataPackage = Package.load(descriptor)
+dataPackage <- Package.load(descriptor)
 dataPackage$descriptor
 
-# Load resource from absolute URL
-descriptor2 = 'https://dev.keitaro.info/dpkjs/datapackage.json'
-dataPackage2 = Package.load(descriptor2)
-dataPackage2$resources[[1]]$descriptor$profile = 'tabular-data-resource'
-table2 = dataPackage2$resources[[1]]$table
-data2 = table2$read()
-data2
 
 # Retrieve Package Descriptor
-descriptor3 = '{"resources": [{"name": "name", "data": ["data"]}]}'
-dataPackage3 = Package.load(descriptor3)
-dataPackage3$descriptor
+descriptor2 <- '{"resources": [{"name": "name", "data": ["data"]}]}'
+dataPackage2 <- Package.load(descriptor2)
+dataPackage2$descriptor
 
 # Expand Resource Descriptor
-descriptor4 = helpers.from.json.to.list('{"resources": 
+descriptor3 <- helpers.from.json.to.list('{"resources": 
                                          [{
                                           "name": "name",
                                           "data": ["data"]
                                           }]
                                         }')
 
-dataPackage4 = Package.load(descriptor4)
-dataPackage4$descriptor
+dataPackage3 <- Package.load(descriptor3)
+dataPackage3$descriptor
 
 
 # Expand Tabular Resource Schema
-descriptor5 = helpers.from.json.to.list('{
+descriptor4 <- helpers.from.json.to.list('{
                                       "resources": [{
                                         "name": "name",
                                         "data": ["data"],
@@ -64,12 +57,12 @@ descriptor5 = helpers.from.json.to.list('{
                                       }]
                                       }')
 
-dataPackage5 = Package.load(descriptor5)
-dataPackage5$descriptor
+dataPackage4 <- Package.load(descriptor4)
+dataPackage4$descriptor
 
 
 # Expand Tabular Resource Dialect
-descriptor6 = helpers.from.json.to.list('{
+descriptor5 <- helpers.from.json.to.list('{
                                          "resources": [{
                                            "name": "name",
                                            "data": ["data"],
@@ -80,37 +73,37 @@ descriptor6 = helpers.from.json.to.list('{
                                            }]
                                          }')
 
-dataPackage6 = Package.load(descriptor6)
-dataPackage6$descriptor
+dataPackage5 <- Package.load(descriptor5)
+dataPackage5$descriptor
 
 
 # Add, Get and Remove Package Resources
-descriptor7 = helpers.from.json.to.list(
+descriptor6 <- helpers.from.json.to.list(
        system.file('extdata/dp1/datapackage.json', 
                      package = "datapackage.r"))
-dataPackage7 = Package.load(descriptor7)
-resource7 = dataPackage7$addResource(
+dataPackage6 <- Package.load(descriptor6)
+resource6 <- dataPackage6$addResource(
         helpers.from.json.to.list('{"name": "name", "data": ["test"]}'))
-dataPackage7$resources[[2]]$source
+dataPackage6$resources[[2]]$source
 # Get resource
-dataPackage7$getResource('name')
+dataPackage6$getResource('name')
 # Remove resource
-dataPackage7$removeResource('name')
-dataPackage7$getResource('name')
+dataPackage6$removeResource('name')
+dataPackage6$getResource('name')
 
 
 
 # Modify and Commit Data Package
-descriptor8 = helpers.from.json.to.list(
+descriptor7 <- helpers.from.json.to.list(
         '{"resources": [{"name": "name", "data": ["data"]}]}')
-dataPackage8 = Package.load(descriptor8)
-dataPackage8$descriptor$resources[[1]]$name = 'modified'
+dataPackage7 <- Package.load(descriptor7)
+dataPackage7$descriptor$resources[[1]]$name <- 'modified'
 ## Name did not modified.
-dataPackage8$resources[[1]]$name
+dataPackage7$resources[[1]]$name
 ## Should commit the changes
-dataPackage8$commit() # TRUE - successful commit 
+dataPackage7$commit() # TRUE - successful commit 
 
-dataPackage8$resources[[1]]$name
+dataPackage7$resources[[1]]$name
 
 }
 \seealso{

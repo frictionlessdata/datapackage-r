@@ -132,19 +132,19 @@ Package <- R6::R6Class(
             message(
               'Resource property "url: <url>" is deprecated.
               Please use "path: <url>" instead.')
-            descriptor$resources[[i]]$path = descriptor$resources[[i]]$url
+            descriptor$resources[[i]]$path <- descriptor$resources[[i]]$url
             rlist::list.remove(descriptor$resources[[i]], "url")
           }
         }
       }
       
-      private$currentDescriptor_ = descriptor
-      private$nextDescriptor_ = descriptor
-      private$basePath_ = basePath
-      private$profile_ = profile
-      private$strict_ = strict
-      private$resources_ = list()
-      private$errors_ = list()
+      private$currentDescriptor_ <- descriptor
+      private$nextDescriptor_ <- descriptor
+      private$basePath_ <- basePath
+      private$profile_ <- profile
+      private$strict_ <- strict
+      private$resources_ <- list()
+      private$errors_ <- list()
       
       
       # Build instance
@@ -153,25 +153,25 @@ Package <- R6::R6Class(
       
     },
     addResource = function(descriptor) {
-      if (is.null(private$currentDescriptor_$resources)) private$currentDescriptor_$resources = list()
-      private$currentDescriptor_$resources = rlist::list.append(private$currentDescriptor_$resources, descriptor)
+      if (is.null(private$currentDescriptor_$resources)) private$currentDescriptor_$resources <- list()
+      private$currentDescriptor_$resources <- rlist::list.append(private$currentDescriptor_$resources, descriptor)
       
       private$build_()
       return(private$resources_[[length(private$resources_)]])
     },
     
     getResource = function(name) {
-      resources = Filter(function(x) x$name == name, private$resources_)
+      resources <- Filter(function(x) x$name == name, private$resources_)
       if (length(resources) > 0) return(resources[[1]])
       else return(NULL)
       
     },
     
     removeResource = function(name) {
-      resource = self$getResource(name)
+      resource <- self$getResource(name)
       if (!is.null(resource)) {
-        predicat = function(resource) { return(resource$name != name) }
-        private$currentDescriptor_$resources = Filter(predicat, private$currentDescriptor_$resources)
+        predicat <- function(resource) { return(resource$name != name) }
+        private$currentDescriptor_$resources <- Filter(predicat, private$currentDescriptor_$resources)
         
         private$build_()
       }
@@ -190,7 +190,7 @@ Package <- R6::R6Class(
         
         # Add resources
         
-        files = findFiles(pattern, private$basePath_)
+        files <- findFiles(pattern, private$basePath_)
         for (file in files) {
           self$addResource(list(path = file))
         }
@@ -199,8 +199,8 @@ Package <- R6::R6Class(
       # Resources
       if (length(private$resources_) > 0) {
         for (index in 1:length(private$resources_)) {
-          descriptor = private$resources_[[index]]$infer()
-          private$currentDescriptor_$resources[[index]] = descriptor
+          descriptor <- private$resources_[[index]]$infer()
+          private$currentDescriptor_$resources[[index]] <- descriptor
           private$build_()
         }
       }
@@ -210,7 +210,7 @@ Package <- R6::R6Class(
       if (isTRUE(private$nextDescriptor_$profile == config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r")))) {
         if (length(private$resources_) >= 1 && rlist::list.all(private$resources_, r ~ isTRUE(r$tabular))) {
           
-          private$currentDescriptor_$profile = 'tabular-data-package'
+          private$currentDescriptor_$profile <- 'tabular-data-package'
           private$build_()
         }
       }
@@ -223,10 +223,10 @@ Package <- R6::R6Class(
     commit = function(strict = NULL) {
       
       if (is.logical(strict))
-        private$strict_ = strict
+        private$strict_ <- strict
       else if (identical(private$currentDescriptor_, private$nextDescriptor_))
         return(FALSE)
-      private$currentDescriptor_ = private$nextDescriptor_
+      private$currentDescriptor_ <- private$nextDescriptor_
       
       private$build_()
       return(TRUE)
@@ -239,7 +239,7 @@ Package <- R6::R6Class(
       # write.csv(private$currentDescriptor_, file=stringr::str_c(target, "package.txt",sep = "/"))
       # }ifelse(!dir.exists("Data"), dir.create("Data"), "Folder exists already")
       if (!dir.exists(target) & target != ".") {
-        create_folder = menu(c("Yes", "No"), title=
+        create_folder <- menu(c("Yes", "No"), title=
                                stringr::str_interp('Folder "${target}" does not exist in current directory: "${getwd()}".\n Do you want to create a new folder?'))
         
         ifelse(create_folder == 1, dir.create(target), return("Package descriptor wasn't saved."))
@@ -247,7 +247,7 @@ Package <- R6::R6Class(
       }
       write.json(private$currentDescriptor_,
                  file = stringr::str_c(target, "package.json", sep = "/"))
-      save = if (isTRUE(target == ".")) stringr::str_interp('Package saved at: "${getwd()}"') else 
+      save <- if (isTRUE(target == ".")) stringr::str_interp('Package saved at: "${getwd()}"') else 
         stringr::str_interp('Package saved at: "${target}"')
       return(save)
       
@@ -263,7 +263,7 @@ Package <- R6::R6Class(
   
   active = list(
     descriptor = function(x) {
-      if (!missing(x)) private$nextDescriptor_ = x
+      if (!missing(x)) private$nextDescriptor_ <- x
       return(private$nextDescriptor_)
     },
     
@@ -273,12 +273,12 @@ Package <- R6::R6Class(
     
     profile = function() {
       if (is.null(private$profile_))
-        private$profile_ = private$currentDescriptor_$resources$profile
+        private$profile_ <- private$currentDescriptor_$resources$profile
       return(private$profile_)
       
       # if (is.json(private$currentDescriptor_)|is.character(private$currentDescriptor_)) {
-      #   private$profile_ = jsonlite::fromJSON(private$currentDescriptor_)$profile
-      #   if (is.null(private$profile_)) private$profile_ = jsonlite::fromJSON(private$currentDescriptor_)$resources$profile
+      #   private$profile_ <- jsonlite::fromJSON(private$currentDescriptor_)$profile
+      #   if (is.null(private$profile_)) private$profile_ <- jsonlite::fromJSON(private$currentDescriptor_)$resources$profile
       # }
       # return (private$profile_)
     },
@@ -291,11 +291,11 @@ Package <- R6::R6Class(
     },
     
     errors = function() {
-      errors = private$errors_
+      errors <- private$errors_
       if (length(private$resources_) > 0) {
         for (index in 1:length(private$resources_)) {
           if (!isTRUE(private$resources_[[index]]$valid)) {
-            errors = append(
+            errors <- append(
               errors,
               DataPackageError$new(
                 'Resource "${private$resources_[[index]]$name || index}" validation error(s)'
@@ -312,7 +312,7 @@ Package <- R6::R6Class(
         return(private$resources_)
       }
       else {
-        private$resources_ = value
+        private$resources_ <- value
         return(private$resources_)
       }
       
@@ -336,21 +336,21 @@ Package <- R6::R6Class(
     resources_length = NULL,
     build_ = function() {
       
-      private$currentDescriptor_ = expandPackageDescriptor(private$currentDescriptor_)
-      private$nextDescriptor_ = private$currentDescriptor_
+      private$currentDescriptor_ <- expandPackageDescriptor(private$currentDescriptor_)
+      private$nextDescriptor_ <- private$currentDescriptor_
       
       
       # Validate descriptor
       
-      private$errors_ = list()
-      valid_errors = private$profile_$validate(private$currentDescriptor_)
+      private$errors_ <- list()
+      valid_errors <- private$profile_$validate(private$currentDescriptor_)
       
       
       if (!isTRUE(valid_errors$valid)) {
-        private$errors_ = valid_errors$errors
+        private$errors_ <- valid_errors$errors
         
         if (isTRUE(private$strict_)) {
-          message = stringr::str_interp(
+          message <- stringr::str_interp(
             "There are ${length(valid_errors$errors)} validation errors: ${paste(private$errors_, collapse = ', ')}"
           )
           stop(message)
@@ -367,14 +367,14 @@ Package <- R6::R6Class(
       
       if ( length(private$resources_) > 0) {
         for (index in 1: length(private$resources_)) {
-          descriptor = private$currentDescriptor_$resources[[index]]
+          descriptor <- private$currentDescriptor_$resources[[index]]
           
           if (index > length(private$resources_) ||
               !identical(private$resources_[[index]], descriptor) ||
               (!is.null(private$resources_[[index]]$schema) &&
                length(private$resources_[[index]]$schema$foreignKeys >= 1)) ) {
             
-            private$resources_[[index]] = Resource$new(
+            private$resources_[[index]] <- Resource$new(
               descriptor,
               strict = private$strict_,
               basePath = private$basePath_,
@@ -407,38 +407,31 @@ Package <- R6::R6Class(
 #' @examples
 #' 
 #' # Load local descriptor
-#' descriptor = system.file('extdata/dp1/datapackage.json', 
+#' descriptor <- system.file('extdata/dp1/datapackage.json', 
 #'                          package = "datapackage.r")
-#' dataPackage = Package.load(descriptor)
+#' dataPackage <- Package.load(descriptor)
 #' dataPackage$descriptor
 #' 
-#' # Load resource from absolute URL
-#' descriptor2 = 'https://dev.keitaro.info/dpkjs/datapackage.json'
-#' dataPackage2 = Package.load(descriptor2)
-#' dataPackage2$resources[[1]]$descriptor$profile = 'tabular-data-resource'
-#' table2 = dataPackage2$resources[[1]]$table
-#' data2 = table2$read()
-#' data2
 #' 
 #' # Retrieve Package Descriptor
-#' descriptor3 = '{"resources": [{"name": "name", "data": ["data"]}]}'
-#' dataPackage3 = Package.load(descriptor3)
-#' dataPackage3$descriptor
+#' descriptor2 <- '{"resources": [{"name": "name", "data": ["data"]}]}'
+#' dataPackage2 <- Package.load(descriptor2)
+#' dataPackage2$descriptor
 #' 
 #' # Expand Resource Descriptor
-#' descriptor4 = helpers.from.json.to.list('{"resources": 
+#' descriptor3 <- helpers.from.json.to.list('{"resources": 
 #'                                          [{
 #'                                           "name": "name",
 #'                                           "data": ["data"]
 #'                                           }]
 #'                                         }')
 #' 
-#' dataPackage4 = Package.load(descriptor4)
-#' dataPackage4$descriptor
+#' dataPackage3 <- Package.load(descriptor3)
+#' dataPackage3$descriptor
 #' 
 #' 
 #' # Expand Tabular Resource Schema
-#' descriptor5 = helpers.from.json.to.list('{
+#' descriptor4 <- helpers.from.json.to.list('{
 #'                                       "resources": [{
 #'                                         "name": "name",
 #'                                         "data": ["data"],
@@ -451,12 +444,12 @@ Package <- R6::R6Class(
 #'                                       }]
 #'                                       }')
 #' 
-#' dataPackage5 = Package.load(descriptor5)
-#' dataPackage5$descriptor
+#' dataPackage4 <- Package.load(descriptor4)
+#' dataPackage4$descriptor
 #' 
 #' 
 #' # Expand Tabular Resource Dialect
-#' descriptor6 = helpers.from.json.to.list('{
+#' descriptor5 <- helpers.from.json.to.list('{
 #'                                          "resources": [{
 #'                                            "name": "name",
 #'                                            "data": ["data"],
@@ -467,63 +460,63 @@ Package <- R6::R6Class(
 #'                                            }]
 #'                                          }')
 #' 
-#' dataPackage6 = Package.load(descriptor6)
-#' dataPackage6$descriptor
+#' dataPackage5 <- Package.load(descriptor5)
+#' dataPackage5$descriptor
 #' 
 #' 
 #' # Add, Get and Remove Package Resources
-#' descriptor7 = helpers.from.json.to.list(
+#' descriptor6 <- helpers.from.json.to.list(
 #'        system.file('extdata/dp1/datapackage.json', 
 #'                      package = "datapackage.r"))
-#' dataPackage7 = Package.load(descriptor7)
-#' resource7 = dataPackage7$addResource(
+#' dataPackage6 <- Package.load(descriptor6)
+#' resource6 <- dataPackage6$addResource(
 #'         helpers.from.json.to.list('{"name": "name", "data": ["test"]}'))
-#' dataPackage7$resources[[2]]$source
+#' dataPackage6$resources[[2]]$source
 #' # Get resource
-#' dataPackage7$getResource('name')
+#' dataPackage6$getResource('name')
 #' # Remove resource
-#' dataPackage7$removeResource('name')
-#' dataPackage7$getResource('name')
+#' dataPackage6$removeResource('name')
+#' dataPackage6$getResource('name')
 #' 
 #' 
 #' 
 #' # Modify and Commit Data Package
-#' descriptor8 = helpers.from.json.to.list(
+#' descriptor7 <- helpers.from.json.to.list(
 #'         '{"resources": [{"name": "name", "data": ["data"]}]}')
-#' dataPackage8 = Package.load(descriptor8)
-#' dataPackage8$descriptor$resources[[1]]$name = 'modified'
+#' dataPackage7 <- Package.load(descriptor7)
+#' dataPackage7$descriptor$resources[[1]]$name <- 'modified'
 #' ## Name did not modified.
-#' dataPackage8$resources[[1]]$name
+#' dataPackage7$resources[[1]]$name
 #' ## Should commit the changes
-#' dataPackage8$commit() # TRUE - successful commit 
+#' dataPackage7$commit() # TRUE - successful commit 
 #' 
-#' dataPackage8$resources[[1]]$name
+#' dataPackage7$resources[[1]]$name
 #' 
 
-Package.load = function(descriptor = list(),
+Package.load <- function(descriptor = list(),
                         basePath = NA,
                         strict = FALSE) {
   
   
   # Get base path
   if (is.na(basePath)) {
-    basePath = locateDescriptor(descriptor)
+    basePath <- locateDescriptor(descriptor)
   }
   
   
   # Process descriptor
-  descriptor = retrieveDescriptor(descriptor)
+  descriptor <- retrieveDescriptor(descriptor)
   
-  descriptor = dereferencePackageDescriptor(descriptor, basePath)
+  descriptor <- dereferencePackageDescriptor(descriptor, basePath)
   # Get profile
   
-  profile.to.load = if (is.null(descriptor$profile)) {
+  profile.to.load <- if (is.null(descriptor$profile)) {
     config::get("DEFAULT_DATA_PACKAGE_PROFILE", file = system.file("config/config.yaml", package = "datapackage.r"))
   } else {
     descriptor$profile
   }
   
-  profile = Profile.load(profile.to.load)
+  profile <- Profile.load(profile.to.load)
   
   return(Package$new(descriptor, basePath, strict = strict, profile = profile))
   
