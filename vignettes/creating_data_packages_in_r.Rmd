@@ -9,13 +9,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This tutorial will show you how to install the R library for working with Data Packages and Table Schema, load a CSV file, infer its schema, and write a Tabular Data Package.
+This tutorial will show you how to install the R package for working with Data Packages and Table Schema, load a CSV file, infer its schema, and write a Tabular Data Package.
 
 # Setup
 
-For this tutorial, we will need the Data Package R library ([datapackage.r](https://github.com/frictionlessdata/datapackage-r)).
+For this tutorial, we will need the Data Package R package ([datapackage.r](https://github.com/frictionlessdata/datapackage-r)).
 
-[devtools library](https://cran.r-project.org/package=devtools) is required to install the datapackage.r library from github.
+[devtools package](https://cran.r-project.org/package=devtools) is required to install the datapackage.r package from github.
 
 ```{r, eval=FALSE, include=TRUE}
 # Install devtools package if not already
@@ -32,7 +32,7 @@ devtools::install_github("frictionlessdata/datapackage.r")
 
 # Load
 
-You can start using the library by loading `datapackage.r`.
+You can start using the package by loading `datapackage.r`.
 
 ```{r, eval=TRUE, include=TRUE}
 library(datapackage.r)
@@ -58,7 +58,7 @@ pt_data <- read.csv2(url, sep = ',')
 knitr::kable(head(pt_data, 10), align = 'c')
 ```
 
-We can guess at our CSV's [schema](https://frictionlessdata.io/guides/table-schema/) by using `infer` from the Table Schema library. We pass directly the remote link to the infer function, the result of which is an inferred schema. For example, if the processor detects only integers in a given column, it will assign `integer` as a column type.
+We can guess at our CSV's [schema](https://frictionlessdata.io/guides/table-schema/) by using `infer` from the Table Schema package. We pass directly the remote link to the infer function, the result of which is an inferred schema. For example, if the processor detects only integers in a given column, it will assign `integer` as a column type.
 
 ```{r, eval=TRUE, include=TRUE}
 filepath <- 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/data.csv'

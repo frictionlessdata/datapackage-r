@@ -22,7 +22,7 @@ version](https://img.shields.io/badge/R%3E%3D-3.1-6666ff.svg)](https://cran.r-pr
 
 # Description
 
-R library for working with [Data
+R package for working with [Frictionless Data
 Package](http://frictionlessdata.io/specs/data-package).
 
 ## Features
@@ -40,7 +40,7 @@ Package](http://frictionlessdata.io/specs/data-package).
 In order to install the latest distribution of [R
 software](https://www.r-project.org/) to your computer you have to
 select one of the mirror sites of the [Comprehensive R Archive
-Network](https://cloud.r-project.org/), select the appropriate link for
+Network](https://cran.r-project.org//), select the appropriate link for
 your operating system and follow the wizard instructions.
 
 For windows users you can:
@@ -69,9 +69,9 @@ with Open Source License and follow the wizard instructions:
 4.  Select the appropriate file for your system
 5.  Run installation file
 
-To install the `datapackage` library it is necessary to install first
-[devtools library](https://cran.r-project.org/package=devtools) to make
-installation of github libraries available.
+To install the `datapackage` package it is necessary to install first
+[devtools package](https://cran.r-project.org/package=devtools) to make
+installation of github packages available.
 
 ``` r
 # Install devtools package if not already
@@ -85,10 +85,10 @@ Install `datapackage.r`
 devtools::install_github("frictionlessdata/datapackage-r")
 ```
 
-## Load library
+## Load package
 
 ``` r
-# load the library using
+# load the package using
 library(datapackage.r)
 ```
 
@@ -100,7 +100,7 @@ even more
 in vignettes directory.
 
 ``` r
-descriptor = '{
+descriptor <- '{
   "resources": [
     {
       "name": "example",
@@ -121,7 +121,7 @@ descriptor = '{
   ]
 }'
 
-dataPackage = Package.load(descriptor)
+dataPackage <- Package.load(descriptor)
 dataPackage
 ```
 
@@ -142,7 +142,7 @@ dataPackage
     ##     save: function (target, type = "json") 
     ##     valid: active binding
     ##   Private:
-    ##     basePath_: C:/Users/akis_/Documents/R_packages/frictionlessdata/dat ...
+    ##     basePath_: C:/Users/akis/Desktop/datapackage-r
     ##     build_: function () 
     ##     currentDescriptor_: list
     ##     currentDescriptor_json: NULL
@@ -156,7 +156,7 @@ dataPackage
     ##     strict_: FALSE
 
 ``` r
-resource = dataPackage$getResource('example')
+resource <- dataPackage$getResource('example')
 # convert to json and add indentation with jsonlite prettify function
 jsonlite::prettify(helpers.from.list.to.json(resource$read()))
 ```
@@ -217,7 +217,7 @@ rome,2017,2860000
 First we create a blank data package:
 
 ``` r
-dataPackage = Package.load()
+dataPackage <- Package.load()
 ```
 
 Now we’re ready to infer a data package descriptor based on data files
@@ -358,7 +358,7 @@ useful metadata like profile, encoding, format, Table Schema etc. Let’s
 tweak it a little bit:
 
 ``` r
-dataPackage$descriptor$resources[[2]]$schema$fields[[2]]$type = 'year'
+dataPackage$descriptor$resources[[2]]$schema$fields[[2]]$type <- 'year'
 dataPackage$commit()
 ```
 
@@ -406,7 +406,7 @@ To continue the work with the data package we just load it again but
 this time using local `datapackage.json`:
 
 ``` r
-dataPackage = Package.load('datapackage.json')
+dataPackage <- Package.load('datapackage.json')
 # Continue the work
 ```
 
@@ -504,7 +504,7 @@ descriptor.
 <!-- end list -->
 
 ``` r
-dataPackage = Package.load('{ 
+dataPackage <- Package.load('{ 
  "name": "package",
  "resources": [{
   "name": "resource",
@@ -518,7 +518,7 @@ dataPackage$descriptor$name # package
     ## [1] "package"
 
 ``` r
-dataPackage$descriptor$name = 'renamed-package'
+dataPackage$descriptor$name <- 'renamed-package'
 dataPackage$commit() # TRUE
 ```
 
@@ -563,7 +563,7 @@ instantiate a resource. Because resource is tabular we could use
 rows:
 
 ``` r
-resource = Resource.load('{"path": "cities.csv"}')
+resource <- Resource.load('{"path": "cities.csv"}')
 resource$tabular
 ```
 
@@ -665,7 +665,7 @@ changed in-place but all changes should be commited by
 `resource$commit()`:
 
 ``` r
-resource$descriptor$schema$missingValues = 'N/A'
+resource$descriptor$schema$missingValues <- 'N/A'
 resource$commit()
 ```
 
@@ -690,7 +690,7 @@ validity. And it’s not valid\! We should use an array for
 missing value:
 
 ``` r
-resource$descriptor$schema[['missingValues']] = list('', 'N/A')
+resource$descriptor$schema[['missingValues']] <- list('', 'N/A')
 resource$commit()
 ```
 
@@ -769,7 +769,7 @@ If we decide to improve it even more we could update the
 `dataresource.json` file and then open it again using local file name:
 
 ``` r
-resource = Resource.load('dataresource.json')
+resource <- Resource.load('dataresource.json')
 # Continue the work
 ```
 
@@ -949,7 +949,7 @@ A component to represent JSON Schema profile from [Profiles
 Registry](https://specs.frictionlessdata.io/schemas/registry.json):
 
 ``` r
-profile = Profile.load('data-package')
+profile <- Profile.load('data-package')
 profile$name # data-package
 ```
 
@@ -960,8 +960,8 @@ profile$jsonschema # List of JSON Schema contents
 ```
 
 ``` r
-valid_errors = profile$validate(descriptor)
-valid = valid_errors$valid # TRUE if valid descriptor
+valid_errors <- profile$validate(descriptor)
+valid <- valid_errors$valid # TRUE if valid descriptor
 valid
 ```
 
@@ -996,7 +996,7 @@ Validate a data package `descriptor` against the Profile$
 A standalone function to validate a data package descriptor:
 
 ``` r
-valid_errors = validate('{"name": "Invalid Datapackage"}')
+valid_errors <- validate('{"name": "Invalid Datapackage"}')
 ```
 
 #### `validate(descriptor)`
@@ -1012,7 +1012,7 @@ A standalone function to validate a data package descriptor:
 A standalone function to infer a data package descriptor.
 
 ``` r
-descriptor = infer("csv",basePath = '.')
+descriptor <- infer("csv",basePath = '.')
 jsonlite::toJSON(descriptor, pretty = TRUE)
 ```
 
@@ -1086,7 +1086,7 @@ Infer a data package descriptor.
 
 ### Foreign Keys
 
-The library supports foreign keys described in the [Table
+The package supports foreign keys described in the [Table
 Schema](http://specs.frictionlessdata.io/table-schema/#foreign-keys)
 specification. It means if your data package descriptor use
 `resources[]$schema$foreignKeys` property for some resources a data
@@ -1095,7 +1095,7 @@ integrity will be checked on reading operations.
 Consider we have a data package:
 
 ``` r
-DESCRIPTOR = '{
+DESCRIPTOR <- '{
   "resources": [
     {
       "name": "teams",
@@ -1133,8 +1133,8 @@ DESCRIPTOR = '{
 Let’s check relations for a `teams` resource:
 
 ``` r
-package = Package.load(DESCRIPTOR)
-teams = package$getResource('teams')
+package <- Package.load(DESCRIPTOR)
+teams <- package$getResource('teams')
 ```
 
 ``` r
@@ -1153,14 +1153,14 @@ from there. We need to fix it in `cities`
 resource:
 
 ``` r
-package$descriptor$resources[[2]]$data = rlist::list.append(package$descriptor$resources[[2]]$data, list('Munich', 'Germany'))
+package$descriptor$resources[[2]]$data <- rlist::list.append(package$descriptor$resources[[2]]$data, list('Munich', 'Germany'))
 package$commit()
 ```
 
     ## [1] TRUE
 
 ``` r
-teams = package$getResource('teams')
+teams <- package$getResource('teams')
 teams$checkRelations()
 ```
 
@@ -1206,7 +1206,7 @@ only if `relations = TRUE` flag is passed.
 
 #### `errors$DataPackageError`
 
-Base class for the all library errors. If there are more than one error
+Base class for the all package errors. If there are more than one error
 you could get an additional information from the error object:
 
 ``` r
@@ -1236,7 +1236,7 @@ history.
 The project follows the [Open Knowledge International coding
 standards](https://github.com/okfn/coding-standards). There are common
 commands to work with the project.Recommended way to get started is to
-create, activate and load the library environment. To install package
+create, activate and load the package environment. To install package
 and development dependencies into active
 environment:
 
@@ -1259,11 +1259,8 @@ devtools::test()
 ```
 
 more detailed information about how to create and run tests you can find
-in [testthat
-package](https://github.com/hadley/testthat)
+in [testthat package](https://github.com/hadley/testthat)
 
 # Github
 
   - <https://github.com/frictionlessdata/datapackage-r>
-
-<img src="okgr.png" align="right" width=120px /><img src="oklabs.png" align="right" width=120px />
