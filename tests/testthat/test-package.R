@@ -556,7 +556,7 @@ test_that("general", {
   dataPackage$save(temp.dir)
   
   expect_true(file.exists(
-    stringr::str_c(tempdir(), "package.json", sep = "\\")))
+    stringr::str_c(temp.dir, "package.json", sep = "/")))
 })
 
 ###################################################

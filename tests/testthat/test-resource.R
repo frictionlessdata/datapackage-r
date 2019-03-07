@@ -665,5 +665,5 @@ test_that("general", {
   temp.dir <- tempdir()
   dataResource$save(temp.dir)
   expect_true(file.exists(
-    stringr::str_c(tempdir(), "resource.json", sep = "\\")))
+    stringr::str_c(temp.dir, "resource.json", sep = "/")))
 })
