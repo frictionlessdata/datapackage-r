@@ -662,7 +662,8 @@ testthat::context("Package #save")
 test_that("general", {
   descriptor <- '{"resources": [{"name": "name", "data": ["data"]}]}'
   dataResource <- Resource.load(descriptor)
-  dataResource$save("inst/extdata")
-  
-  expect_true(file.exists("inst/extdata/resource.json"))
+  temp.dir <- tempdir()
+  dataResource$save(temp.dir)
+  expect_true(file.exists(
+    stringr::str_c(tempdir(), "resource.json", sep = "\\")))
 })

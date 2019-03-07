@@ -319,7 +319,7 @@ expandResourceDescriptor <- function(descriptor) {
 #' @return TRUE if path is remote
 #' @rdname isRemotePath
 #' @export
-#'
+#' 
 
 isRemotePath <- function(path) {
   if (!is.character(path)) {
@@ -340,7 +340,8 @@ isRemotePath <- function(path) {
 #' @return TRUE if path is safe
 #' @rdname isSafePath
 #' @export
-#'
+#' 
+ 
 
 isSafePath <- function(path) {
   

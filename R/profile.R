@@ -91,12 +91,7 @@ Profile <- R6::R6Class(
         errors <- c(errors, stringr::str_interp(
           'Descriptor validation error:
             ${private$validation_$errors [i, "field"]} - ${private$validation_$errors [i, "message"]}'
-          
-        )
-        )
-        
-        
-        
+        ))
         
       }
       
