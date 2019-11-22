@@ -5,9 +5,6 @@
 \alias{BinaryReadableConnection}
 \title{Binary Readable Connection class}
 \format{\code{\link{R6Class}} object.}
-\usage{
-BinaryReadableConnection
-}
 \value{
 Object of \code{\link{R6Class}}.
 }
@@ -15,3 +12,44 @@ Object of \code{\link{R6Class}}.
 Binary Readable connection class
 }
 \keyword{data}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-new}{\code{BinaryReadableConnection$new()}}
+\item \href{#method-read}{\code{BinaryReadableConnection$read()}}
+\item \href{#method-clone}{\code{BinaryReadableConnection$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\subsection{Method \code{new()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BinaryReadableConnection$new(options = list())}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-read"></a>}}
+\subsection{Method \code{read()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BinaryReadableConnection$read(size = NULL)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BinaryReadableConnection$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}

@@ -116,4 +116,107 @@ in this package documents are to be interpreted as described in \href{https://ww
 \code{\link{Resource.load}}, 
 \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource Specifications}
 }
-\keyword{datasets}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-new}{\code{Resource$new()}}
+\item \href{#method-iter}{\code{Resource$iter()}}
+\item \href{#method-read}{\code{Resource$read()}}
+\item \href{#method-checkRelations}{\code{Resource$checkRelations()}}
+\item \href{#method-rawIter}{\code{Resource$rawIter()}}
+\item \href{#method-rawRead}{\code{Resource$rawRead()}}
+\item \href{#method-infer}{\code{Resource$infer()}}
+\item \href{#method-commit}{\code{Resource$commit()}}
+\item \href{#method-save}{\code{Resource$save()}}
+\item \href{#method-clone}{\code{Resource$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\subsection{Method \code{new()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$new(descriptor, basePath, strict = FALSE, dataPackage = list())}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-iter"></a>}}
+\subsection{Method \code{iter()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$iter(relations = FALSE, options = list())}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-read"></a>}}
+\subsection{Method \code{read()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$read(relations = FALSE, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-checkRelations"></a>}}
+\subsection{Method \code{checkRelations()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$checkRelations()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-rawIter"></a>}}
+\subsection{Method \code{rawIter()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$rawIter(stream = FALSE)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-rawRead"></a>}}
+\subsection{Method \code{rawRead()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$rawRead()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-infer"></a>}}
+\subsection{Method \code{infer()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$infer()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-commit"></a>}}
+\subsection{Method \code{commit()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$commit(strict = NULL)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-save"></a>}}
+\subsection{Method \code{save()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$save(target)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Resource$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}

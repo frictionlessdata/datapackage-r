@@ -122,3 +122,94 @@ in this package documents are to be interpreted as described in \href{https://ww
 \href{https://frictionlessdata.io/specs/data-package/}{Data Package Specifications}
 }
 \keyword{data}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-new}{\code{Package$new()}}
+\item \href{#method-addResource}{\code{Package$addResource()}}
+\item \href{#method-getResource}{\code{Package$getResource()}}
+\item \href{#method-removeResource}{\code{Package$removeResource()}}
+\item \href{#method-infer}{\code{Package$infer()}}
+\item \href{#method-commit}{\code{Package$commit()}}
+\item \href{#method-save}{\code{Package$save()}}
+\item \href{#method-clone}{\code{Package$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\subsection{Method \code{new()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Package$new(
+  descriptor = list(),
+  basePath = NULL,
+  strict = FALSE,
+  profile = NULL
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-addResource"></a>}}
+\subsection{Method \code{addResource()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Package$addResource(descriptor)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getResource"></a>}}
+\subsection{Method \code{getResource()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Package$getResource(name)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-removeResource"></a>}}
+\subsection{Method \code{removeResource()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Package$removeResource(name)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-infer"></a>}}
+\subsection{Method \code{infer()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Package$infer(pattern)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-commit"></a>}}
+\subsection{Method \code{commit()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Package$commit(strict = NULL)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-save"></a>}}
+\subsection{Method \code{save()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Package$save(target, type = "json")}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Package$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}

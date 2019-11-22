@@ -8,9 +8,6 @@
 \usage{
 # Profile.load(profile)
 }
-\arguments{
-\item{profile}{string profile name in registry or URL to JSON Schema}
-}
 \value{
 Object of \code{\link{R6Class}} .
 }
@@ -45,4 +42,51 @@ Validate a tabular data package descriptor against the \code{Profile}.}
 \seealso{
 \href{http://frictionlessdata.io/specs/profiles/}{Profile Specifications}
 }
-\keyword{datasets}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-new}{\code{Profile$new()}}
+\item \href{#method-validate}{\code{Profile$validate()}}
+\item \href{#method-clone}{\code{Profile$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\subsection{Method \code{new()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Profile$new(profile)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{profile}}{string profile name in registry or URL to JSON Schema}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-validate"></a>}}
+\subsection{Method \code{validate()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Profile$validate(descriptor)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Profile$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}

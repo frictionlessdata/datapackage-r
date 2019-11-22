@@ -11,3 +11,5 @@
 ^oklabs\.png$
 ^codecov\.yml$
 ^.github
+^Makefile$
+^LEAD\.md$

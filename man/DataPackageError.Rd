@@ -5,9 +5,6 @@
 \alias{DataPackageError}
 \title{DataPackageError class}
 \format{\code{\link{R6Class}} object.}
-\usage{
-DataPackageError
-}
 \value{
 Object of \code{\link{R6Class}} .
 }
@@ -15,3 +12,44 @@ Object of \code{\link{R6Class}} .
 Error class for Data Package
 }
 \keyword{data}
+\section{Super class}{
+\code{\link[tableschema.r:TableSchemaError]{tableschema.r::TableSchemaError}} -> \code{DataPackageError}
+}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-new}{\code{DataPackageError$new()}}
+\item \href{#method-clone}{\code{DataPackageError$clone()}}
+}
+}
+\if{html}{
+\out{<details open ><summary>Inherited methods</summary>}
+\itemize{
+}
+\out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\subsection{Method \code{new()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataPackageError$new(message, error = NULL)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataPackageError$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}
