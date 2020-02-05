@@ -145,7 +145,10 @@ dereferenceResourceDescriptor <- function(descriptor, basePath, baseDescriptor =
           ))}
       )
       # URI -> Remote
-      # TODO: remote base path also will lead to remote case!
+    } else if (isTRUE(basePath) || isRemotePath(unlist(value))) {
+      
+      value <- paste0(basePath,'/',value)
+      
     } else if (isRemotePath(unlist(value))) {
       tryCatch({
         # response <- httr::GET(value)
@@ -293,25 +296,83 @@ expandResourceDescriptor <- function(descriptor) {
     
     # Dialect
     
-    if (isTRUE(!is.null(descriptor$dialect))) {
-      #descriptor$dialect <- config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))
-      # descriptor$dialect$lineTerminator<-"\r\n"
-      # descriptor$dialect$quoteChar<-"\""
-      # descriptor$dialect$escapeChar<-"\\"
+    # if (isTRUE(!is.null(descriptor$dialect))) {
+    #   #descriptor$dialect <- config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))
+    #   # descriptor$dialect$lineTerminator<-"\r\n"
+    #   # descriptor$dialect$quoteChar<-"\""
+    #   # descriptor$dialect$escapeChar<-"\\"
+    #   
+    #   for (key in which(!names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))) %in% names(descriptor$dialect))) {
+    #     # if (!names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r")))[key] %in% names(descriptor$dialect)) {
+    #     
+    #     descriptor$dialect[[
+    #       paste(names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r")))[key])
+    #       ]] <- config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))[key]
+    #   }
+    #   descriptor$dialect <- lapply(descriptor$dialect, unlist, use.names = FALSE)
+    #   #}
+    # }
+    
+    
+    
+    dialect <- descriptor$dialect
+    if (isTRUE(!is.null(dialect))) {
       
-      for (key in which(!names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))) %in% names(descriptor$dialect))) {
-        # if (!names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r")))[key] %in% names(descriptor$dialect)) {
-        
-        descriptor$dialect[[paste(names(config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r")))[key])]] <- config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))[key]
+        for (key in names(filterDefaultDialect(validateDialect(dialect)))) {
+          
+        if (is.null(dialect[[key]])) {
+          
+          dialect[key] <- filterDefaultDialect(validateDialect(dialect))[key]
+        }
       }
-      descriptor$dialect <- lapply(descriptor$dialect, unlist, use.names = FALSE)
-      #}
     }
+    
+    descriptor$dialect <- dialect
+    
+    
+    
+    
   }
   return(descriptor)
 }
 
 # Miscellaneous
+
+#' Validate dialect
+#' @description Helper function to validate dialect.
+#' quoteChar and escapeChar are mutually exclusive: https://frictionlessdata.io/specs/csv-dialect/#specification
+#' @param dialect list
+#' @return dialect list
+#' @rdname validateDialect
+#' @export
+#' 
+
+validateDialect <- function(dialect = NULL) {
+  
+  if (isTRUE(all(c('quoteChar','escapeChar') %in% names(dialect)))) {
+    stop(DataPackageError$new('Resource$table dialect options quoteChar and escapeChar are mutually exclusive.')$message)
+  } else return(dialect)
+}
+
+
+#' Filter Default Dialect
+#' @description Helper function to filter default dialect
+#' quoteChar and escapeChar are mutually exclusive: https://frictionlessdata.io/specs/csv-dialect/#specification
+#' @param dialect list
+#' @return dialect list
+#' @rdname filterDefaultDialect
+#' @export
+#' 
+filterDefaultDialect <- function(dialect = NULL) {
+  
+  default.dialect <- config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))
+  
+  if ('escapeChar' %in% names(dialect)) {default.dialect <- default.dialect[names(default.dialect) != 'quoteChar']} else default.dialect
+  
+  return(default.dialect)
+}
+
+
 
 #' Is remote path
 #' @description Helper function to identify a remote path.
@@ -341,7 +402,7 @@ isRemotePath <- function(path) {
 #' @rdname isSafePath
 #' @export
 #' 
- 
+
 
 isSafePath <- function(path) {
   
@@ -468,14 +529,14 @@ findFiles <- function(pattern, path = getwd()) {
   # matched_files = files[grep(path, files, fixed = FALSE, ignore.case = FALSE)]
   
   matched_files <- files[grepl(pattern,
-                              files,
-                              fixed = FALSE,
-                              ignore.case = FALSE)]
+                               files,
+                               fixed = FALSE,
+                               ignore.case = FALSE)]
   
   matched_files <- matched_files[grepl(stringr::str_c(".","csv"), 
-                                      matched_files, 
-                                      fixed = TRUE, 
-                                      ignore.case = FALSE)]
+                                       matched_files, 
+                                       fixed = TRUE, 
+                                       ignore.case = FALSE)]
   
   return(matched_files)
 }

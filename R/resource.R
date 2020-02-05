@@ -409,7 +409,7 @@ Resource <- R6Class(
     },
     
     getTable_ = function() {
-      if (!isTRUE(!is.null(private$table_))) {        
+      if (isTRUE(is.null(private$table_))) {        
         # Resource -> Regular
         if (!isTRUE(self$tabular)) {
           return(NULL)
@@ -421,6 +421,34 @@ Resource <- R6Class(
         }
         # Resource -> Tabular
         
+        options <- list()
+        descriptor <- private$currentDescriptor_
+        options$format <- if(!is.null(descriptor$format)) descriptor$format else "csv"
+        options$encoding <- descriptor$encoding
+        dialect <- descriptor$dialect
+        
+        if (!is.empty(dialect)) {
+          
+          if (dialect$header == FALSE || config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))$header == FALSE) {
+            
+            fields_ <- if(!is.null(descriptor$schema)) descriptor$schema else list()
+            fields <- if(!is.null(fields_$fields)) fields_$fields else list()
+            
+            options$headers <- if(length(fields)>0) {
+              purrr::map(fields,names)
+              } else NULL
+          }
+          validateDialect(dialect)
+          
+          for (key in names(DIALECT_KEYS)) {
+            if (!is.null(dialect[key])) {
+              options[tolower(key)] <- dialect[key]
+            }
+          }
+        }
+        
+        
+        
         schemaDescriptor <- private$currentDescriptor_$schema
         
         schema <- if (isTRUE(!is.null(schemaDescriptor))) tableschema.r::Schema.load(helpers.from.list.to.json(schemaDescriptor)) else NULL
@@ -429,7 +457,7 @@ Resource <- R6Class(
           schema <- future::value(schema)
         }
         
-        table_ <- tableschema.r::Table.load( self$source, schema = schema)
+        table_ <- tableschema.r::Table.load(self$source, schema = schema, options = options)
         private$table_ <- future::value(table_)
       }
       
@@ -439,7 +467,7 @@ Resource <- R6Class(
     
     getRelations_ = function() {
       
-      if (isTRUE(private$relations_ == FALSE) || is.null(private$relations_)) {
+      if (!private$relations_) {
         # Prepare resources
         resources <- list()
         if (isTRUE(!is.null(private$getTable_())) && isTRUE(!is.null((private$getTable_()$schema)))) {
