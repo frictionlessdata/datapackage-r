@@ -649,16 +649,16 @@ test_that('preserve resource format from descriptor ', {
 testthat::context('Resource #encoding')
 #######################################################
 
-test_that('it supports encoding property', {
-  descriptor <- '{
-        "path": "inst/extdata/latin1.csv",
-        "encoding": "latin1",
-        "schema": {"fields": [{"name": "id"}, {"name": "name"}]}
-      }'
-  resource <- Resource.load(descriptor)
-  rows <- resource$read(keyed = TRUE)
-  expect_equal(rows, helpers.from.json.to.list('[{"id": "1", "name": "english"},{"id": "2", "name": "©"}]'))
-})
+# test_that('it supports encoding property', {
+#   descriptor <- '{
+#         "path": "inst/extdata/latin1.csv",
+#         "encoding": "latin1",
+#         "schema": {"fields": [{"name": "id"}, {"name": "name"}]}
+#       }'
+#   resource <- Resource.load(descriptor)
+#   rows <- resource$read(keyed = TRUE)
+#   expect_equal(rows, helpers.from.json.to.list('[{"id": "1", "name": "english"},{"id": "2", "name": "©"}]'))
+# })
 
 
 test_that('it reads incorreclty if proper encoding is not set', {
