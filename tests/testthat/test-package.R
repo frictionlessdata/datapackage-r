@@ -410,7 +410,6 @@ test_that('tabular resource dialect', {
                                        				"doubleQuote": true,
                                        				"lineTerminator": "\\r\\n",
                                        				"quoteChar": "\\"",
-                                       				"escapeChar": "\\\\",
                                        				"skipInitialSpace": true,
                                        				"header": true,
                                        				"caseSensitiveHeader": false
@@ -647,8 +646,8 @@ test_that('should read rows if single field foreign keys is valid', {
   expect_equal(rows, list(
     list('1', list(firstname = 'Alex', surname = 'Martin'), 'Martin', NULL),
     list('2', list(firstname = 'John', surname = 'Dockins'), 'Dockins', '1'),
-    list('3', list(firstname = 'Walter', surname = 'White'), 'White', '2')
-  ))
+    list('3', list(firstname = 'Walter', surname = 'White'), 'White', '2'))
+  )
 })
 
 

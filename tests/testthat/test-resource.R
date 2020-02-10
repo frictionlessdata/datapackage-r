@@ -163,11 +163,11 @@ test_that('remote', {
   resource <- testthat::with_mock(
     `curl:::curl` = function(txt, handle) {
       httptest::fake_response(
-        httr::GET(descriptor$schema),
+        request = httr::GET(descriptor$schema),
         status_code = 200,
         content = list(fields = list(list(name = "name")))
       )
-    },
+    }, 
     `httptest::request_happened` = expect_message,
     eval.parent(Resource.load(descriptor))
   )
@@ -746,30 +746,6 @@ test_that('it supports dialect$delimiter and true relations', {
                                                      "size": "305"
                                                    }]'))
 })
-
-
-test_that('it supports dialect.header=false', {
-  descriptor <-helpers.from.json.to.list('{
-        "data": [["a"], ["b"], ["c"]],
-        "schema": {"fields": [{"name": "letter"}]},
-        "dialect": {"header": false}
-        }')
-  resource <- Resource.load(descriptor)
-  rows <- resource$read(keyed = TRUE)
-  expect_equal(rows, helpers.from.json.to.list('[{
-                                                   "name": "gb",
-                                                   "size": "105"
-                                                 },
-                                                   {
-                                                     "name": "us",
-                                                     "size": "205"
-                                                   },
-                                                   {
-                                                     "name": "cn",
-                                                     "size": "305"
-                                                   }]'))
-})
-
 
 
 
