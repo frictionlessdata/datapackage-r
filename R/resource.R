@@ -377,7 +377,7 @@ Resource <- R6Class(
       private$nextDescriptor_ <- private$currentDescriptor_
       # Inspect source
       
-      private$sourceInspection_ <- inspectSource( private$currentDescriptor_$data,
+      private$sourceInspection_ <- inspectSource(private$currentDescriptor_$data,
                                                  as.character(private$currentDescriptor_$path),
                                                  private$basePath_
       )
@@ -427,15 +427,17 @@ Resource <- R6Class(
         options$encoding <- descriptor$encoding
         dialect <- descriptor$dialect
         
-        if (!is.empty(dialect)) {
+        if (!is.null(dialect)) {
           
           if (dialect$header == FALSE || config::get("DEFAULT_DIALECT", file = system.file("config/config.yaml", package = "datapackage.r"))$header == FALSE) {
             
-            fields_ <- if(!is.null(descriptor$schema)) descriptor$schema else list()
-            fields <- if(!is.null(fields_$fields)) fields_$fields else list()
+            # fields_ <- if(!is.null(descriptor$schema)) descriptor$schema$fields else list()
+            fields <- if(!is.null(descriptor$schema$fields)) descriptor$schema$fields else list()
             
-            options$headers <- if(length(fields)>0) {
-              purrr::map(fields,names)
+            options$headers <- if(isTRUE(length(fields)>0)) {
+              
+              purrr::map(fields, names)
+              
               } else NULL
           }
           validateDialect(dialect)
@@ -457,7 +459,7 @@ Resource <- R6Class(
           schema <- future::value(schema)
         }
         
-        table_ <- tableschema.r::Table.load(self$source, schema = schema, options = options)
+        table_ <- tableschema.r::Table.load(self$source, schema = schema)
         private$table_ <- future::value(table_)
       }
       
@@ -467,7 +469,8 @@ Resource <- R6Class(
     
     getRelations_ = function() {
       
-      if (!private$relations_) {
+      
+      if (isTRUE(private$relations_ == FALSE) || is.null(private$relations_)) {
         # Prepare resources
         resources <- list()
         if (isTRUE(!is.null(private$getTable_())) && isTRUE(!is.null((private$getTable_()$schema)))) {

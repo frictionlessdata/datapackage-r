@@ -268,7 +268,7 @@ expandResourceDescriptor <- function(descriptor) {
     
     # Schema
     
-    if (!isTRUE(is.null(descriptor$schema))) {
+    if (isTRUE(!is.null(descriptor$schema))) {
       
       for (i in 1:length(descriptor$schema$fields)) {
         
