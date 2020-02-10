@@ -657,12 +657,7 @@ test_that('it supports encoding property', {
       }'
   resource <- Resource.load(descriptor)
   rows <- resource$read(keyed = TRUE)
-  expect_equal(rows,
-               helpers.from.json.to.list(
-                 '[
-        {"id": "1", "name": "english"},
-        {"id": "2", "name": "©"}
-      ]'))
+  expect_equal(rows, helpers.from.json.to.list('[{"id": "1", "name": "english"},{"id": "2", "name": "©"}]'))
 })
 
 
