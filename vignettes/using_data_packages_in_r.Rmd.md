@@ -27,7 +27,7 @@ Reading Basic Metadata
 
 In this case, we are using an example Tabular Data Package containing the periodic table stored on [GitHub](https://github.com/frictionlessdata/example-data-packages/tree/master/periodic-table) ([datapackage.json](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/datapackage.json), [data.csv](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv)). This dataset includes the atomic number, symbol, element name, atomic mass, and the metallicity of the element. Here are the first five rows:
 
-    url = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv'
+    url = 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/data.csv'
     pt_data = read.csv2(url, sep = ',')
     knitr::kable(head(pt_data, 5), align = 'c')
 

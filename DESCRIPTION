@@ -2,7 +2,7 @@ Package: datapackage.r
 Type: Package
 Title: Data Package 'Frictionless Data'
 Version: 1.3.0
-Date: 2020-02-11
+Date: 2020-03-09s
 Authors@R: c(person("Kleanthis", "Koupidis", email = "koupidis@okfn.gr", role = c("aut", "cre")), 
             person("Lazaros", "Ioannidis", email = "larjohn@gmail.com", role = "aut"),
             person("Charalampos", "Bratsas", email = "cbratsas@math.auth.gr", role = "aut"),
