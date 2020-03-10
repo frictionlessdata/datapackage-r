@@ -160,17 +160,18 @@ test_that('pointer bad', {
 test_that('remote', {
   descriptor <- helpers.from.json.to.list('{"name": "name", "data": "data", "schema": "http://example.com/schema"}')
   
-  resource <- testthat::with_mock(
-    `curl:::curl` = function(txt, handle) {
+  schema <- testthat::with_mock(
       httptest::fake_response(
         request = httr::GET(descriptor$schema),
         status_code = 200,
-        content = list(fields = list(list(name = "name")))
-      )
-    }, 
+        content = rlist::list.serialize(list(fields = list(list(name = "name"))),"inst/list.json")
+      ), 
     `httptest::request_happened` = expect_message,
-    eval.parent(Resource.load(descriptor))
+  .env = eval.parent(Resource.load(descriptor))
   )
+  descriptor$schema <- content(schema)
+  
+  resource <- Resource.load(descriptor)
   expect_equal(resource$descriptor,
                expandResourceDescriptor(descriptor = list(
                  name = 'name',
@@ -188,12 +189,10 @@ test_that('remote bad', {
 }')
   
   expect_error(with_mock(
-    `curl:::curl` = function(txt, handle) {
-      stop('Could not resolve host')
-    },
+      stop('Could not resolve host'),
     `httptest::request_happened` = expect_message,
-    eval.parent(Resource.load(descriptor))
-  ), 'Not resolved Remote URI')
+  .env =eval.parent(Resource.load(descriptor))
+  ), 'Could not resolve host')
   
   
 })
