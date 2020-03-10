@@ -164,7 +164,7 @@ test_that('remote', {
       httptest::fake_response(
         request = httr::GET(descriptor$schema),
         status_code = 200,
-        content = rlist::list.serialize(list(fields = list(list(name = "name"))),"inst/list.json")
+        content = rlist::list.serialize(list(fields = list(list(name = "name"))),"inst/extdata/list.json")
       ), 
     `httptest::request_happened` = expect_message,
   .env = eval.parent(Resource.load(descriptor))

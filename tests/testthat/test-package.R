@@ -227,7 +227,7 @@ test_that('remote', {
     httptest::fake_response(
       httr::GET("http://example.com/schema"),
       status_code = 200,
-      content = rlist::list.serialize(list(fields = list(list(name = "name"))),"inst/list.json")
+      content = rlist::list.serialize(list(fields = list(list(name = "name"))),"inst/extdata/list.json")
     ),
     `httptest::request_happened` = expect_message,
     
@@ -239,7 +239,7 @@ test_that('remote', {
     httptest::fake_response(
       httr::GET("http://example.com/dialect"),
       status_code = 200,
-      content = rlist::list.serialize(list(delimiter = ","),"inst/listdelim.json")
+      content = rlist::list.serialize(list(delimiter = ","),"inst/extdata/listdelim.json")
     ),
     `httptest::request_happened` = expect_message,
     .env = eval.parent(Package.load(descriptor))

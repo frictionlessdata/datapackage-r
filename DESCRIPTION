@@ -56,5 +56,5 @@ Collate:
     'is.valid.R'
     'resource.R'
     'validate.R'
-RoxygenNote: 7.0.0
+RoxygenNote: 7.0.2
 VignetteBuilder: knitr
