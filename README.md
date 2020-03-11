@@ -1396,7 +1396,3 @@ described only breaking and the most important changes. The full
 changelog could be found in nicely formatted
 [commit](https://github.com/frictionlessdata/datapackage-r/commits/master)
 history.
-
-# Github
-
-  - <https://github.com/frictionlessdata/datapackage-r>

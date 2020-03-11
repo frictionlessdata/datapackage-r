@@ -883,10 +883,6 @@ more detailed information about how to create and run tests you can find in [tes
 
 In [NEWS.md][news] described only breaking and the most important changes. The full changelog could be found in nicely formatted [commit][commits] history.  
 
-# Github 
-
-+ https://github.com/frictionlessdata/datapackage-r
-
 
 [Rs]: https://www.r-project.org/
 [R]: https://cran.r-project.org//
