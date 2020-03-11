@@ -11,7 +11,7 @@ output:
 [![Github Issues](http://githubbadges.herokuapp.com/frictionlessdata/datapackage-r/issues.svg)](https://github.com/frictionlessdata/datapackage-r/issues)
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/frictionlessdata/datapackage-r/pulls.svg)](https://github.com/frictionlessdata/datapackage-r/pulls)
 [![Project Status: Active – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.1-6666ff.svg)](https://cran.r-project.org/)
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-`r rvers`-6666ff.svg)](https://cran.r-project.org/)
 [![Rdoc](http://www.rdocumentation.org/badges/version/datapackage.r)](http://www.rdocumentation.org/packages/datapackage.r)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/datapackage.r)](http://cran.rstudio.com/web/packages/datapackage.r/index.html)
 [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -386,7 +386,7 @@ DESCRIPTOR <- '{
 
 Let's check relations for a `teams` resource:
 
-```{r eval=TRUE, include=TRUE,warning=FALSE}
+```{r eval=TRUE, include=TRUE, warning=FALSE}
 package <- Package.load(DESCRIPTOR)
 teams <- package$getResource('teams')
 ```
@@ -421,18 +421,18 @@ Package representation
 
 * [Package](#Package)
     * _instance_
-        * [.valid](#Package+valid) ⇒ <code>Boolean</code>
-        * [.errors](#Package+errors) ⇒ <code>Array.&lt;Error&gt;</code>
-        * [.profile](#Package+profile) ⇒ <code>Profile</code>
-        * [.descriptor](#Package+descriptor) ⇒ <code>Object</code>
-        * [.resources](#Package+resources) ⇒ <code>Array.&lt;Resoruce&gt;</code>
-        * [.resourceNames](#Package+resourceNames) ⇒ <code>Array.&lt;string&gt;</code>
-        * [.getResource(name)](#Package+getResource) ⇒ <code>Resource</code> \| <code>null</code>
-        * [.addResource(descriptor)](#Package+addResource) ⇒ <code>Resource</code>
-        * [.removeResource(name)](#Package+removeResource) ⇒ <code>Resource</code> \| <code>null</code>
-        * [.infer(pattern)](#Package+infer) ⇒ <code>Object</code>
-        * [.commit(strict)](#Package+commit) ⇒ <code>Boolean</code>
-        * [.save(target, raises, returns)](#Package+save)
+        * [$valid](#Package+valid) ⇒ <code>Boolean</code>
+        * [$errors](#Package+errors) ⇒ <code>Array.&lt;Error&gt;</code>
+        * [$profile](#Package+profile) ⇒ <code>Profile</code>
+        * [$descriptor](#Package+descriptor) ⇒ <code>Object</code>
+        * [$resources](#Package+resources) ⇒ <code>Array.&lt;Resoruce&gt;</code>
+        * [$resourceNames](#Package+resourceNames) ⇒ <code>Array.&lt;string&gt;</code>
+        * [$getResource(name)](#Package+getResource) ⇒ <code>Resource</code> \| <code>null</code>
+        * [$addResource(descriptor)](#Package+addResource) ⇒ <code>Resource</code>
+        * [$removeResource(name)](#Package+removeResource) ⇒ <code>Resource</code> \| <code>null</code>
+        * [$infer(pattern)](#Package+infer) ⇒ <code>Object</code>
+        * [$commit(strict)](#Package+commit) ⇒ <code>Boolean</code>
+        * [$save(target, raises, returns)](#Package+save)
     * _static_
         * [.load(descriptor, basePath, strict)](#Package.load) ⇒ [<code>Package</code>](#Package)
 
@@ -567,29 +567,29 @@ Resource representation
 
 * [Resource](#Resource)
     * _instance_
-        * [.valid](#Resource+valid) ⇒ <code>Boolean</code>
-        * [.errors](#Resource+errors) ⇒ <code>Array.&lt;Error&gt;</code>
-        * [.profile](#Resource+profile) ⇒ <code>Profile</code>
-        * [.descriptor](#Resource+descriptor) ⇒ <code>Object</code>
-        * [.name](#Resource+name) ⇒ <code>string</code>
-        * [.inline](#Resource+inline) ⇒ <code>boolean</code>
-        * [.local](#Resource+local) ⇒ <code>boolean</code>
-        * [.remote](#Resource+remote) ⇒ <code>boolean</code>
-        * [.multipart](#Resource+multipart) ⇒ <code>boolean</code>
-        * [.tabular](#Resource+tabular) ⇒ <code>boolean</code>
-        * [.source](#Resource+source) ⇒ <code>Array</code> \| <code>string</code>
-        * [.headers](#Resource+headers) ⇒ <code>Array.&lt;string&gt;</code>
-        * [.schema](#Resource+schema) ⇒ <code>tableschema.Schema</code>
-        * [.iter(keyed, extended, cast, forceCast, relations, stream)](#Resource+iter) ⇒ <code>AsyncIterator</code> \| <code>Stream</code>
-        * [.read(limit)](#Resource+read) ⇒ <code>Array.&lt;Array&gt;</code> \| <code>Array.&lt;Object&gt;</code>
-        * [.checkRelations()](#Resource+checkRelations) ⇒ <code>boolean</code>
-        * [.rawIter(stream)](#Resource+rawIter) ⇒ <code>Iterator</code> \| <code>Stream</code>
-        * [.rawRead()](#Resource+rawRead) ⇒ <code>Buffer</code>
-        * [.infer()](#Resource+infer) ⇒ <code>Object</code>
-        * [.commit(strict)](#Resource+commit) ⇒ <code>boolean</code>
-        * [.save(target)](#Resource+save) ⇒ <code>boolean</code>
+        * [$valid](#Resource+valid) ⇒ <code>Boolean</code>
+        * [$errors](#Resource+errors) ⇒ <code>Array.&lt;Error&gt;</code>
+        * [$profile](#Resource+profile) ⇒ <code>Profile</code>
+        * [$descriptor](#Resource+descriptor) ⇒ <code>Object</code>
+        * [$name](#Resource+name) ⇒ <code>string</code>
+        * [$inline](#Resource+inline) ⇒ <code>boolean</code>
+        * [$local](#Resource+local) ⇒ <code>boolean</code>
+        * [$remote](#Resource+remote) ⇒ <code>boolean</code>
+        * [$multipart](#Resource+multipart) ⇒ <code>boolean</code>
+        * [$tabular](#Resource+tabular) ⇒ <code>boolean</code>
+        * [$source](#Resource+source) ⇒ <code>Array</code> \| <code>string</code>
+        * [$headers](#Resource+headers) ⇒ <code>Array.&lt;string&gt;</code>
+        * [$schema](#Resource+schema) ⇒ <code>tableschema.Schema</code>
+        * [$iter(keyed, extended, cast, forceCast, relations, stream)](#Resource+iter) ⇒ <code>AsyncIterator</code> \| <code>Stream</code>
+        * [$read(limit)](#Resource+read) ⇒ <code>Array.&lt;Array&gt;</code> \| <code>Array.&lt;Object&gt;</code>
+        * [$checkRelations()](#Resource+checkRelations) ⇒ <code>boolean</code>
+        * [$rawIter(stream)](#Resource+rawIter) ⇒ <code>Iterator</code> \| <code>Stream</code>
+        * [$rawRead()](#Resource+rawRead) ⇒ <code>Buffer</code>
+        * [$infer()](#Resource+infer) ⇒ <code>Object</code>
+        * [$commit(strict)](#Resource+commit) ⇒ <code>boolean</code>
+        * [$save(target)](#Resource+save) ⇒ <code>boolean</code>
     * _static_
-        * [.load(descriptor, basePath, strict)](#Resource.load) ⇒ [<code>Resource</code>](#Resource)
+        * [$load(descriptor, basePath, strict)](#Resource.load) ⇒ [<code>Resource</code>](#Resource)
 
 
 #### resource.valid ⇒ <code>Boolean</code>
@@ -789,11 +789,11 @@ Profile representation
 
 * [Profile](#Profile)
     * _instance_
-        * [.name](#Profile+name) ⇒ <code>string</code>
-        * [.jsonschema](#Profile+jsonschema) ⇒ <code>Object</code>
-        * [.validate(descriptor)](#Profile+validate) ⇒ <code>Object</code>
+        * [$name](#Profile+name) ⇒ <code>string</code>
+        * [$jsonschema](#Profile+jsonschema) ⇒ <code>Object</code>
+        * [$validate(descriptor)](#Profile+validate) ⇒ <code>Object</code>
     * _static_
-        * [.load(profile)](#Profile.load) ⇒ [<code>Profile</code>](#Profile)
+        * [$load(profile)](#Profile.load) ⇒ [<code>Profile</code>](#Profile)
 
 
 #### profile.name ⇒ <code>string</code>

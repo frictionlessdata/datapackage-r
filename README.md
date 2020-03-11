@@ -1,4 +1,4 @@
-<img src="okgr.png" align="right" width=130px /><img src="oklabs.png" align="right" width=130px /><br><br/><img src="frictionlessdata.png" align="left" width=60 />rictionless
+<img src="okgr.png" align="right" width=130px /><img src="oklabs.png" align="right" width=130px /><br><br/><img src="Ffrictionless.png" align="left" width=60 />rictionless
 Data - <br/> Data Package
 ================
 
@@ -16,7 +16,7 @@ state but is no longer being actively developed; support/maintenance
 will be provided as time
 allows.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![minimal R
-version](https://img.shields.io/badge/R%3E%3D-3.1-6666ff.svg)](https://cran.r-project.org/)
+version](https://img.shields.io/badge/R%3E%3D-3.6-6666ff.svg)](https://cran.r-project.org/)
 [![Rdoc](http://www.rdocumentation.org/badges/version/datapackage.r)](http://www.rdocumentation.org/packages/datapackage.r)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/datapackage.r)](http://cran.rstudio.com/web/packages/datapackage.r/index.html)
 [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -876,23 +876,23 @@ Package representation
 
   - [Package](#Package)
       - *instance*
-          - [.valid](#Package+valid) ⇒ <code>Boolean</code>
-          - [.errors](#Package+errors) ⇒ <code>Array.\<Error\></code>
-          - [.profile](#Package+profile) ⇒ <code>Profile</code>
-          - [.descriptor](#Package+descriptor) ⇒ <code>Object</code>
-          - [.resources](#Package+resources) ⇒
+          - [$valid](#Package+valid) ⇒ <code>Boolean</code>
+          - [$errors](#Package+errors) ⇒ <code>Array.\<Error\></code>
+          - [$profile](#Package+profile) ⇒ <code>Profile</code>
+          - [$descriptor](#Package+descriptor) ⇒ <code>Object</code>
+          - [$resources](#Package+resources) ⇒
             <code>Array.\<Resoruce\></code>
-          - [.resourceNames](#Package+resourceNames) ⇒
+          - [$resourceNames](#Package+resourceNames) ⇒
             <code>Array.\<string\></code>
-          - [.getResource(name)](#Package+getResource) ⇒
+          - [$getResource(name)](#Package+getResource) ⇒
             <code>Resource</code> | <code>null</code>
-          - [.addResource(descriptor)](#Package+addResource) ⇒
+          - [$addResource(descriptor)](#Package+addResource) ⇒
             <code>Resource</code>
-          - [.removeResource(name)](#Package+removeResource) ⇒
+          - [$removeResource(name)](#Package+removeResource) ⇒
             <code>Resource</code> | <code>null</code>
-          - [.infer(pattern)](#Package+infer) ⇒ <code>Object</code>
-          - [.commit(strict)](#Package+commit) ⇒ <code>Boolean</code>
-          - [.save(target, raises, returns)](#Package+save)
+          - [$infer(pattern)](#Package+infer) ⇒ <code>Object</code>
+          - [$commit(strict)](#Package+commit) ⇒ <code>Boolean</code>
+          - [$save(target, raises, returns)](#Package+save)
       - *static*
           - [.load(descriptor, basePath, strict)](#Package.load) ⇒
             [<code>Package</code>](#Package)
@@ -1050,37 +1050,37 @@ Resource representation
 
   - [Resource](#Resource)
       - *instance*
-          - [.valid](#Resource+valid) ⇒ <code>Boolean</code>
-          - [.errors](#Resource+errors) ⇒ <code>Array.\<Error\></code>
-          - [.profile](#Resource+profile) ⇒ <code>Profile</code>
-          - [.descriptor](#Resource+descriptor) ⇒ <code>Object</code>
-          - [.name](#Resource+name) ⇒ <code>string</code>
-          - [.inline](#Resource+inline) ⇒ <code>boolean</code>
-          - [.local](#Resource+local) ⇒ <code>boolean</code>
-          - [.remote](#Resource+remote) ⇒ <code>boolean</code>
-          - [.multipart](#Resource+multipart) ⇒ <code>boolean</code>
-          - [.tabular](#Resource+tabular) ⇒ <code>boolean</code>
-          - [.source](#Resource+source) ⇒ <code>Array</code> |
+          - [$valid](#Resource+valid) ⇒ <code>Boolean</code>
+          - [$errors](#Resource+errors) ⇒ <code>Array.\<Error\></code>
+          - [$profile](#Resource+profile) ⇒ <code>Profile</code>
+          - [$descriptor](#Resource+descriptor) ⇒ <code>Object</code>
+          - [$name](#Resource+name) ⇒ <code>string</code>
+          - [$inline](#Resource+inline) ⇒ <code>boolean</code>
+          - [$local](#Resource+local) ⇒ <code>boolean</code>
+          - [$remote](#Resource+remote) ⇒ <code>boolean</code>
+          - [$multipart](#Resource+multipart) ⇒ <code>boolean</code>
+          - [$tabular](#Resource+tabular) ⇒ <code>boolean</code>
+          - [$source](#Resource+source) ⇒ <code>Array</code> |
             <code>string</code>
-          - [.headers](#Resource+headers) ⇒
+          - [$headers](#Resource+headers) ⇒
             <code>Array.\<string\></code>
-          - [.schema](#Resource+schema) ⇒
+          - [$schema](#Resource+schema) ⇒
             <code>tableschema.Schema</code>
-          - [.iter(keyed, extended, cast, forceCast, relations,
+          - [$iter(keyed, extended, cast, forceCast, relations,
             stream)](#Resource+iter) ⇒ <code>AsyncIterator</code> |
             <code>Stream</code>
-          - [.read(limit)](#Resource+read) ⇒
+          - [$read(limit)](#Resource+read) ⇒
             <code>Array.\<Array\></code> | <code>Array.\<Object\></code>
-          - [.checkRelations()](#Resource+checkRelations) ⇒
+          - [$checkRelations()](#Resource+checkRelations) ⇒
             <code>boolean</code>
-          - [.rawIter(stream)](#Resource+rawIter) ⇒
+          - [$rawIter(stream)](#Resource+rawIter) ⇒
             <code>Iterator</code> | <code>Stream</code>
-          - [.rawRead()](#Resource+rawRead) ⇒ <code>Buffer</code>
-          - [.infer()](#Resource+infer) ⇒ <code>Object</code>
-          - [.commit(strict)](#Resource+commit) ⇒ <code>boolean</code>
-          - [.save(target)](#Resource+save) ⇒ <code>boolean</code>
+          - [$rawRead()](#Resource+rawRead) ⇒ <code>Buffer</code>
+          - [$infer()](#Resource+infer) ⇒ <code>Object</code>
+          - [$commit(strict)](#Resource+commit) ⇒ <code>boolean</code>
+          - [$save(target)](#Resource+save) ⇒ <code>boolean</code>
       - *static*
-          - [.load(descriptor, basePath, strict)](#Resource.load) ⇒
+          - [$load(descriptor, basePath, strict)](#Resource.load) ⇒
             [<code>Resource</code>](#Resource)
 
 #### resource.valid ⇒ <code>Boolean</code>
@@ -1293,12 +1293,12 @@ Profile representation
 
   - [Profile](#Profile)
       - *instance*
-          - [.name](#Profile+name) ⇒ <code>string</code>
-          - [.jsonschema](#Profile+jsonschema) ⇒ <code>Object</code>
-          - [.validate(descriptor)](#Profile+validate) ⇒
+          - [$name](#Profile+name) ⇒ <code>string</code>
+          - [$jsonschema](#Profile+jsonschema) ⇒ <code>Object</code>
+          - [$validate(descriptor)](#Profile+validate) ⇒
             <code>Object</code>
       - *static*
-          - [.load(profile)](#Profile.load) ⇒
+          - [$load(profile)](#Profile.load) ⇒
             [<code>Profile</code>](#Profile)
 
 #### profile.name ⇒ <code>string</code>
