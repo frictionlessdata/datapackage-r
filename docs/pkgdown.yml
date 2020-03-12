@@ -1,0 +1,7 @@
+pandoc: 2.7.2
+pkgdown: 1.4.1
+pkgdown_sha: ~
+articles:
+  creating_data_packages_in_r: creating_data_packages_in_r.html
+  using_data_packages_in_r.Rmd: using_data_packages_in_r.Rmd.html
+
