@@ -4,7 +4,9 @@
 \name{Resource}
 \alias{Resource}
 \title{Resource class}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \usage{
 # Resource.load(descriptor = list(), basePath = NA, strict = FALSE, dataPackage = list())
 }
@@ -133,6 +135,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Resource$new(descriptor, basePath, strict = FALSE, dataPackage = list())}\if{html}{\out{</div>}}
@@ -141,6 +144,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-iter"></a>}}
+\if{latex}{\out{\hypertarget{method-iter}{}}}
 \subsection{Method \code{iter()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Resource$iter(relations = FALSE, options = list())}\if{html}{\out{</div>}}
@@ -149,6 +153,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-read"></a>}}
+\if{latex}{\out{\hypertarget{method-read}{}}}
 \subsection{Method \code{read()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Resource$read(relations = FALSE, ...)}\if{html}{\out{</div>}}
@@ -157,6 +162,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-checkRelations"></a>}}
+\if{latex}{\out{\hypertarget{method-checkRelations}{}}}
 \subsection{Method \code{checkRelations()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Resource$checkRelations()}\if{html}{\out{</div>}}
@@ -165,6 +171,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-rawIter"></a>}}
+\if{latex}{\out{\hypertarget{method-rawIter}{}}}
 \subsection{Method \code{rawIter()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Resource$rawIter(stream = FALSE)}\if{html}{\out{</div>}}
@@ -173,6 +180,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-rawRead"></a>}}
+\if{latex}{\out{\hypertarget{method-rawRead}{}}}
 \subsection{Method \code{rawRead()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Resource$rawRead()}\if{html}{\out{</div>}}
@@ -181,6 +189,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-infer"></a>}}
+\if{latex}{\out{\hypertarget{method-infer}{}}}
 \subsection{Method \code{infer()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Resource$infer()}\if{html}{\out{</div>}}
@@ -189,6 +198,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-commit"></a>}}
+\if{latex}{\out{\hypertarget{method-commit}{}}}
 \subsection{Method \code{commit()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Resource$commit(strict = NULL)}\if{html}{\out{</div>}}
@@ -197,6 +207,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-save"></a>}}
+\if{latex}{\out{\hypertarget{method-save}{}}}
 \subsection{Method \code{save()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Resource$save(target)}\if{html}{\out{</div>}}
@@ -205,6 +216,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

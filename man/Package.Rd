@@ -4,7 +4,9 @@
 \name{Package}
 \alias{Package}
 \title{Data Package class}
-\format{\code{\link{R6Class}} object}
+\format{
+\code{\link{R6Class}} object
+}
 \usage{
 # Package.load(descriptor = list(),basePath = NA,strict = FALSE)
 }
@@ -137,6 +139,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Package$new(
@@ -150,6 +153,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-addResource"></a>}}
+\if{latex}{\out{\hypertarget{method-addResource}{}}}
 \subsection{Method \code{addResource()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Package$addResource(descriptor)}\if{html}{\out{</div>}}
@@ -158,6 +162,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getResource"></a>}}
+\if{latex}{\out{\hypertarget{method-getResource}{}}}
 \subsection{Method \code{getResource()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Package$getResource(name)}\if{html}{\out{</div>}}
@@ -166,6 +171,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-removeResource"></a>}}
+\if{latex}{\out{\hypertarget{method-removeResource}{}}}
 \subsection{Method \code{removeResource()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Package$removeResource(name)}\if{html}{\out{</div>}}
@@ -174,6 +180,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-infer"></a>}}
+\if{latex}{\out{\hypertarget{method-infer}{}}}
 \subsection{Method \code{infer()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Package$infer(pattern)}\if{html}{\out{</div>}}
@@ -182,6 +189,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-commit"></a>}}
+\if{latex}{\out{\hypertarget{method-commit}{}}}
 \subsection{Method \code{commit()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Package$commit(strict = NULL)}\if{html}{\out{</div>}}
@@ -190,6 +198,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-save"></a>}}
+\if{latex}{\out{\hypertarget{method-save}{}}}
 \subsection{Method \code{save()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Package$save(target, type = "json")}\if{html}{\out{</div>}}
@@ -198,6 +207,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

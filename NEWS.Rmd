@@ -5,6 +5,10 @@ output:
     html_preview: yes
 ---
 
+#### datapackage.r v1.3.1
+
+keep profiles up to date
+
 #### datapackage.r v1.3
 
 add dialects, validate, filter dialect accoriding to js current version https://github.com/frictionlessdata/datapackage-js/tree/0ec8220f52b917422277decd673081609c6db38e

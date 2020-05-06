@@ -4,7 +4,9 @@
 \name{BinaryReadableConnection}
 \alias{BinaryReadableConnection}
 \title{Binary Readable Connection class}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \value{
 Object of \code{\link{R6Class}}.
 }
@@ -22,6 +24,7 @@ Binary Readable connection class
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BinaryReadableConnection$new(options = list())}\if{html}{\out{</div>}}
@@ -30,6 +33,7 @@ Binary Readable connection class
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-read"></a>}}
+\if{latex}{\out{\hypertarget{method-read}{}}}
 \subsection{Method \code{read()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BinaryReadableConnection$read(size = NULL)}\if{html}{\out{</div>}}
@@ -38,6 +42,7 @@ Binary Readable connection class
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

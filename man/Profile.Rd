@@ -4,7 +4,9 @@
 \name{Profile}
 \alias{Profile}
 \title{Profile class}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \usage{
 # Profile.load(profile)
 }
@@ -52,6 +54,7 @@ Validate a tabular data package descriptor against the \code{Profile}.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Profile$new(profile)}\if{html}{\out{</div>}}
@@ -67,6 +70,7 @@ Validate a tabular data package descriptor against the \code{Profile}.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}
+\if{latex}{\out{\hypertarget{method-validate}{}}}
 \subsection{Method \code{validate()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Profile$validate(descriptor)}\if{html}{\out{</div>}}
@@ -75,6 +79,7 @@ Validate a tabular data package descriptor against the \code{Profile}.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -1,6 +1,10 @@
 NEWS
 ================
 
+#### datapackage.r v1.3.1
+
+keep profiles up to date
+
 #### datapackage.r v1.3
 
 add dialects, validate, filter dialect accoriding to js current version
