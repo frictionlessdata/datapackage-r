@@ -1,0 +1,14 @@
+{
+    "resources": [
+        {
+            "name": "name",
+            "data": [
+                "data"
+            ],
+            "profile": "data-resource",
+            "encoding": "utf-8"
+        }
+    ],
+    "profile": "data-package"
+}
+

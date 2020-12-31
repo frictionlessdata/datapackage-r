@@ -119,7 +119,7 @@
               "{\n  \"email\": \"example@example.com\"\n}\n"
             ]
           },
-          "organisation": {
+          "organization": {
             "title": "Organization",
             "description": "An organizational affiliation for this contributor.",
             "type": "string"

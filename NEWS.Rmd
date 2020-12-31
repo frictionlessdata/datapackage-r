@@ -4,6 +4,9 @@ output:
   github_document:
     html_preview: yes
 ---
+#### datapackage.r v1.3.2
+
+keep profiles up to date
 
 #### datapackage.r v1.3.1
 

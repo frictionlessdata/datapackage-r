@@ -122,7 +122,7 @@
               "{\n  \"email\": \"example@example.com\"\n}\n"
             ]
           },
-          "organisation": {
+          "organization": {
             "title": "Organization",
             "description": "An organizational affiliation for this contributor.",
             "type": "string"
@@ -1138,6 +1138,13 @@
                           "enum": [
                             "boolean"
                           ]
+                        },
+                        "format": {
+                          "description": "There are no format keyword options for `boolean`: only `default` is allowed.",
+                          "enum": [
+                            "default"
+                          ],
+                          "default": "default"
                         },
                         "trueValues": {
                           "type": "array",
