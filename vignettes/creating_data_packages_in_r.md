@@ -37,7 +37,7 @@ You can add useful metadata by adding keys to metadata dict attribute. Below, we
 Infer a CSV Schema
 ------------------
 
-We will use periodic-table data from [remote path](<https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example%20data/data.csv>)
+We will use periodic-table data from [remote path](<https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/exampledata/data.csv>)
 <table>
 <thead>
 <tr class="header">
@@ -124,7 +124,7 @@ We will use periodic-table data from [remote path](<https://raw.githubuserconten
 
 We can guess at our CSV's [schema](https://frictionlessdata.io/guides/table-schema/) by using `infer` from the Table Schema library. We pass directly the remote link to the infer function, the result of which is an inferred schema. For example, if the processor detects only integers in a given column, it will assign `integer` as a column type.
 
-    filepath = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv'
+    filepath = 'https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/exampledata/data.csv'
 
     schema = tableschema.r::infer(filepath)
 
@@ -169,7 +169,7 @@ Now we are ready to write our `datapackage.json` file to the current working dir
 
     dataPackage$save('example_data')
 
-The `datapackage.json` ([download](https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/package.json)) is inlined below. Note that atomic number has been correctly inferred as an `integer` and atomic mass as a `number` (float) while every other column is a `string`.
+The `datapackage.json` ([download](https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/exampledata/package.json)) is inlined below. Note that atomic number has been correctly inferred as an `integer` and atomic mass as a `number` (float) while every other column is a `string`.
 
     jsonlite::prettify(helpers.from.list.to.json(dataPackage$descriptor))
 
@@ -180,7 +180,7 @@ The `datapackage.json` ([download](https://raw.githubusercontent.com/okgreece/da
     ##     "resources": [
     ##         {
     ##             "name": "data",
-    ##             "path": "https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/example_data/data.csv",
+    ##             "path": "https://raw.githubusercontent.com/okgreece/datapackage-r/master/vignettes/exampledata/data.csv",
     ##             "schema": {
     ##                 "fields": [
     ##                     {
