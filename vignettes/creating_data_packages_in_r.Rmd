@@ -58,7 +58,7 @@ pt_data <- read.csv2(url, sep = ',')
 knitr::kable(head(pt_data, 10), align = 'c')
 ```
 
-We can guess at our CSV's [schema](https://frictionlessdata.io/guides/table-schema/) by using `infer` from the Table Schema package. We pass directly the remote link to the infer function, the result of which is an inferred schema. For example, if the processor detects only integers in a given column, it will assign `integer` as a column type.
+We can guess at our CSV's [schema](https://specs.frictionlessdata.io/table-schema/) by using `infer` from the Table Schema package. We pass directly the remote link to the infer function, the result of which is an inferred schema. For example, if the processor detects only integers in a given column, it will assign `integer` as a column type.
 
 ```{r, eval=TRUE, include=TRUE}
 filepath <- 'https://raw.githubusercontent.com/frictionlessdata/datapackage-r/master/vignettes/exampledata/data.csv'
@@ -123,4 +123,4 @@ jsonlite::prettify(helpers.from.list.to.json(dataPackage$descriptor))
 
 # Publishing
 
-Now that you have created your Data Package, you might want to [publish your data online](https://frictionlessdata.io/guides/publish-online/) so that you can share it with others.
+Now that you have created your Data Package, you might want to [publish your data online](https://frictionlessdata.io/blog/2016/08/30/publish/) so that you can share it with others.
