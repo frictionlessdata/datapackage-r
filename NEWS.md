@@ -25,14 +25,14 @@ add Makefile, LEAD.md files to buildignore
 #### datapackage.r v1.1
 
 keep profiles up to date -
-<a href="https://frictionlessdata.io/specs/profiles/" class="uri">https://frictionlessdata.io/specs/profiles/</a>
+<a href="https://specs.frictionlessdata.io//profiles/" class="uri">https://specs.frictionlessdata.io//profiles/</a>
 
 ------------------------------------------------------------------------
 
 #### datapackage.r v1.0
 
 The library based on the Frictionless Data specs v1 -
-<a href="https://frictionlessdata.io/specs/data-package/" class="uri">https://frictionlessdata.io/specs/data-package/</a>
+<a href="https://specs.frictionlessdata.io//data-package/" class="uri">https://specs.frictionlessdata.io//data-package/</a>
 
 ------------------------------------------------------------------------
 

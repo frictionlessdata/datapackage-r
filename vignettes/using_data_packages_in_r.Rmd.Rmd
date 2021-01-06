@@ -40,7 +40,7 @@ library(datapackage.r)
 
 # Reading Basic Metadata
 
-In this case, we are using an example Tabular Data Package containing the periodic table stored on [GitHub](https://github.com/frictionlessdata/example-data-packages/tree/master/periodic-table) ([datapackage.json](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/datapackage.json), [data.csv](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv)). This dataset includes the atomic number, symbol, element name, atomic mass, and the metallicity of the element. Here are the first five rows:
+In this case, we are using an example Tabular Data Package containing the periodic table stored on [GitHub](https://github.com/frictionlessdata/examples/tree/master/periodic-table) ([datapackage.json](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/datapackage.json), [data.csv](https://raw.githubusercontent.com/frictionlessdata/example-data-packages/master/periodic-table/data.csv)). This dataset includes the atomic number, symbol, element name, atomic mass, and the metallicity of the element. Here are the first five rows:
 
 
 ```{r, echo=TRUE, results='asis'}
@@ -58,7 +58,7 @@ datapackage$resources[[1]]$descriptor$profile <- 'tabular-data-resource' # tabul
 datapackage$resources[[1]]$commit() # commit changes
 ```
 
-At the most basic level, Data Packages provide a standardized format for general metadata (for example, the dataset title, source, author, and/or description) about your dataset. Now that you have loaded this Data Package, you have access to this `metadata` using the metadata dict attribute. Note that these fields are optional and may not be specified for all Data Packages. For more information on which fields are supported, see [the full Data Package standard](https://frictionlessdata.io/specs/data-package/).
+At the most basic level, Data Packages provide a standardized format for general metadata (for example, the dataset title, source, author, and/or description) about your dataset. Now that you have loaded this Data Package, you have access to this `metadata` using the metadata dict attribute. Note that these fields are optional and may not be specified for all Data Packages. For more information on which fields are supported, see [the full Data Package standard](https://specs.frictionlessdata.io//data-package/).
 
 ```{r, eval=TRUE, include=TRUE}
 datapackage$descriptor$title
@@ -79,9 +79,9 @@ You can further manipulate list objects in R by using [purrr](https://cran.r-pro
 
 # Loading into an SQL database
 
-[Tabular Data Packages](https://frictionlessdata.io/specs/tabular-data-package/) contains schema information about its data using [Table Schema](https://frictionlessdata.io/specs/table-schema/). This means you can easily import your Data Package into the SQL backend of your choice. In this case, we are creating an [SQLite](http://sqlite.org/) database.
+[Tabular Data Packages](https://specs.frictionlessdata.io//tabular-data-package/) contains schema information about its data using [Table Schema](https://specs.frictionlessdata.io//table-schema/). This means you can easily import your Data Package into the SQL backend of your choice. In this case, we are creating an [SQLite](http://sqlite.org/) database.
 
-To create a new SQLite database and load the data into SQL we will need [DBI](https://cran.r-project.org/package=DBI) package and [RSQLite](https://cran.r-project.org/package=RSQLite) package, which contains [SQLite](https://www.sqlite.org/) (no external software is needed).
+To create a new SQLite database and load the data into SQL we will need [DBI](https://cran.r-project.org/package=DBI) package and [RSQLite](https://cran.r-project.org/package=RSQLite) package, which contains [SQLite](https://www.sqlite.org/index.html) (no external software is needed).
 
 You can install and load them by using:
 
@@ -132,4 +132,4 @@ Return all elements with an atomic number of less than 10:
 dbGetQuery(dp.database, 'SELECT * FROM periodic_table_sql WHERE "atomic number" < 10')
 ```
 
-More about using databases, SQLite in R you can find in vignettes of [DBI](https://cran.r-project.org/package=DBI) and [SQLite](https://www.sqlite.org/) packages.
+More about using databases, SQLite in R you can find in vignettes of [DBI](https://cran.r-project.org/package=DBI) and [SQLite](https://www.sqlite.org/index.html) packages.

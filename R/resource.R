@@ -90,7 +90,7 @@
 #' A range of other properties can be declared to provide a richer set of metadata.
 #' 
 #' Packaged data resources are described in the resources property of the package descriptor. 
-#' This property \code{MUST} be an array of objects. Each object \code{MUST} follow the \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource specification}.
+#' This property \code{MUST} be an array of objects. Each object \code{MUST} follow the \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource specification}.
 #'  
 #' @section Language:
 #' The key words \code{MUST}, \code{MUST NOT}, \code{REQUIRED}, \code{SHALL}, \code{SHALL NOT}, 
@@ -104,7 +104,7 @@
 #' @return Object of \code{\link{R6Class}}.
 #' @format \code{\link{R6Class}} object.
 #' @seealso \code{\link{Resource.load}}, 
-#' \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource Specifications}
+#' \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
 #' 
 
 Resource <- R6Class(
@@ -532,7 +532,7 @@ DIALECT_KEYS <- c(
 #' @param dataPackage data package list
 #' @rdname Resource.load
 #' @return \code{\link{Resource}} class object
-#' @seealso \code{\link{Resource}}, \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource Specifications}
+#' @seealso \code{\link{Resource}}, \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
 #' @export
 #' 
 #' @examples

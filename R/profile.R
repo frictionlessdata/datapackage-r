@@ -1,5 +1,5 @@
 #' Profile class
-#' @description Class to represent JSON Schema profile from \href{https://frictionlessdata.io/schemas/registry.json}{Profiles Registry}.
+#' @description Class to represent JSON Schema profile from \href{https://specs.frictionlessdata.io/schemas/registry.json}{Profiles Registry}.
 #' 
 #' @usage # Profile.load(profile)
 #' @param profile string profile name in registry or URL to JSON Schema
@@ -26,7 +26,7 @@
 #'   \item{\code{jsonschema}}{Returns profile JSON Schema contents.}
 #' }
 #' 
-#' @seealso \href{http://frictionlessdata.io/specs/profiles/}{Profile Specifications}
+#' @seealso \href{https://specs.frictionlessdata.io//profiles/}{Profile Specifications}
 #' 
 #' @docType class
 #' @importFrom R6 R6Class

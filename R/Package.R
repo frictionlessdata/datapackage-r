@@ -105,7 +105,7 @@
 #' in this package documents are to be interpreted as described in \href{https://www.ietf.org/rfc/rfc2119.txt}{RFC 2119}.
 #'
 #' @seealso \code{\link{Package.load}}, 
-#' \href{https://frictionlessdata.io/specs/data-package/}{Data Package Specifications}
+#' \href{https://specs.frictionlessdata.io//data-package/}{Data Package Specifications}
 #' 
 #'  
 #' @docType class
@@ -400,7 +400,7 @@ Package <- R6::R6Class(
 #' Setting it to \code{TRUE} leads to throwing errors on any operation with invalid descriptor.
 #' @rdname Package.load
 #' @seealso \code{\link{Package}}, 
-#' \href{https://frictionlessdata.io/specs/data-package/#specification}{Data Package Specifications}
+#' \href{https://specs.frictionlessdata.io//data-package/#specification}{Data Package Specifications}
 #' @export
 #' 
 #' 

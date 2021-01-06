@@ -18,6 +18,7 @@ output:
 [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/frictionlessdata/chat)
 
+
 # Description
 
 
@@ -346,7 +347,7 @@ jsonlite::toJSON(descriptor, pretty = TRUE)
 
 ### Working with Foreign Keys
 
-The package supports foreign keys described in the [Table Schema](http://specs.frictionlessdata.io/table-schema/#foreign-keys) specification. It means if your data package descriptor use `resources[]$schema$foreignKeys` property for some resources a data integrity will be checked on reading operations.
+The package supports foreign keys described in the [Table Schema](https://specs.frictionlessdata.io/table-schema/#foreign-keys) specification. It means if your data package descriptor use `resources[]$schema$foreignKeys` property for some resources a data integrity will be checked on reading operations.
 
 Consider we have a data package:
 

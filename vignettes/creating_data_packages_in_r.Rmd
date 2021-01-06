@@ -38,7 +38,7 @@ You can start using the package by loading `datapackage.r`.
 library(datapackage.r)
 ```
 
-You can add useful metadata by adding keys to metadata dict attribute. Below, we are adding the required `name` key as well as a human-readable `title` key. For the keys supported, please consult the full [Data Package spec](https://frictionlessdata.io/specs/data-package/#metadata). Note, we will be creating the required `resources` key further down below.
+You can add useful metadata by adding keys to metadata dict attribute. Below, we are adding the required `name` key as well as a human-readable `title` key. For the keys supported, please consult the full [Data Package spec](https://specs.frictionlessdata.io//data-package/). Note, we will be creating the required `resources` key further down below.
 
 ```{r, eval=TRUE, include=TRUE}
 dataPackage <- Package.load()
