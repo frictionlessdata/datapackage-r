@@ -65,14 +65,14 @@ resource6 <- Resource.load(descriptor6)
 resource6$source
 
 # Resource - Remote source/sourceType
-descriptor7 <- '{"name": "name","path": ["http://example.com//table.csv"]}'
+descriptor7 <- '{"name": "name","path": ["https://example.com//table.csv"]}'
 resource7 <- Resource.load(descriptor7)
 resource7$source 
 
 # Resource - Multipart Remote source/sourceType
 descriptor8 <- '{
               "name": "name",
-              "path": ["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]
+              "path": ["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]
               }'
 resource8 <- Resource.load(descriptor8)
 resource8$source 
@@ -109,5 +109,5 @@ table
 
 }
 \seealso{
-\code{\link{Resource}}, \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
+\code{\link{Resource}}, \href{httpss://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
 }

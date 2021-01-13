@@ -80,7 +80,7 @@
 #'   \item{\code{tabular}}{Returns \code{TRUE} if resource is tabular.}
 #'   \item{\code{source}}{Returns a list/string of data/path property respectively.}
 #'   \item{\code{headers}}{Returns a string of data source headers.}
-#'   \item{\code{schema}}{Returns a \code{Schema} instance to interact with data schema. Read API documentation - \href{https://github.com/frictionlessdata/tableschema-r#schema}{tableschema.Schema} or \link[tableschema.r]{Schema}}
+#'   \item{\code{schema}}{Returns a \code{Schema} instance to interact with data schema. Read API documentation - \href{httpss://github.com/frictionlessdata/tableschema-r#schema}{tableschema.Schema} or \link[tableschema.r]{Schema}}
 #'  }
 #'
 #'  
@@ -90,12 +90,12 @@
 #' A range of other properties can be declared to provide a richer set of metadata.
 #' 
 #' Packaged data resources are described in the resources property of the package descriptor. 
-#' This property \code{MUST} be an array of objects. Each object \code{MUST} follow the \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource specification}.
+#' This property \code{MUST} be an array of objects. Each object \code{MUST} follow the \href{httpss://specs.frictionlessdata.io//data-resource/}{Data Resource specification}.
 #'  
 #' @section Language:
 #' The key words \code{MUST}, \code{MUST NOT}, \code{REQUIRED}, \code{SHALL}, \code{SHALL NOT}, 
 #' \code{SHOULD}, \code{SHOULD NOT}, \code{RECOMMENDED}, \code{MAY}, and \code{OPTIONAL} 
-#' in this package documents are to be interpreted as described in \href{https://www.ietf.org/rfc/rfc2119.txt}{RFC 2119}.
+#' in this package documents are to be interpreted as described in \href{httpss://www.ietf.org/rfc/rfc2119.txt}{RFC 2119}.
 #' 
 #' @docType class
 #' @importFrom R6 R6Class
@@ -104,7 +104,7 @@
 #' @return Object of \code{\link{R6Class}}.
 #' @format \code{\link{R6Class}} object.
 #' @seealso \code{\link{Resource.load}}, 
-#' \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
+#' \href{httpss://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
 #' 
 
 Resource <- R6Class(
@@ -532,7 +532,7 @@ DIALECT_KEYS <- c(
 #' @param dataPackage data package list
 #' @rdname Resource.load
 #' @return \code{\link{Resource}} class object
-#' @seealso \code{\link{Resource}}, \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
+#' @seealso \code{\link{Resource}}, \href{httpss://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
 #' @export
 #' 
 #' @examples
@@ -579,14 +579,14 @@ DIALECT_KEYS <- c(
 #' resource6$source
 #' 
 #' # Resource - Remote source/sourceType
-#' descriptor7 <- '{"name": "name","path": ["http://example.com//table.csv"]}'
+#' descriptor7 <- '{"name": "name","path": ["https://example.com//table.csv"]}'
 #' resource7 <- Resource.load(descriptor7)
 #' resource7$source 
 #' 
 #' # Resource - Multipart Remote source/sourceType
 #' descriptor8 <- '{
 #'               "name": "name",
-#'               "path": ["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]
+#'               "path": ["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]
 #'               }'
 #' resource8 <- Resource.load(descriptor8)
 #' resource8$source 
