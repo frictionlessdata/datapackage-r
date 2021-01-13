@@ -11,7 +11,7 @@
 "title": "Tabular Data Package",
 "schema": "https://specs.frictionlessdata.io/schemas/tabular-data-package.json",
 "schema_path": "tabular-data-package.json",
-"specification": "http://specs.frictionlessdata.io/tabular-data-package/"
+"specification": "https://specs.frictionlessdata.io/tabular-data-package/"
 },
 {
 "id": "fiscal-data-package",
