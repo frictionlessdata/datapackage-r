@@ -170,7 +170,7 @@
 #' Examples: 
 #' \itemize{
 #' \item{\code{{"profile": "tabular-data-package"}}}
-#' \item{\code{{"profile": "http://example.com/my-profiles-json-schema.json"}}}
+#' \item{\code{{"profile": "https://example.com/my-profiles-json-schema.json"}}}
 #' }
 #' }
 #' 
@@ -226,14 +226,14 @@
 #'    "contributors": [{
 #'      "title": "Joe Bloggs",
 #'      "email": "joe@bloggs.com",
-#'      "path": "http://www.bloggs.com",
+#'      "path": "https://www.bloggs.com",
 #'      "role": "author"
 #'    }]
 #' }
 #' 
 #' \itemize{
 #' \item{\code{title}: Name/Title of the contributor (name for person, name/title of organization).}
-#' \item{\code{path}: A fully qualified http URL pointing to a relevant location online for the contributor.}
+#' \item{\code{path}: A fully qualified https URL pointing to a relevant location online for the contributor.}
 #' \item{\code{email}: An email address.}
 #' \item{\code{role}: A string describing the role of the contributor. It \code{MUST} be one of: \code{author}, 
 #'   \code{publisher}, \code{maintainer}, \code{wrangler}, and \code{contributor}. Defaults to \code{contributor}.
