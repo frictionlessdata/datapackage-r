@@ -158,7 +158,7 @@ test_that('pointer bad', {
 
 
 test_that('remote', {
-  descriptor <- helpers.from.json.to.list('{"name": "name", "data": "data", "schema": "http://example.com/schema"}')
+  descriptor <- helpers.from.json.to.list('{"name": "name", "data": "data", "schema": "https://example.com/schema"}')
   
   schema <- testthat::with_mock(
       httptest::fake_response(
@@ -185,7 +185,7 @@ test_that('remote bad', {
   descriptor <- helpers.from.json.to.list('{
                                          "name": "name",
                                          "data": "data",
-                                         "schema": "http://example.com/schema"
+                                         "schema": "https://example.com/schema"
 }')
   
   expect_error(with_mock(
@@ -427,10 +427,10 @@ test_that('local bad not safe traversing', {
 test_that('remote', {
   descriptor <- '{
   "name": "name",
-  "path": ["http://example.com//table.csv"]
+  "path": ["https://example.com//table.csv"]
 }'
   resource <- Resource.load(descriptor)
-  expect_equal(resource$source, 'http://example.com//table.csv')
+  expect_equal(resource$source, 'https://example.com//table.csv')
   expect_true(resource$remote)
 })
 
@@ -439,18 +439,18 @@ test_that('remote path relative and base path remote', {
   "name": "name",
   "path": ["table.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'http://example.com/')
-  expect_equal(resource$source, 'http://example.com//table.csv')
+  resource <- Resource.load(descriptor, basePath = 'https://example.com/')
+  expect_equal(resource$source, 'https://example.com//table.csv')
   expect_true(resource$remote)
 })
 
 test_that('remote path remote and base path remote', {
   descriptor <- '{
   "name": "name",
-  "path": ["http://example1.com/table.csv"]
+  "path": ["https://example1.com/table.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'http://example1.com/')
-  expect_equal(resource$source, 'http://example1.com/table.csv')
+  resource <- Resource.load(descriptor, basePath = 'https://example1.com/')
+  expect_equal(resource$source, 'https://example1.com/table.csv')
   expect_true(resource$remote)
 })
 
@@ -498,11 +498,11 @@ test_that('multipart local bad not safe traversing', {
 test_that('multipart remote', {
   descriptor <- '{
   "name": "name",
-  "path": ["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]
+  "path": ["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]
 }'
   resource <- Resource.load(descriptor)
   expect_equal(resource$source,
-               jsonlite::fromJSON('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]'))
+               jsonlite::fromJSON('["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]'))
   expect_true(resource$remote)
   expect_true(resource$multipart)
 })
@@ -512,9 +512,9 @@ test_that('multipart remote path relative and base path remote', {
   "name": "name",
   "path": ["chunk1.csv", "chunk2.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'http://example.com')
+  resource <- Resource.load(descriptor, basePath = 'https://example.com')
   expect_equal(resource$source,
-               jsonlite::fromJSON('["http://example.com/chunk1.csv", "http://example.com/chunk2.csv"]'))
+               jsonlite::fromJSON('["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]'))
   expect_true(resource$remote)
   expect_true(resource$multipart)
 })
@@ -523,11 +523,11 @@ test_that('multipart remote path relative and base path remote', {
 test_that('multipart remote path remote and base path remote', {
   descriptor <- '{
   "name": "name",
-  "path": ["chunk1.csv", "http://example2.com/chunk2.csv"]
+  "path": ["chunk1.csv", "https://example2.com/chunk2.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'http://example1.com')
+  resource <- Resource.load(descriptor, basePath = 'https://example1.com')
   expect_equal(resource$source,
-               jsonlite::fromJSON('["http://example1.com/chunk1.csv", "http://example2.com/chunk2.csv"]'))
+               jsonlite::fromJSON('["https://example1.com/chunk1.csv", "https://example2.com/chunk2.csv"]'))
   expect_true(resource$remote)
   expect_true(resource$multipart)
 })
