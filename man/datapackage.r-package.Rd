@@ -216,7 +216,7 @@ Example:
 \code{
   "sources": [{
     "title": "World Bank and OECD",
-    "path": "http://data.worldbank.org/indicator/NY.GDP.MKTP.CD"
+    "path": "https://data.worldbank.org/indicator/NY.GDP.MKTP.CD"
   }]
 }
 
