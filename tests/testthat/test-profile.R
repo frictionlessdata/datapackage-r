@@ -44,7 +44,7 @@ test_that('load remote profile 1', {
 })
 
 test_that('load remote profile', {
-  url <- 'http://example.com/data-package.json'
+  url <- 'https://example.com/data-package.json'
   jsonschema <- helpers.from.json.to.list('inst/profiles/data-package.json')
   httptest::with_mock_API({
     profile <- Profile.load(url)
@@ -61,7 +61,7 @@ test_that('throw loading bad registry profile', {
 
 
 test_that('throw loading bad remote profile', {
-  name <- 'http://example.com/profile.json'
+  name <- 'https://example.com/profile.json'
   
   
   expect_error(
