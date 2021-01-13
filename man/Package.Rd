@@ -121,7 +121,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 
 \seealso{
 \code{\link{Package.load}}, 
-\href{https://frictionlessdata.io/specs/data-package/}{Data Package Specifications}
+\href{https://specs.frictionlessdata.io//data-package/}{Data Package Specifications}
 }
 \keyword{data}
 \section{Methods}{
