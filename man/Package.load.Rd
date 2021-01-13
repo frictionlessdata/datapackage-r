@@ -108,5 +108,5 @@ dataPackage7$resources[[1]]$name
 }
 \seealso{
 \code{\link{Package}}, 
-\href{https://frictionlessdata.io/specs/data-package/#specification}{Data Package Specifications}
+\href{https://specs.frictionlessdata.io//data-package/#specification}{Data Package Specifications}
 }

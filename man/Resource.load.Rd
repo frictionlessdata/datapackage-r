@@ -109,5 +109,5 @@ table
 
 }
 \seealso{
-\code{\link{Resource}}, \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource Specifications}
+\code{\link{Resource}}, \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
 }

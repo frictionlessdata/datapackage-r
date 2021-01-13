@@ -104,7 +104,7 @@ The essence of a Data Resource is a locator for the data it describes.
 A range of other properties can be declared to provide a richer set of metadata.
 
 Packaged data resources are described in the resources property of the package descriptor. 
-This property \code{MUST} be an array of objects. Each object \code{MUST} follow the \href{https://frictionlessdata.io/specs/data-resource/}{Data Resource specification}.
+This property \code{MUST} be an array of objects. Each object \code{MUST} follow the \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource specification}.
 }
 
 \section{Language}{
@@ -116,7 +116,7 @@ in this package documents are to be interpreted as described in \href{https://ww
 
 \seealso{
 \code{\link{Resource.load}}, 
-\href{https://frictionlessdata.io/specs/data-resource/}{Data Resource Specifications}
+\href{https://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
 }
 \section{Methods}{
 \subsection{Public methods}{

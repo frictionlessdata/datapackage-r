@@ -14,7 +14,7 @@
 Object of \code{\link{R6Class}} .
 }
 \description{
-Class to represent JSON Schema profile from \href{https://frictionlessdata.io/schemas/registry.json}{Profiles Registry}.
+Class to represent JSON Schema profile from \href{https://specs.frictionlessdata.io/schemas/registry.json}{Profiles Registry}.
 }
 \section{Methods}{
 
@@ -42,7 +42,7 @@ Validate a tabular data package descriptor against the \code{Profile}.}
 }
 
 \seealso{
-\href{http://frictionlessdata.io/specs/profiles/}{Profile Specifications}
+\href{https://specs.frictionlessdata.io//profiles/}{Profile Specifications}
 }
 \section{Methods}{
 \subsection{Public methods}{
