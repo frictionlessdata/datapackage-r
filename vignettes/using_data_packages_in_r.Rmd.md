@@ -110,7 +110,7 @@ You can further manipulate list objects in R by using [purrr](https://cran.r-pro
 Loading into an SQL database
 ----------------------------
 
-[Tabular Data Packages](https://frictionlessdata.io/specs/tabular-data-package/) contains schema information about its data using [Table Schema](https://frictionlessdata.io/specs/table-schema/). This means you can easily import your Data Package into the SQL backend of your choice. In this case, we are creating an [SQLite](https://sqlite.org/) database.
+[Tabular Data Packages](https://frictionlessdata.io/specs/tabular-data-package/) contains schema information about its data using [Table Schema](https://frictionlessdata.io/specs/table-schema/). This means you can easily import your Data Package into the SQL backend of your choice. In this case, we are creating an [SQLite](https://sqlite.org/index.html) database.
 
 To create a new SQLite database and load the data into SQL we will need [DBI](https://cran.r-project.org/package=DBI) package and [RSQLite](https://cran.r-project.org/package=RSQLite) package, which contains [SQLite](https://www.sqlite.org/) (no external software is needed).
 
