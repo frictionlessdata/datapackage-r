@@ -181,8 +181,8 @@ that is a fully qualified HTTP address, or a relative POSIX path (see
 }
 
 \item{\code{profile}}{
-A string identifying the \href{https://frictionlessdata.io/specs/profiles/}{profile} of this descriptor as per 
-the \href{https://frictionlessdata.io/specs/profiles/}{profiles} specification.}
+A string identifying the \href{https://specs.frictionlessdata.io//profiles/}{profile} of this descriptor as per 
+the \href{https://specs.frictionlessdata.io//profiles//}{profiles} specification.}
 
 Examples: 
 \itemize{
@@ -207,7 +207,7 @@ formatted -- this also allows for simple plain text as plain text is itself vali
 
 \item{\code{version}}{A version string identifying the version of the package. It should conform to the 
 \href{https://semver.org/}{Semantic Versioning} requirements and should follow the 
-\href{https://frictionlessdata.io/specs/patterns/#data-package-version}{Data Package Version} pattern.}
+\href{https://specs.frictionlessdata.io//patterns/}{Data Package Version} pattern.}
 
 \item{\code{sources}}{The raw sources for this data package. It \code{MUST} be an array of Source objects. Each Source object \code{MUST} have a \code{title} and \code{MAY} have \code{path} and/or \code{email} properties. 
 
