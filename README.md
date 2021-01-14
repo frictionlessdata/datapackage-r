@@ -25,7 +25,7 @@ version](https://img.shields.io/badge/R%3E%3D-3.6-6666ff.svg)](https://cran.r-pr
 # Description
 
 R package for working with [Frictionless Data
-Package](http://frictionlessdata.io/specs/data-package).
+Package](https://specs.frictionlessdata.io/data-package/).
 
 ## Features
 

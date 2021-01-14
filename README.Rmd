@@ -891,7 +891,7 @@ In [NEWS.md][news] described only breaking and the most important changes. The f
 [Rstudio]: https://www.rstudio.com/
 [Rstudiodown]: https://www.rstudio.com/products/rstudio/download/
 [coding_standards]: https://github.com/okfn/coding-standards
-[datapackage]: http://frictionlessdata.io/specs/data-package
+[datapackage]: https://specs.frictionlessdata.io/data-package/
 [news]: https://github.com/frictionlessdata/datapackage-r/blob/master/NEWS.md
 [commits]: https://github.com/frictionlessdata/datapackage-r/commits/master
 
