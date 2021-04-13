@@ -2075,7 +2075,7 @@
                 "title": "Skip Initial Space",
                 "description": "Specifies the interpretation of whitespace immediately following a delimiter. If false, whitespace immediately after a delimiter should be treated as part of the subsequent field.",
                 "type": "boolean",
-                "default": true,
+                "default": false,
                 "examples": [
                   "{\n  \"skipInitialSpace\": true\n}\n"
                 ]

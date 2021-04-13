@@ -93,7 +93,7 @@ For now only descriptor will be saved. Save resource to target destination.}
   \item{\code{tabular}}{Returns \code{TRUE} if resource is tabular.}
   \item{\code{source}}{Returns a list/string of data/path property respectively.}
   \item{\code{headers}}{Returns a string of data source headers.}
-  \item{\code{schema}}{Returns a \code{Schema} instance to interact with data schema. Read API documentation - \href{https://github.com/frictionlessdata/tableschema-r#schema}{tableschema.Schema} or \link[tableschema.r]{Schema}}
+  \item{\code{schema}}{Returns a \code{Schema} instance to interact with data schema. Read API documentation - \href{httpss://github.com/frictionlessdata/tableschema-r#schema}{tableschema.Schema} or \link[tableschema.r]{Schema}}
  }
 }
 
@@ -104,19 +104,19 @@ The essence of a Data Resource is a locator for the data it describes.
 A range of other properties can be declared to provide a richer set of metadata.
 
 Packaged data resources are described in the resources property of the package descriptor. 
-This property \code{MUST} be an array of objects. Each object \code{MUST} follow the \href{https://specs.frictionlessdata.io//data-resource/}{Data Resource specification}.
+This property \code{MUST} be an array of objects. Each object \code{MUST} follow the \href{httpss://specs.frictionlessdata.io//data-resource/}{Data Resource specification}.
 }
 
 \section{Language}{
 
 The key words \code{MUST}, \code{MUST NOT}, \code{REQUIRED}, \code{SHALL}, \code{SHALL NOT}, 
 \code{SHOULD}, \code{SHOULD NOT}, \code{RECOMMENDED}, \code{MAY}, and \code{OPTIONAL} 
-in this package documents are to be interpreted as described in \href{https://www.ietf.org/rfc/rfc2119.txt}{RFC 2119}.
+in this package documents are to be interpreted as described in \href{httpss://www.ietf.org/rfc/rfc2119.txt}{RFC 2119}.
 }
 
 \seealso{
 \code{\link{Resource.load}}, 
-\href{https://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
+\href{httpss://specs.frictionlessdata.io//data-resource/}{Data Resource Specifications}
 }
 \section{Methods}{
 \subsection{Public methods}{

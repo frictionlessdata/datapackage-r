@@ -1,6 +1,10 @@
 NEWS
 ================
 
+#### datapackage.r v1.3.3
+
+update profiles
+
 #### datapackage.r v1.3.2
 
 keep profiles up to date
