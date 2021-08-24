@@ -14,29 +14,31 @@ testthat::context("Resource")
 testthat::context("Resource #load")
 ########################################################
 
-test_that('works with base descriptor', {
-  
+test_that("works with base descriptor", {
   descriptor <- '{"name":"name","data":["data"]}'
   resource <- Resource.load(descriptor)
-  
-  expect_equal(resource$name, 'name')
+
+  expect_equal(resource$name, "name")
   expect_false(resource$tabular)
-  expect_equal(resource$descriptor, 
-               expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
+  expect_equal(
+    resource$descriptor,
+    expandResourceDescriptor(helpers.from.json.to.list(descriptor))
+  )
   expect_true(resource$inline)
   expect_equal(resource$source, list("data"))
   expect_null(resource$table)
 })
 
-test_that('works with tabular descriptor', {
-  
-  descriptor <- '{"name":"name","data":["data"],"profile":"tabular-data-resource"}' 
+test_that("works with tabular descriptor", {
+  descriptor <- '{"name":"name","data":["data"],"profile":"tabular-data-resource"}'
   resource <- Resource.load(descriptor)
-  
-  expect_equal(resource$name, 'name')
+
+  expect_equal(resource$name, "name")
   expect_true(resource$tabular)
-  expect_equal(resource$descriptor,
-               expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
+  expect_equal(
+    resource$descriptor,
+    expandResourceDescriptor(helpers.from.json.to.list(descriptor))
+  )
   expect_true(resource$inline)
   expect_true(resource$checkRelations())
   expect_equal(resource$source, list("data"))
@@ -44,43 +46,45 @@ test_that('works with tabular descriptor', {
 
 
 #######################################################
-testthat::context('Resource #descriptor (retrieve)')
+testthat::context("Resource #descriptor (retrieve)")
 ########################################################
 
-test_that('object', {
-  
+test_that("object", {
   descriptor <- '{"name": "name","data": "data"}'
   resource <- Resource.load(descriptor)
-  
-  expect_equal(resource$descriptor,
-               expandResourceDescriptor(helpers.from.json.to.list(descriptor)))
+
+  expect_equal(
+    resource$descriptor,
+    expandResourceDescriptor(helpers.from.json.to.list(descriptor))
+  )
 })
 
 
-test_that('string remote path', {
-  
-  fileName <- system.file('extdata/data-resource.json', package = "datapackage.r")
+test_that("string remote path", {
+  fileName <- system.file("extdata/data-resource.json", package = "datapackage.r")
   contents <- helpers.from.json.to.list(fileName)
-  
-  descriptor <- 'https://httpbin.org/data-resource/'
-  
+
+  descriptor <- "https://httpbin.org/data-resource/"
+
   httptest::with_mock_API({
     resource <- Resource.load(descriptor)
   })
-  
-  expect_equal(resource$descriptor,
-               expandResourceDescriptor(descriptor = contents))
+
+  expect_equal(
+    resource$descriptor,
+    expandResourceDescriptor(descriptor = contents)
+  )
 })
 
 
-test_that('string remote path bad', {
-  
-  descriptor <- 'https://httpbin.org/bad-path.json'
-  
+test_that("string remote path bad", {
+  descriptor <- "https://httpbin.org/bad-path.json"
+
   expect_error(
     with_mock(
-      `httr:::request_perform` = function()
-        httptest::fake_response(httr::GET(descriptor), status_code = 500) ,
+      `httr:::request_perform` = function() {
+        httptest::fake_response(httr::GET(descriptor), status_code = 500)
+      },
       `httptest::request_happened` = expect_message,
       eval.parent(Resource.load(descriptor)),
       "Can not retrieve remote"
@@ -88,153 +92,157 @@ test_that('string remote path bad', {
   )
 })
 
-test_that('string local path', {
-  
-  fileName <- system.file('extdata/data-resource.json', package = "datapackage.r")
+test_that("string local path", {
+  fileName <- system.file("extdata/data-resource.json", package = "datapackage.r")
   contents <- helpers.from.json.to.list(fileName)
-  descriptor  <- 'inst/extdata/data-resource.json'
+  descriptor <- "inst/extdata/data-resource.json"
   resource <- Resource.load(descriptor)
-  
+
   expect_equal(resource$descriptor, expandResourceDescriptor(contents))
 })
 
-test_that('string local bad path', {
-  
-  descriptor <- 'bad-path.json'
+test_that("string local bad path", {
+  descriptor <- "bad-path.json"
   expect_error(Resource.load(descriptor))
 })
 
 #########################################################
-testthat::context('Resource #descriptor (dereference)')
+testthat::context("Resource #descriptor (dereference)")
 #########################################################
 
-test_that('general', {
-  descriptor <- system.file('extdata/data-resource-dereference.json', package = "datapackage.r")
+test_that("general", {
+  descriptor <- system.file("extdata/data-resource-dereference.json", package = "datapackage.r")
   resource <- Resource.load(descriptor)
-  
-  expect_equal(resource$descriptor,
-               expandResourceDescriptor(
-                 helpers.from.json.to.list(
-                   '{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'
-                 )
-               ))
+
+  expect_equal(
+    resource$descriptor,
+    expandResourceDescriptor(
+      helpers.from.json.to.list(
+        '{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'
+      )
+    )
+  )
 })
 
-test_that('general strict', {
-  descriptor <- system.file('extdata/data-resource-dereference.json', package = "datapackage.r")
-  resource <- Resource.load(descriptor,strict = TRUE)
-  
-  expect_equal(resource$descriptor,
-               expandResourceDescriptor(
-                 helpers.from.json.to.list(
-                   '{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'
-                 )
-               ))
+test_that("general strict", {
+  descriptor <- system.file("extdata/data-resource-dereference.json", package = "datapackage.r")
+  resource <- Resource.load(descriptor, strict = TRUE)
+
+  expect_equal(
+    resource$descriptor,
+    expandResourceDescriptor(
+      helpers.from.json.to.list(
+        '{"name": "name",  "data": "data","schema": {"fields": [{"name": "name"}]},"dialect": {"delimiter": ","},"dialects": {"main": {"delimiter": ","}}}'
+      )
+    )
+  )
 })
 
 
-test_that('pointer', {
+test_that("pointer", {
   descriptor <- '{"name": "name","data": "data","schema": "#/schemas/main","schemas": {"main": {"fields": [{"name": "name"}]}}}'
   resource <- Resource.load(descriptor)
-  expect_equal(resource$descriptor,
-               expandResourceDescriptor(
-                 helpers.from.json.to.list(
-                   '{
+  expect_equal(
+    resource$descriptor,
+    expandResourceDescriptor(
+      helpers.from.json.to.list(
+        '{
                    "name": "name",
                    "data": "data",
                    "schema": {"fields": [{"name": "name"}]},
                    "schemas": {"main": {"fields": [{"name": "name"}]}}
 }'
-                 )
-               ))
+      )
+    )
+  )
 })
 
 
-test_that('pointer bad', {
+test_that("pointer bad", {
   descriptor <- '{"name": "name", "data": "data", "schema": "#/schemas/main"}'
-  expect_error(Resource.load(descriptor), 'Not resolved Pointer URI')
-  
+  expect_error(Resource.load(descriptor), "Not resolved Pointer URI")
 })
 
 
-test_that('remote', {
+test_that("remote", {
   descriptor <- helpers.from.json.to.list('{"name": "name", "data": "data", "schema": "https://example.com/schema"}')
-  
+
   schema <- testthat::with_mock(
-      httptest::fake_response(
-        request = httr::GET(descriptor$schema),
-        status_code = 200,
-        content = rlist::list.serialize(list(fields = list(list(name = "name"))),"inst/extdata/list.json")
-      ), 
+    httptest::fake_response(
+      request = httr::GET(descriptor$schema),
+      status_code = 200,
+      content = rlist::list.serialize(list(fields = list(list(name = "name"))), "inst/extdata/list.json")
+    ),
     `httptest::request_happened` = expect_message,
-  .env = eval.parent(Resource.load(descriptor))
+    .env = eval.parent(Resource.load(descriptor))
   )
   descriptor$schema <- content(schema)
-  
+
   resource <- Resource.load(descriptor)
-  expect_equal(resource$descriptor,
-               expandResourceDescriptor(descriptor = list(
-                 name = 'name',
-                 data = 'data',
-                 schema = list(fields = list(list(name = 'name')))
-               )))
+  expect_equal(
+    resource$descriptor,
+    expandResourceDescriptor(descriptor = list(
+      name = "name",
+      data = "data",
+      schema = list(fields = list(list(name = "name")))
+    ))
+  )
 })
 
 
-test_that('remote bad', {
+test_that("remote bad", {
   descriptor <- helpers.from.json.to.list('{
                                          "name": "name",
                                          "data": "data",
                                          "schema": "https://example.com/schema"
 }')
-  
+
   expect_error(with_mock(
-      stop('Could not resolve host'),
+    stop("Could not resolve host"),
     `httptest::request_happened` = expect_message,
-  .env =eval.parent(Resource.load(descriptor))
-  ), 'Could not resolve host')
-  
-  
+    .env = eval.parent(Resource.load(descriptor))
+  ), "Could not resolve host")
 })
 
 #
-test_that('local', {
+test_that("local", {
   descriptor <- '{
                   "name": "name",
                   "data": "data",
                   "schema": "table-schema.json"
                 }'
-  resource <- Resource.load(descriptor, basePath = 'inst/extdata')
-  expect_equal(resource$descriptor, 
-               expandResourceDescriptor(helpers.from.json.to.list('{"name": "name","data": "data","schema": {"fields": [{"name": "name"}]} }')))
+  resource <- Resource.load(descriptor, basePath = "inst/extdata")
+  expect_equal(
+    resource$descriptor,
+    expandResourceDescriptor(helpers.from.json.to.list('{"name": "name","data": "data","schema": {"fields": [{"name": "name"}]} }'))
+  )
 })
 
-test_that('local bad', {
+test_that("local bad", {
   descriptor <- '{
                   "name": "name",
                   "data": "data",
                   "schema": "bad-path.json"
                 }'
-  expect_error(Resource.load(descriptor, basePath = 'inst/extdata'))
-  
+  expect_error(Resource.load(descriptor, basePath = "inst/extdata"))
 })
 
-test_that('local bad not safe', {
+test_that("local bad not safe", {
   descriptor <- '{
                   "name": "name",
                   "data": "data",
                   "schema": "../extdata/table-schema.json"
                 }'
-  expect_error(Resource.load(descriptor, basePath = 'inst/extdata'), "Not safe path")
+  expect_error(Resource.load(descriptor, basePath = "inst/extdata"), "Not safe path")
 })
 
 
 
 #######################################################
-testthat::context('Resource #descriptor (expand)')
+testthat::context("Resource #descriptor (expand)")
 ########################################################
 
-test_that('general resource', {
+test_that("general resource", {
   descriptor <- '{
                   "name": "name",
                   "data": "data"
@@ -243,7 +251,7 @@ test_that('general resource', {
   expect_equal(resource$descriptor, helpers.from.json.to.list('{"name": "name","data": "data","profile": "data-resource","encoding": "utf-8"}'))
 })
 
-test_that('tabular resource schema', {
+test_that("tabular resource schema", {
   descriptor <- helpers.from.json.to.list('{
                                             "name": "name",
                                             "data": "data",
@@ -262,13 +270,13 @@ test_that('tabular resource schema', {
                                                   "missingValues": [""]
                                              }
                                             }')
-  
+
   resource <- Resource.load(descriptor)
-  
+
   expect_equal(resource$descriptor[sort(names(resource$descriptor))], target_outcome[sort(names(target_outcome))])
 })
 
-test_that('tabular resource dialect', {
+test_that("tabular resource dialect", {
   descriptor <- helpers.from.json.to.list('{
      "name": "name",
      "data": "data",
@@ -279,27 +287,25 @@ test_that('tabular resource dialect', {
    }')
   resource <- Resource.load(descriptor)
   expect_equivalent(resource$descriptor, list(
-    name = 'name',
-    data = 'data',
-    profile = 'tabular-data-resource',
+    name = "name",
+    data = "data",
+    profile = "tabular-data-resource",
     dialect = list(
-      delimiter = 'custom',
+      delimiter = "custom",
       doubleQuote = TRUE,
-      lineTerminator = '\r\n',
+      lineTerminator = "\r\n",
       quoteChar = '"',
       # escapeChar = '\\',
       skipInitialSpace = TRUE,
       header = TRUE,
       caseSensitiveHeader = FALSE
-    ),    encoding = 'utf-8'
-  )
-  
-  )
+    ), encoding = "utf-8"
+  ))
 })
 
 
 
-test_that('tabular resource dialect updates quoteChar when given', {
+test_that("tabular resource dialect updates quoteChar when given", {
   descriptor <- helpers.from.json.to.list('{
      "name": "name",
      "data": "data",
@@ -311,25 +317,23 @@ test_that('tabular resource dialect updates quoteChar when given', {
    }')
   resource <- Resource.load(descriptor)
   expect_equivalent(resource$descriptor, list(
-    name = 'name',
-    data = 'data',
-    profile = 'tabular-data-resource',
+    name = "name",
+    data = "data",
+    profile = "tabular-data-resource",
     dialect = list(
-      delimiter = 'custom',
-      quoteChar = '+',
+      delimiter = "custom",
+      quoteChar = "+",
       doubleQuote = TRUE,
-      lineTerminator = '\r\n',
+      lineTerminator = "\r\n",
       skipInitialSpace = TRUE,
       header = TRUE,
       caseSensitiveHeader = FALSE
-    ),    encoding = 'utf-8'
-  )
-  
-  )
+    ), encoding = "utf-8"
+  ))
 })
 
 
-test_that('tabular resource dialect does not include quoteChar, given escapeChar', {
+test_that("tabular resource dialect does not include quoteChar, given escapeChar", {
   descriptor <- helpers.from.json.to.list('{
      "name": "name",
      "data": "data",
@@ -341,25 +345,23 @@ test_that('tabular resource dialect does not include quoteChar, given escapeChar
    }')
   resource <- Resource.load(descriptor)
   expect_equivalent(resource$descriptor, list(
-    name = 'name',
-    data = 'data',
-    profile = 'tabular-data-resource',
+    name = "name",
+    data = "data",
+    profile = "tabular-data-resource",
     dialect = list(
-      delimiter = 'custom',
-      escapeChar = '/+',
+      delimiter = "custom",
+      escapeChar = "/+",
       doubleQuote = TRUE,
-      lineTerminator = '\r\n',
+      lineTerminator = "\r\n",
       skipInitialSpace = TRUE,
       header = TRUE,
       caseSensitiveHeader = FALSE
-    ),    encoding = 'utf-8'
-  )
-  
-  )
+    ), encoding = "utf-8"
+  ))
 })
 
 
-test_that('tabular resource dialect throws error given escapeChar and quoteChar', {
+test_that("tabular resource dialect throws error given escapeChar and quoteChar", {
   descriptor <- helpers.from.json.to.list('{
      "name": "name",
      "data": "data",
@@ -370,36 +372,36 @@ test_that('tabular resource dialect throws error given escapeChar and quoteChar'
        "quoteChar": "\'"
      }
    }')
-  
+
   expect_error(Resource.load(descriptor)$descriptor, "quoteChar and escapeChar are mutually exclusive")
 })
 #######################################################
-testthat::context('Resource #source/sourceType')
+testthat::context("Resource #source/sourceType")
 ########################################################
 
-test_that('inline', {
+test_that("inline", {
   descriptor <- '{
   "name": "name",
   "data": "data",
   "path": ["path"]
 }'
   resource <- Resource.load(descriptor)
-  expect_equal(resource$source, 'data')
+  expect_equal(resource$source, "data")
   expect_true(resource$inline)
 })
 
 
-test_that('local', {
+test_that("local", {
   descriptor <- '{
   "name": "name",
   "path": ["table.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'inst/extdata')
-  expect_equal(resource$source, 'inst/extdata/table.csv')
+  resource <- Resource.load(descriptor, basePath = "inst/extdata")
+  expect_equal(resource$source, "inst/extdata/table.csv")
   expect_true(resource$local)
 })
 
-test_that('local base no base path', {
+test_that("local base no base path", {
   descriptor <- '{
   "name": "name",
   "path": ["table.csv"]
@@ -407,60 +409,60 @@ test_that('local base no base path', {
   expect_error(Resource.load(descriptor, basePath = NULL), "requires base path")
 })
 
-test_that('local bad not safe absolute', {
+test_that("local bad not safe absolute", {
   descriptor <- '{
   "name": "name",
   "path": ["/fixtures/table.csv"]
 }'
-  expect_error(Resource.load(descriptor,basePath = 'extdata'), "not safe")
+  expect_error(Resource.load(descriptor, basePath = "extdata"), "not safe")
 })
 
 
-test_that('local bad not safe traversing', {
+test_that("local bad not safe traversing", {
   descriptor <- '{
   "name": "name",
   "path": ["../fixtures/table.csv"]
 }'
-  expect_error(Resource.load(descriptor,basePath = 'extdata'), "not safe")
+  expect_error(Resource.load(descriptor, basePath = "extdata"), "not safe")
 })
 
-test_that('remote', {
+test_that("remote", {
   descriptor <- '{
   "name": "name",
   "path": ["https://example.com//table.csv"]
 }'
   resource <- Resource.load(descriptor)
-  expect_equal(resource$source, 'https://example.com//table.csv')
+  expect_equal(resource$source, "https://example.com//table.csv")
   expect_true(resource$remote)
 })
 
-test_that('remote path relative and base path remote', {
+test_that("remote path relative and base path remote", {
   descriptor <- '{
   "name": "name",
   "path": ["table.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'https://example.com/')
-  expect_equal(resource$source, 'https://example.com//table.csv')
+  resource <- Resource.load(descriptor, basePath = "https://example.com/")
+  expect_equal(resource$source, "https://example.com//table.csv")
   expect_true(resource$remote)
 })
 
-test_that('remote path remote and base path remote', {
+test_that("remote path remote and base path remote", {
   descriptor <- '{
   "name": "name",
   "path": ["https://example1.com/table.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'https://example1.com/')
-  expect_equal(resource$source, 'https://example1.com/table.csv')
+  resource <- Resource.load(descriptor, basePath = "https://example1.com/")
+  expect_equal(resource$source, "https://example1.com/table.csv")
   expect_true(resource$remote)
 })
 
 
-test_that('multipart local', {
+test_that("multipart local", {
   descriptor <- '{
   "name": "name",
   "path": ["chunk1.csv", "chunk2.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'extdata')
+  resource <- Resource.load(descriptor, basePath = "extdata")
   expect_equal(resource$source, unlist(jsonlite::fromJSON('["extdata/chunk1.csv", "extdata/chunk2.csv"]')))
   expect_equal(resource$local, TRUE)
   expect_true(resource$multipart)
@@ -468,88 +470,91 @@ test_that('multipart local', {
 
 
 
-test_that('multipart local bad no base path', {
+test_that("multipart local bad no base path", {
   descriptor <- helpers.from.json.to.list('{
      "name": "name",
      "path": ["chunk1.csv", "chunk2.csv"]
    }')
-  
-  expect_error(Resource.load(descriptor = descriptor, basePath = NULL), 'requires base path')
-  
+
+  expect_error(Resource.load(descriptor = descriptor, basePath = NULL), "requires base path")
 })
 
-test_that('multipart local bad not safe absolute', {
+test_that("multipart local bad not safe absolute", {
   descriptor <- '{
   "name": "name",
   "path": ["/fixtures/chunk1.csv", "chunk2.csv"]
 }'
-  expect_error(Resource.load(descriptor,basePath = 'extdata'), 'not safe')
+  expect_error(Resource.load(descriptor, basePath = "extdata"), "not safe")
 })
 
-test_that('multipart local bad not safe traversing', {
+test_that("multipart local bad not safe traversing", {
   descriptor <- '{
   "name": "name",
   "path": ["chunk1.csv", "../fixtures/chunk2.csv"]
 }'
-  expect_error(Resource.load(descriptor,basePath = 'extdata'), 'not safe')
-  
+  expect_error(Resource.load(descriptor, basePath = "extdata"), "not safe")
 })
 
-test_that('multipart remote', {
+test_that("multipart remote", {
   descriptor <- '{
   "name": "name",
   "path": ["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]
 }'
   resource <- Resource.load(descriptor)
-  expect_equal(resource$source,
-               jsonlite::fromJSON('["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]'))
+  expect_equal(
+    resource$source,
+    jsonlite::fromJSON('["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]')
+  )
   expect_true(resource$remote)
   expect_true(resource$multipart)
 })
 
-test_that('multipart remote path relative and base path remote', {
+test_that("multipart remote path relative and base path remote", {
   descriptor <- '{
   "name": "name",
   "path": ["chunk1.csv", "chunk2.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'https://example.com')
-  expect_equal(resource$source,
-               jsonlite::fromJSON('["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]'))
+  resource <- Resource.load(descriptor, basePath = "https://example.com")
+  expect_equal(
+    resource$source,
+    jsonlite::fromJSON('["https://example.com/chunk1.csv", "https://example.com/chunk2.csv"]')
+  )
   expect_true(resource$remote)
   expect_true(resource$multipart)
 })
 
 
-test_that('multipart remote path remote and base path remote', {
+test_that("multipart remote path remote and base path remote", {
   descriptor <- '{
   "name": "name",
   "path": ["chunk1.csv", "https://example2.com/chunk2.csv"]
 }'
-  resource <- Resource.load(descriptor, basePath = 'https://example1.com')
-  expect_equal(resource$source,
-               jsonlite::fromJSON('["https://example1.com/chunk1.csv", "https://example2.com/chunk2.csv"]'))
+  resource <- Resource.load(descriptor, basePath = "https://example1.com")
+  expect_equal(
+    resource$source,
+    jsonlite::fromJSON('["https://example1.com/chunk1.csv", "https://example2.com/chunk2.csv"]')
+  )
   expect_true(resource$remote)
   expect_true(resource$multipart)
 })
 
 ########################################################
-testthat::context('Resource #rawRead')
+testthat::context("Resource #rawRead")
 ########################################################
 
-test_that('it raw reads local file source', {
-  
+test_that("it raw reads local file source", {
   resource <- Resource.load('{"path": "inst/extdata/data.csv"}', basePath = getwd())
   bytes <- resource$rawRead()
-  expect_true(grepl('name,size', intToUtf8(bytes), fixed = TRUE))
+  expect_true(grepl("name,size", intToUtf8(bytes), fixed = TRUE))
 })
 
 
 #######################################################
-testthat::context('Resource #table')
+testthat::context("Resource #table")
 ########################################################
 
 
-test_that('general resource', {
+test_that("general resource", {
   descriptor <- '{
   "name": "name",
   "data": "data"
@@ -559,7 +564,7 @@ test_that('general resource', {
 })
 
 
-test_that('tabular resource inline', {
+test_that("tabular resource inline", {
   descriptor <- '{
                   "name": "example",
                   "profile": "tabular-data-resource",
@@ -585,15 +590,17 @@ test_that('tabular resource inline', {
                   }
                 }'
   resource <- Resource.load(descriptor)
-  expect_equal(class(resource$table), c("Table","R6"))
-  expect_equal(resource$table$read(), 
-               helpers.from.json.to.list('[
+  expect_equal(class(resource$table), c("Table", "R6"))
+  expect_equal(
+    resource$table$read(),
+    helpers.from.json.to.list('[
                                             [180, 18, "Tony"],
                                             [192, 32, "Jacob"]
-                                           ]'))
+                                           ]')
+  )
 })
 
-test_that('tabular resource local', {
+test_that("tabular resource local", {
   descriptor <- '{
     "name": "example",
     "profile": "tabular-data-resource",
@@ -610,27 +617,30 @@ test_that('tabular resource local', {
       ]
     }
   }'
-  
+
   resource <- Resource.load(descriptor)
-  expect_equal(class(resource$table), c("Table","R6"))
-  expect_equal(resource$table$read(), 
-               helpers.from.json.to.list('[
+  expect_equal(class(resource$table), c("Table", "R6"))
+  expect_equal(
+    resource$table$read(),
+    helpers.from.json.to.list('[
                                         ["gb", 100],
                                          ["us", 200],
                                          ["cn", 300]
-                                         ]'))
+                                         ]')
+  )
 })
 
 #######################################################
-testthat::context('Resource #infer')
+testthat::context("Resource #infer")
 #######################################################
 
-test_that('preserve resource format from descriptor ', {
+test_that("preserve resource format from descriptor ", {
   descriptor <- '{"path": "inst/extdata/data.csvformat.txt", "format": "csv"}'
   resource <- Resource.load(descriptor)
-  expect_equal(resource$infer(),
-               helpers.from.json.to.list(
-                 '{
+  expect_equal(
+    resource$infer(),
+    helpers.from.json.to.list(
+      '{
 "path": "inst/extdata/data.csvformat.txt",
 "format": "csv",
 "profile": "tabular-data-resource",
@@ -642,10 +652,12 @@ test_that('preserve resource format from descriptor ', {
                  { "name": "population","type": "integer",  "format": "default"}],
                  "missingValues": [""]
                  }
-}'))
+}'
+    )
+  )
 })
 #######################################################
-testthat::context('Resource #encoding')
+testthat::context("Resource #encoding")
 #######################################################
 
 # test_that('it supports encoding property', {
@@ -660,26 +672,29 @@ testthat::context('Resource #encoding')
 # })
 
 
-test_that('it reads incorreclty if proper encoding is not set', {
+test_that("it reads incorreclty if proper encoding is not set", {
   descriptor <- '{
         "path": "inst/extdata/latin1.csv",
         "schema": {"fields": [{"name": "id"}, {"name": "name"}]}
       }'
   resource <- Resource.load(descriptor)
   rows <- resource$read(keyed = F)
-  expect_error(expect_equal(rows,
-               helpers.from.json.to.list(
-                 '[
+  expect_error(expect_equal(
+    rows,
+    helpers.from.json.to.list(
+      '[
         {"id": "1", "name": "english"},
         {"id": "2", "name": "©"}
-      ]')))
+      ]'
+    )
+  ))
 })
 #######################################################
-testthat::context('Resource #dialect')
+testthat::context("Resource #dialect")
 #######################################################
 
-test_that('it supports dialect$delimiter', {
-  descriptor <-helpers.from.json.to.list('{
+test_that("it supports dialect$delimiter", {
+  descriptor <- helpers.from.json.to.list('{
                                            "profile": "tabular-data-resource",
                                            "path": "inst/extdata/data.dialect.csv",
                                            "schema": {
@@ -710,8 +725,8 @@ test_that('it supports dialect$delimiter', {
                                                    ]'))
 })
 
-test_that('it supports dialect$delimiter and true relations', {
-  descriptor <-helpers.from.json.to.list('{
+test_that("it supports dialect$delimiter and true relations", {
+  descriptor <- helpers.from.json.to.list('{
                                            "profile": "tabular-data-resource",
                                            "path": "inst/extdata/data.dialect.csv",
                                            "schema": {
@@ -745,13 +760,13 @@ test_that('it supports dialect$delimiter and true relations', {
 
 
 #######################################################
-testthat::context('Resource #commit')
+testthat::context("Resource #commit")
 #######################################################
 
-test_that('commit', {
-  descriptor <- '{"name":"name","data":["data"],"profile":"data-resource"}' 
+test_that("commit", {
+  descriptor <- '{"name":"name","data":["data"],"profile":"data-resource"}'
   resource <- Resource.load(descriptor)
-  expect_equal(resource$name, 'name')
+  expect_equal(resource$name, "name")
   expect_equal(resource$profile$name, "data-resource")
   expect_false(resource$tabular)
   resource$descriptor$profile <- "tabular-data-resource"
@@ -770,5 +785,6 @@ test_that("general", {
   temp.dir <- tempdir()
   dataResource$save(temp.dir)
   expect_true(file.exists(
-    stringr::str_c(temp.dir, "resource.json", sep = "/")))
+    stringr::str_c(temp.dir, "resource.json", sep = "/")
+  ))
 })
