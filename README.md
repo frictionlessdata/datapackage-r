@@ -10,12 +10,10 @@ Status](https://coveralls.io/repos/github/frictionlessdata/datapackage-r/badge.s
 state but is no longer being actively developed; support/maintenance
 will be provided as time
 allows.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![minimal R
-version](https://img.shields.io/badge/R%3E%3D-3.6-6666ff.svg)](https://cran.r-project.org/)
 [![Rdoc](http://www.rdocumentation.org/badges/version/datapackage.r)](http://www.rdocumentation.org/packages/datapackage.r)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/datapackage.r)](http://cran.rstudio.com/web/packages/datapackage.r/index.html)
 [![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/frictionlessdata/chat)
+[![Support](https://img.shields.io/badge/support-discord-brightgreen)](https://discordapp.com/invite/Sewv6av)
 
 # Description
 
