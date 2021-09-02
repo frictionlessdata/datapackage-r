@@ -3,14 +3,9 @@ Data - <br/>Data Package
 ================
 
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/datapackage.r)](https://cran.r-project.org/package=datapackage.r)
-<!-- badges: start -->
 [![R-CMD-check](https://github.com/frictionlessdata/datapackage-r/workflows/R-CMD-check/badge.svg)](https://github.com/frictionlessdata/datapackage-r/actions)
-<!-- badges: end --> [![Coverage
-Status](https://coveralls.io/repos/github/frictionlessdata/datapackage-r/badge.svg?branch=master)](https://coveralls.io/github/frictionlessdata/datapackage-r?branch=master)<!-- [![Coverage Status](https://img.shields.io/codecov/c/github/frictionlessdata/datapackage-r/master.svg)](https://codecov.io/github/frictionlessdata/datapackage-r?branch=master) -->
-[![Github
-Issues](http://githubbadges.herokuapp.com/frictionlessdata/datapackage-r/issues.svg)](https://github.com/frictionlessdata/datapackage-r/issues)
-[![Pending
-Pull-Requests](http://githubbadges.herokuapp.com/frictionlessdata/datapackage-r/pulls.svg)](https://github.com/frictionlessdata/datapackage-r/pulls)
+[![Coverage
+Status](https://coveralls.io/repos/github/frictionlessdata/datapackage-r/badge.svg?branch=master)](https://coveralls.io/github/frictionlessdata/datapackage-r?branch=master)
 [![Project Status: Active – The project has reached a stable, usable
 state but is no longer being actively developed; support/maintenance
 will be provided as time
