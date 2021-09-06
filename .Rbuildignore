@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^config\.yaml$
-^\.travis\.yml$
 ^\.coveralls\.yml$
 ^NEWS\.Rmd$
 ^README\.Rmd$
@@ -15,3 +14,4 @@
 ^LEAD\.md$
 ^Ffrictionless\.png
 ^docs$
+^\.github$
