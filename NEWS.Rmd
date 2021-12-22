@@ -4,6 +4,10 @@ output:
   github_document:
     html_preview: yes
 ---
+#### datapackage.r v1.3.4
+
+update profiles and httptest::with_mock_api
+
 #### datapackage.r v1.3.3
 
 update profiles
