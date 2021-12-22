@@ -104,7 +104,7 @@
           },
           "path": {
             "title": "Path",
-            "description": "A fully qualified URL, or a POSIX file path..",
+            "description": "A fully qualified URL, or a POSIX file path.",
             "type": "string",
             "pattern": "^(?=^[^./~])(^((?!\\.{2}).)*$).*$",
             "examples": [
@@ -191,7 +191,7 @@
           },
           "path": {
             "title": "Path",
-            "description": "A fully qualified URL, or a POSIX file path..",
+            "description": "A fully qualified URL, or a POSIX file path.",
             "type": "string",
             "pattern": "^(?=^[^./~])(^((?!\\.{2}).)*$).*$",
             "examples": [
@@ -277,7 +277,7 @@
             "oneOf": [
               {
                 "title": "Path",
-                "description": "A fully qualified URL, or a POSIX file path..",
+                "description": "A fully qualified URL, or a POSIX file path.",
                 "type": "string",
                 "pattern": "^(?=^[^./~])(^((?!\\.{2}).)*$).*$",
                 "examples": [
@@ -291,7 +291,7 @@
                 "minItems": 1,
                 "items": {
                   "title": "Path",
-                  "description": "A fully qualified URL, or a POSIX file path..",
+                  "description": "A fully qualified URL, or a POSIX file path.",
                   "type": "string",
                   "pattern": "^(?=^[^./~])(^((?!\\.{2}).)*$).*$",
                   "examples": [
@@ -322,7 +322,10 @@
             "propertyOrder": 40,
             "title": "Table Schema",
             "description": "A Table Schema for this resource, compliant with the [Table Schema](/tableschema/) specification.",
-            "type": "object",
+            "type": [
+              "string",
+              "object"
+            ],
             "required": [
               "fields"
             ],
@@ -1926,7 +1929,7 @@
                 },
                 "path": {
                   "title": "Path",
-                  "description": "A fully qualified URL, or a POSIX file path..",
+                  "description": "A fully qualified URL, or a POSIX file path.",
                   "type": "string",
                   "pattern": "^(?=^[^./~])(^((?!\\.{2}).)*$).*$",
                   "examples": [
@@ -1972,7 +1975,7 @@
                 },
                 "path": {
                   "title": "Path",
-                  "description": "A fully qualified URL, or a POSIX file path..",
+                  "description": "A fully qualified URL, or a POSIX file path.",
                   "type": "string",
                   "pattern": "^(?=^[^./~])(^((?!\\.{2}).)*$).*$",
                   "examples": [
@@ -2001,7 +2004,10 @@
             "propertyOrder": 50,
             "title": "CSV Dialect",
             "description": "The CSV dialect descriptor.",
-            "type": "object",
+            "type": [
+              "string",
+              "object"
+            ],
             "required": [
               "delimiter",
               "doubleQuote"
@@ -2202,7 +2208,7 @@
           },
           "path": {
             "title": "Path",
-            "description": "A fully qualified URL, or a POSIX file path..",
+            "description": "A fully qualified URL, or a POSIX file path.",
             "type": "string",
             "pattern": "^(?=^[^./~])(^((?!\\.{2}).)*$).*$",
             "examples": [

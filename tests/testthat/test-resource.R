@@ -64,7 +64,7 @@ test_that('string remote path', {
   
   descriptor <- 'https://httpbin.org/data-resource/'
   
-  httptest::with_mock_API({
+  httptest::with_mock_api({
     resource <- Resource.load(descriptor)
   })
   

@@ -109,7 +109,7 @@ test_that('string remote path', {
   descriptor <- 'http://example.com/data-package'
   # Mocks
   contents <-  helpers.from.json.to.list(system.file('extdata/data-package.json', package = "datapackage.r"))
-  httptest::with_mock_API({
+  httptest::with_mock_api({
     dataPackage <- Package.load(descriptor)
   })
   

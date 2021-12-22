@@ -46,7 +46,7 @@ test_that('load remote profile 1', {
 test_that('load remote profile', {
   url <- 'https://example.com/data-package.json'
   jsonschema <- helpers.from.json.to.list('inst/profiles/data-package.json')
-  httptest::with_mock_API({
+  httptest::with_mock_api({
     profile <- Profile.load(url)
   })
   expect_equal(profile$name, "data-package")
